@@ -8,14 +8,15 @@ interface RetroWindowProps {
   title: string;
   children: ReactNode;
   className?: string;
+  accent?: boolean;
 }
 
-/**
- * Decorative "retro desktop window" chrome around a shadcn Card.
- * The title bar controls are presentational only — no close/minimize/
- * maximize behavior is implemented.
- */
-export function RetroWindow({ title, children, className }: RetroWindowProps) {
+export function RetroWindow({
+  title,
+  children,
+  className,
+  accent = false,
+}: RetroWindowProps) {
   return (
     <Card className={cn("gap-0 rounded-lg p-0", className)}>
       <div className="flex items-center justify-between gap-3 border-b border-border bg-accent-blue/20 px-3 py-2">
@@ -24,12 +25,22 @@ export function RetroWindow({ title, children, className }: RetroWindowProps) {
           {title}
         </span>
         <span aria-hidden className="flex items-center gap-1.5">
-          <span className="flex size-4 items-center justify-center rounded-[3px] border border-border bg-surface text-muted-foreground">
-            <Square className="size-2.5" />
-          </span>
-          <span className="flex size-4 items-center justify-center rounded-[3px] border border-border bg-surface text-muted-foreground">
-            <X className="size-2.5" />
-          </span>
+          {accent ? (
+            <>
+              <span className="size-2.5 rounded-full bg-mood-happy" />
+              <span className="size-2.5 rounded-full bg-mood-neutral" />
+              <span className="size-2.5 rounded-full bg-mood-sad" />
+            </>
+          ) : (
+            <>
+              <span className="flex size-4 items-center justify-center rounded-[3px] border border-border bg-surface text-muted-foreground">
+                <Square className="size-2.5" />
+              </span>
+              <span className="flex size-4 items-center justify-center rounded-[3px] border border-border bg-surface text-muted-foreground">
+                <X className="size-2.5" />
+              </span>
+            </>
+          )}
         </span>
       </div>
       <div className="p-6">{children}</div>

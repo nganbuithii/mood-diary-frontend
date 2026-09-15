@@ -1,6 +1,8 @@
+import { AuthBrandingPanel } from "@/components/auth/auth-branding-panel";
+
 export function LoginBranding() {
   return (
-    <div className="relative hidden flex-col justify-center overflow-hidden bg-secondary/10 px-12 py-16 lg:flex">
+    <AuthBrandingPanel className="bg-secondary/10">
       <div
         aria-hidden
         className="pointer-events-none absolute -top-24 -left-20 size-72 rounded-full bg-accent-blue/30 blur-3xl"
@@ -60,6 +62,6 @@ export function LoginBranding() {
           time.
         </p>
       </div>
-    </div>
+    </AuthBrandingPanel>
   );
 }
