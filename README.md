@@ -41,6 +41,11 @@ src/
   components/ lib/ hooks/ stores/
 ```
 
+Quy ước: UI component (form, layout, button riêng của domain) đặt ở
+`components/<domain>/`; data layer của domain (types, Zod schema, hàm gọi
+API, hook TanStack Query) đặt ở `features/<domain>/{types,schemas,api,hooks}`.
+Phần dùng chung nhiều domain (Axios client, error type, env) nằm ở `lib/`.
+
 ## Deploy
 
 Đích deploy là **Vercel** (không container hóa) — xem lý do trong README của
