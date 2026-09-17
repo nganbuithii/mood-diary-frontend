@@ -2,6 +2,7 @@ import axios from "axios";
 
 import { apiBaseUrl } from "@/lib/env";
 import { ApiError } from "@/lib/api/http-error";
+import { getAccessToken } from "@/lib/auth/token-storage";
 
 interface ErrorResponseBody {
   message?: string | string[];
@@ -13,6 +14,14 @@ export const apiClient = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+});
+
+apiClient.interceptors.request.use((config) => {
+  const accessToken = getAccessToken();
+  if (accessToken) {
+    config.headers.set("Authorization", `Bearer ${accessToken}`);
+  }
+  return config;
 });
 
 apiClient.interceptors.response.use(
