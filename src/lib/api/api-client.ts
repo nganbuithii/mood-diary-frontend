@@ -14,7 +14,7 @@ interface RetryableRequestConfig extends InternalAxiosRequestConfig {
 
 export const apiClient = axios.create({
   baseURL: apiBaseUrl,
-  timeout: 10_000,
+  timeout: 30_000,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -37,6 +37,12 @@ apiClient.interceptors.response.use(
     }
 
     if (!error.response) {
+      if (error.code === "ECONNABORTED") {
+        return Promise.reject(
+          new ApiError(0, "The server took too long to respond. Please try again."),
+        );
+      }
+
       return Promise.reject(
         new ApiError(0, "Unable to reach the server. Please try again."),
       );
