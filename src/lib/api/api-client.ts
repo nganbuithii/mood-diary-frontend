@@ -49,13 +49,16 @@ apiClient.interceptors.response.use(
     }
 
     const originalRequest = error.config as RetryableRequestConfig | undefined;
-    const isRefreshCall = originalRequest?.url === ENDPOINTS.REFRESH;
+    const isAuthEntryCall =
+      originalRequest?.url === ENDPOINTS.REFRESH ||
+      originalRequest?.url === ENDPOINTS.LOGIN ||
+      originalRequest?.url === ENDPOINTS.REGISTER;
 
     if (
       error.response.status === 401 &&
       originalRequest &&
       !originalRequest._retry &&
-      !isRefreshCall
+      !isAuthEntryCall
     ) {
       originalRequest._retry = true;
 

@@ -53,7 +53,7 @@ export function LoginForm() {
   const onSubmit = handleSubmit(async (values) => {
     try {
       await loginMutation.mutateAsync(values);
-      router.push("/");
+      router.push("/home");
     } catch (error) {
       setError("root", {
         message:
