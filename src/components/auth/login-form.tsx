@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import { Lock, Mail } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { CardDescription, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Field,
@@ -66,15 +65,7 @@ export function LoginForm() {
   });
 
   return (
-    <RetroWindow title="Mood Diary" className="w-full max-w-sm">
-      <div className="mb-6 flex flex-col gap-1 text-center">
-        <CardTitle className="text-xl">
-          Welcome back <span aria-hidden>♡</span>
-        </CardTitle>
-        <CardDescription>
-          Log in to open today&apos;s page in your journal.
-        </CardDescription>
-      </div>
+    <RetroWindow title="Welcome Back" accent className="w-full">
       <form onSubmit={onSubmit} noValidate>
         <FieldGroup>
           <Field data-invalid={!!errors.email}>
@@ -135,7 +126,7 @@ export function LoginForm() {
 
           <Field>
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Logging in..." : "Log in ♡"}
+              {isSubmitting ? "Logging in..." : "Log in"}
             </Button>
           </Field>
 

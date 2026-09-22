@@ -196,7 +196,7 @@ export function RegisterForm() {
             <GoogleAuthButton />
             <FieldDescription className="text-center">
               Already have an account?{" "}
-              <Link href="/login">Log in ♡</Link>
+              <Link href="/login">Log in</Link>
             </FieldDescription>
           </Field>
         </FieldGroup>
