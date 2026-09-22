@@ -8,7 +8,7 @@ import { cn } from "cn";
 import { LogoutButton } from "@/components/auth/logout-button";
 
 const NAV_LINKS = [
-  { href: "/", label: "Home" },
+  { href: "/home", label: "Home" },
   { href: "/diary", label: "My Diary" },
   { href: "/memories", label: "Memories" },
   { href: "/friends", label: "Friends" },
@@ -26,7 +26,7 @@ export function Navbar({ userName }: NavbarProps) {
     <header className="sticky top-0 z-10 border-b border-border bg-surface/90 backdrop-blur supports-[backdrop-filter]:bg-surface/75">
       <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3 sm:px-6">
         <Link
-          href="/"
+          href="/home"
           className="order-1 flex shrink-0 items-center gap-1.5 font-heading text-xl text-foreground sm:text-2xl"
         >
           <span aria-hidden>🌷</span> Moodiary
