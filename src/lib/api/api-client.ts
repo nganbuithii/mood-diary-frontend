@@ -52,7 +52,9 @@ apiClient.interceptors.response.use(
     const isAuthEntryCall =
       originalRequest?.url === ENDPOINTS.REFRESH ||
       originalRequest?.url === ENDPOINTS.LOGIN ||
-      originalRequest?.url === ENDPOINTS.REGISTER;
+      originalRequest?.url === ENDPOINTS.REGISTER ||
+      originalRequest?.url === ENDPOINTS.FORGOT_PASSWORD ||
+      originalRequest?.url === ENDPOINTS.RESET_PASSWORD;
 
     if (
       error.response.status === 401 &&
