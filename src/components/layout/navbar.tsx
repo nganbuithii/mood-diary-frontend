@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Heart } from "lucide-react";
+import { Heart, User } from "lucide-react";
 import { cn } from "cn";
 
 import { LogoutButton } from "@/components/auth/logout-button";
+import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 
 const NAV_LINKS = [
   { href: "/home", label: "Home" },
@@ -14,13 +15,10 @@ const NAV_LINKS = [
   { href: "/friends", label: "Friends" },
 ] as const;
 
-interface NavbarProps {
-  userName: string;
-}
-
-export function Navbar({ userName }: NavbarProps) {
+export function Navbar() {
   const pathname = usePathname();
-  const initial = userName.charAt(0).toUpperCase();
+  const { data: currentUser } = useCurrentUser();
+  const initial = currentUser?.displayName.charAt(0).toUpperCase();
 
   return (
     <header className="sticky top-0 z-10 border-b border-border bg-surface/90 backdrop-blur supports-[backdrop-filter]:bg-surface/75">
@@ -68,7 +66,7 @@ export function Navbar({ userName }: NavbarProps) {
             aria-label="Your profile"
             className="flex size-8 items-center justify-center rounded-full bg-primary/20 font-heading text-sm text-foreground transition-transform hover:scale-105"
           >
-            {initial}
+            {initial ?? <User className="size-4" />}
           </Link>
 
           <LogoutButton />

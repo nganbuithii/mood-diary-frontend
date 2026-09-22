@@ -1,10 +1,8 @@
+"use client";
+
 import { MoodCheckinCard } from "@/components/mood-diary/mood-checkin-card";
 import { RecentMemoriesSection } from "@/components/mood-diary/recent-memories-section";
-
-export const dynamic = "force-dynamic";
-
-// No "current user" endpoint yet — swap for the real session name once auth exposes one.
-const CURRENT_USER_NAME = "Mai";
+import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 
 function getGreeting(hour: number) {
   if (hour < 12) return "Good morning";
@@ -13,6 +11,7 @@ function getGreeting(hour: number) {
 }
 
 export default function HomePage() {
+  const { data: currentUser } = useCurrentUser();
   const greeting = getGreeting(new Date().getHours());
 
   return (
@@ -29,7 +28,9 @@ export default function HomePage() {
       <main className="relative mx-auto flex w-full max-w-3xl flex-col gap-10 px-4 py-10 sm:px-6 lg:px-10">
         <section className="flex flex-col items-center gap-2 text-center">
           <h1 className="font-heading text-3xl text-foreground sm:text-4xl">
-            {greeting}, {CURRENT_USER_NAME} <span aria-hidden>♡</span>
+            {greeting}
+            {currentUser ? `, ${currentUser.displayName}` : ""}{" "}
+            <span aria-hidden>♡</span>
           </h1>
           <p className="text-sm text-muted-foreground sm:text-base">
             Every feeling deserves a little space.

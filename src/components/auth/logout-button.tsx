@@ -1,12 +1,23 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import type { VariantProps } from "class-variance-authority";
 import { LogOut } from "lucide-react";
+import { cn } from "cn";
 
-import { Button } from "@/components/ui/button";
+import { Button, type buttonVariants } from "@/components/ui/button";
 import { useLogout } from "@/features/auth/hooks/use-logout";
 
-export function LogoutButton() {
+interface LogoutButtonProps
+  extends Pick<VariantProps<typeof buttonVariants>, "variant" | "size"> {
+  className?: string;
+}
+
+export function LogoutButton({
+  variant = "ghost",
+  size = "sm",
+  className,
+}: LogoutButtonProps) {
   const router = useRouter();
   const logoutMutation = useLogout();
 
@@ -21,9 +32,9 @@ export function LogoutButton() {
   return (
     <Button
       type="button"
-      variant="ghost"
-      size="sm"
-      className="gap-1.5"
+      variant={variant}
+      size={size}
+      className={cn("gap-1.5", className)}
       onClick={handleLogout}
       disabled={logoutMutation.isPending}
     >
