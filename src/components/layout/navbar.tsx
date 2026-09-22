@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Heart, User } from "lucide-react";
+import { Bell, Flame, Heart, User } from "lucide-react";
 import { cn } from "cn";
 
 import { LogoutButton } from "@/components/auth/logout-button";
@@ -25,9 +26,16 @@ export function Navbar() {
       <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3 sm:px-6">
         <Link
           href="/home"
-          className="order-1 flex shrink-0 items-center gap-1.5 font-heading text-xl text-foreground sm:text-2xl"
+          className="order-1 flex shrink-0 items-center gap-2 font-heading text-xl text-foreground sm:text-2xl"
         >
-          <span aria-hidden>🌷</span> Moodiary
+          <Image
+            src="/images/logo.png"
+            alt="Moodiary"
+            width={1536}
+            height={1024}
+            priority
+            className="h-11 w-auto shrink-0 sm:h-13"
+          />
         </Link>
 
         <nav
@@ -53,20 +61,47 @@ export function Navbar() {
         </nav>
 
         <div className="order-2 flex shrink-0 items-center gap-2 md:order-3">
+          <button
+            type="button"
+            disabled
+            title="Daily streak — coming soon"
+            aria-label="Daily streak — coming soon"
+            className="flex size-10 items-center justify-center rounded-full text-muted-foreground/70"
+          >
+            <Flame className="size-5" />
+          </button>
+
+          <button
+            type="button"
+            disabled
+            title="Notifications — coming soon"
+            aria-label="Notifications — coming soon"
+            className="flex size-10 items-center justify-center rounded-full text-muted-foreground/70"
+          >
+            <Bell className="size-5" />
+          </button>
+
           <Link
             href="/favorites"
             aria-label="Favorites"
-            className="flex size-8 items-center justify-center rounded-full text-primary-hover transition-colors hover:bg-primary/10"
+            className="flex size-10 items-center justify-center rounded-full text-primary-hover transition-colors hover:bg-primary/10"
           >
-            <Heart className="size-4" fill="currentColor" />
+            <Heart className="size-5" fill="currentColor" />
           </Link>
 
           <Link
             href="/profile"
             aria-label="Your profile"
-            className="flex size-8 items-center justify-center rounded-full bg-primary/20 font-heading text-sm text-foreground transition-transform hover:scale-105"
+            className="flex shrink-0 items-center gap-2 rounded-full py-1 pr-1 pl-2 transition-colors hover:bg-primary/10"
           >
-            {initial ?? <User className="size-4" />}
+            {currentUser && (
+              <span className="hidden font-heading text-sm text-foreground sm:inline">
+                {currentUser.displayName}
+              </span>
+            )}
+            <span className="flex size-10 items-center justify-center rounded-full bg-primary/20 font-heading text-base text-foreground">
+              {initial ?? <User className="size-5" />}
+            </span>
           </Link>
 
           <LogoutButton />

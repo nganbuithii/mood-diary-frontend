@@ -3,10 +3,12 @@ import { ProfileCard } from "@/components/profile/profile-card";
 
 export default function ProfilePage() {
   return (
-    <div className="min-h-svh bg-background">
+    <div className="min-h-svh">
       <Navbar />
-      <div className="flex w-full items-center justify-center px-6 py-10 sm:py-16">
-        <ProfileCard />
+      <div className="w-full px-4 py-10 sm:px-6 sm:py-16">
+        <div className="mx-auto w-full max-w-2xl">
+          <ProfileCard />
+        </div>
       </div>
     </div>
   );

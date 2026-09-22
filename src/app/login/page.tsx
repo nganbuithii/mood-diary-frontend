@@ -3,7 +3,7 @@ import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-svh w-full items-center justify-center bg-[url('/images/bg_home.png')] bg-contain bg-top bg-no-repeat px-6 py-10 lg:bg-cover lg:bg-center lg:bg-fixed lg:px-12 lg:py-16">
+    <div className="flex min-h-svh w-full items-center justify-center px-6 py-10 lg:px-12 lg:py-16">
       <div className="grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1fr_minmax(380px,440px)] lg:gap-12">
         <LoginBranding />
 

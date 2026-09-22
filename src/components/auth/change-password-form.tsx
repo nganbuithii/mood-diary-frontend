@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { CardDescription, CardTitle } from "@/components/ui/card";
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -130,12 +129,8 @@ export function ChangePasswordForm() {
               }
               {...register("newPassword")}
             />
-            {errors.newPassword ? (
+            {errors.newPassword && (
               <FieldError id="newPassword-error" errors={[errors.newPassword]} />
-            ) : (
-              <FieldDescription id="newPassword-description">
-                Use at least 8 characters.
-              </FieldDescription>
             )}
           </Field>
 
@@ -166,7 +161,7 @@ export function ChangePasswordForm() {
 
           <Field>
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Updating..." : "Update password ♡"}
+              {isSubmitting ? "Updating..." : "Update password"}
             </Button>
           </Field>
         </FieldGroup>

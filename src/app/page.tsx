@@ -27,10 +27,10 @@ const STEPS = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-svh bg-background">
+    <div className="min-h-svh">
       <PublicHeader />
 
-      <div className="relative isolate overflow-hidden bg-[url('/images/bg_home.png')] bg-contain bg-top bg-no-repeat lg:bg-cover lg:bg-center lg:bg-fixed">
+      <div className="relative isolate overflow-hidden">
         <main className="relative mx-auto flex w-full max-w-5xl flex-col gap-24 px-4 py-16 sm:px-6 sm:py-20 lg:px-10">
           {/* Hero */}
           <section className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-8">

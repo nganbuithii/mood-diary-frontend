@@ -25,7 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${nunito.variable} ${patrickHand.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="flex min-h-full flex-col bg-[url('/images/bg_home.png')] bg-contain bg-top bg-no-repeat lg:bg-cover lg:bg-center lg:bg-fixed">
         <Providers>{children}</Providers>
       </body>
     </html>
