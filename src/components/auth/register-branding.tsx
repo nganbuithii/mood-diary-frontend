@@ -4,7 +4,7 @@ import { AuthBrandingPanel } from "@/components/auth/auth-branding-panel";
 
 export function RegisterBranding() {
   return (
-    <AuthBrandingPanel className="items-center bg-background">
+    <AuthBrandingPanel className="items-center">
       <div className="relative z-10 flex max-w-md flex-col items-center gap-6 text-center">
         <Image
           src="/images/auth/register-welcome.jpg"

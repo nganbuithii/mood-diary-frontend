@@ -42,6 +42,7 @@ export function LoginForm() {
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
+    reValidateMode: "onBlur",
     defaultValues: {
       email: "",
       password: "",
@@ -108,6 +109,7 @@ export function LoginForm() {
             </div>
             <PasswordInput
               id="password"
+              placeholder="Enter your password"
               autoComplete="current-password"
               icon={<Lock />}
               disabled={isSubmitting}

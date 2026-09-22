@@ -9,16 +9,14 @@ export function PublicHeader() {
           href="/"
           className="flex shrink-0 items-center gap-2 font-heading text-xl text-foreground sm:text-2xl"
         >
-          <span className="relative size-11 shrink-0 overflow-hidden sm:size-13">
-            <Image
-              src="/images/logo.png"
-              alt=""
-              fill
-              sizes="52px"
-              priority
-              className="origin-top scale-[1.8] object-cover"
-            />
-          </span>
+          <Image
+            src="/images/logo.png"
+            alt="Moodiary"
+            width={1536}
+            height={1024}
+            priority
+            className="h-11 w-auto shrink-0 sm:h-13"
+          />
         </Link>
       </div>
     </header>

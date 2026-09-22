@@ -41,6 +41,7 @@ export function RegisterForm() {
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
+    reValidateMode: "onBlur",
     defaultValues: {
       displayName: "",
       email: "",
@@ -87,7 +88,7 @@ export function RegisterForm() {
               <InputGroupInput
                 id="displayName"
                 type="text"
-                placeholder="Ngân"
+                placeholder="Jane Doe"
                 autoComplete="name"
                 disabled={isSubmitting}
                 aria-invalid={!!errors.displayName}
@@ -124,22 +125,15 @@ export function RegisterForm() {
             <FieldLabel htmlFor="password">Password</FieldLabel>
             <PasswordInput
               id="password"
+              placeholder="Enter your password"
               autoComplete="new-password"
               icon={<Lock />}
               disabled={isSubmitting}
               aria-invalid={!!errors.password}
-              aria-describedby={
-                errors.password ? "password-error" : "password-description"
-              }
+              aria-describedby={errors.password ? "password-error" : undefined}
               {...register("password")}
             />
-            {errors.password ? (
-              <FieldError id="password-error" errors={[errors.password]} />
-            ) : (
-              <FieldDescription id="password-description">
-                Use at least 8 characters.
-              </FieldDescription>
-            )}
+            <FieldError id="password-error" errors={[errors.password]} />
           </Field>
 
           <Field data-invalid={!!errors.confirmPassword}>
@@ -148,6 +142,7 @@ export function RegisterForm() {
             </FieldLabel>
             <PasswordInput
               id="confirm-password"
+              placeholder="Re-enter your password"
               autoComplete="new-password"
               icon={<Lock />}
               disabled={isSubmitting}
@@ -191,7 +186,7 @@ export function RegisterForm() {
 
           <Field>
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Creating account..." : "Create account ♡"}
+              {isSubmitting ? "Creating account..." : "Create account"}
             </Button>
           </Field>
 

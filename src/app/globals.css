@@ -156,4 +156,13 @@
   html {
     @apply font-sans;
   }
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--foreground) !important;
+    -webkit-box-shadow: 0 0 0px 1000px var(--surface) inset !important;
+    box-shadow: 0 0 0px 1000px var(--surface) inset !important;
+    caret-color: var(--foreground) !important;
+    transition: background-color 9999s ease-in-out 0s;
+  }
 }
