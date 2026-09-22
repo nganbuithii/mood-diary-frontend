@@ -20,6 +20,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { SettingRow } from "@/components/profile/setting-row";
@@ -39,7 +40,8 @@ export function ProfileCard() {
   if (isPending || !currentUser) {
     return (
       <Card className="w-full">
-        <CardContent className="py-10 text-center text-sm text-muted-foreground">
+        <CardContent className="flex flex-col items-center gap-3 py-10 text-center text-sm text-muted-foreground">
+          <Spinner size="lg" />
           Loading your page...
         </CardContent>
       </Card>
