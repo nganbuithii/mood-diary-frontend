@@ -165,7 +165,7 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col">
+    <form onSubmit={handleSubmit} className="flex min-w-0 flex-col">
       <div className="flex items-center justify-between gap-3 border-b border-border bg-accent-blue/20 px-5 py-3">
         <div className="flex flex-col gap-0.5">
           <DialogTitle className="flex items-center gap-1.5 font-heading text-lg text-foreground">

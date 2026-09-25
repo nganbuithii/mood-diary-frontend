@@ -133,7 +133,7 @@ src/
 | Auth | `POST /auth/register`, `/auth/login`, `/auth/refresh`, `/auth/logout`, `/auth/change-password` · `GET /auth/me` |
 | Users | `POST /users/me/avatar` (multipart, field `file`, tối đa 5MB) |
 | Diaries | `GET /diaries?month=YYYY-MM` · `POST /diaries` (multipart: `date`, `mood`, `note`, `photos[]` tối đa 3 ảnh × 5MB, `songId`) |
-| Songs | `GET /songs/search?q=` (tối đa 10 kết quả, giới hạn 30 lần/phút cho mỗi user) |
+| Songs | `GET /songs/search?q=` (tối đa 10 kết quả, giới hạn 30 lần/phút cho mỗi user) · `GET /songs/trending` (top 20 bài nghe nhiều ở Việt Nam, hiện khi ô tìm kiếm còn trống) |
 
 Quy ước của `POST /diaries` cần nhớ: đây là **upsert theo ngày**, và field nào không gửi thì **giữ nguyên**.
 
