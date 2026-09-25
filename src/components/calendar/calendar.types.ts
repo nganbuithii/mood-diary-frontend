@@ -4,4 +4,5 @@ export interface DiaryEntry {
   date: string;
   mood: Mood;
   note?: string;
+  photoUrls: string[];
 }

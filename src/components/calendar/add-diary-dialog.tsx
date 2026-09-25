@@ -24,12 +24,17 @@ import type { DiaryEntry } from "@/components/calendar/calendar.types";
 const MAX_PHOTOS = 3;
 const MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024;
 
+interface SelectedPhoto {
+  file: File;
+  previewUrl: string;
+}
+
 interface AddDiaryDialogProps {
   date: Date | null;
   existingEntry?: DiaryEntry;
   isSaving?: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (mood: Mood, note: string) => void;
+  onSave: (mood: Mood, note: string, photos: File[]) => void;
 }
 
 export function AddDiaryDialog({
@@ -65,15 +70,19 @@ interface DiaryFormProps {
   existingEntry?: DiaryEntry;
   isSaving: boolean;
   onCancel: () => void;
-  onSave: (mood: Mood, note: string) => void;
+  onSave: (mood: Mood, note: string, photos: File[]) => void;
 }
 
 function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFormProps) {
   const [mood, setMood] = useState<Mood | null>(existingEntry?.mood ?? null);
   const [note, setNote] = useState(existingEntry?.note ?? "");
-  const [photos, setPhotos] = useState<string[]>([]);
+  const [photos, setPhotos] = useState<SelectedPhoto[]>([]);
   const photosRef = useRef(photos);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const savedPhotoUrls = existingEntry?.photoUrls ?? [];
+  // Saving uploads a fresh set that replaces what's stored, so saved photos only show until new ones are picked.
+  const showSavedPhotos = photos.length === 0 && savedPhotoUrls.length > 0;
 
   useEffect(() => {
     photosRef.current = photos;
@@ -81,7 +90,7 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
 
   useEffect(() => {
     return () => {
-      photosRef.current.forEach((url) => URL.revokeObjectURL(url));
+      photosRef.current.forEach((photo) => URL.revokeObjectURL(photo.previewUrl));
     };
   }, []);
 
@@ -95,7 +104,11 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     if (!mood) return;
-    onSave(mood, note);
+    onSave(
+      mood,
+      note,
+      photos.map((photo) => photo.file),
+    );
   };
 
   const handleFilesSelected = (event: ChangeEvent<HTMLInputElement>) => {
@@ -109,7 +122,7 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
       return;
     }
 
-    const accepted: string[] = [];
+    const accepted: SelectedPhoto[] = [];
     for (const file of files) {
       if (accepted.length >= remainingSlots) {
         toast.error(`You can add up to ${MAX_PHOTOS} photos.`);
@@ -123,7 +136,7 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
         toast.error("Each photo must be smaller than 5MB.");
         continue;
       }
-      accepted.push(URL.createObjectURL(file));
+      accepted.push({ file, previewUrl: URL.createObjectURL(file) });
     }
 
     if (accepted.length > 0) {
@@ -131,9 +144,9 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
     }
   };
 
-  const handleRemovePhoto = (url: string) => {
-    URL.revokeObjectURL(url);
-    setPhotos((current) => current.filter((photoUrl) => photoUrl !== url));
+  const handleRemovePhoto = (previewUrl: string) => {
+    URL.revokeObjectURL(previewUrl);
+    setPhotos((current) => current.filter((photo) => photo.previewUrl !== previewUrl));
   };
 
   return (
@@ -182,17 +195,27 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
             </span>
           </FieldLabel>
           <div className="flex flex-wrap gap-2">
-            {photos.map((url) => (
+            {showSavedPhotos &&
+              savedPhotoUrls.map((url) => (
+                <div
+                  key={url}
+                  className="relative size-16 shrink-0 overflow-hidden rounded-xl border border-border shadow-sm sm:size-20"
+                >
+                  <img src={url} alt="" className="size-full object-cover" />
+                </div>
+              ))}
+
+            {photos.map(({ previewUrl }) => (
               <div
-                key={url}
+                key={previewUrl}
                 className="group/photo relative size-16 shrink-0 overflow-hidden rounded-xl border border-border shadow-sm sm:size-20"
               >
-                <img src={url} alt="" className="size-full object-cover" />
+                <img src={previewUrl} alt="" className="size-full object-cover" />
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon-xs"
-                  onClick={() => handleRemovePhoto(url)}
+                  onClick={() => handleRemovePhoto(previewUrl)}
                   disabled={isSaving}
                   aria-label="Remove photo"
                   className="absolute top-1 right-1 size-5 rounded-full bg-foreground/70 text-background opacity-0 hover:bg-foreground/90 hover:text-background group-hover/photo:opacity-100 focus-visible:opacity-100"
@@ -215,6 +238,11 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
               </Button>
             )}
           </div>
+          {showSavedPhotos && (
+            <p className="text-xs text-muted-foreground">
+              New photos will replace the ones you saved before.
+            </p>
+          )}
           <input
             ref={fileInputRef}
             type="file"
@@ -222,6 +250,7 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
             multiple
             className="sr-only"
             onChange={handleFilesSelected}
+            disabled={isSaving}
           />
         </Field>
       </div>

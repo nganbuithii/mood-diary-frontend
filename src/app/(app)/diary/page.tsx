@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-
 import { CalendarHeader } from "@/components/calendar/calendar-header";
 import { MonthGrid } from "@/components/calendar/month-grid";
 import { AddDiaryDialog } from "@/components/calendar/add-diary-dialog";
@@ -43,6 +42,7 @@ export default function DiaryCalendarPage() {
         date: entry.date,
         mood: entry.mood,
         note: entry.note ?? undefined,
+        photoUrls: entry.photoUrls ?? [],
       };
     }
     return map;
@@ -60,12 +60,12 @@ export default function DiaryCalendarPage() {
     setViewDate((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1));
   const goToToday = () => setViewDate(new Date(today.getFullYear(), today.getMonth(), 1));
 
-  const handleSaveEntry = (mood: Mood, note: string) => {
+  const handleSaveEntry = (mood: Mood, note: string, photos: File[]) => {
     if (!selectedDate) return;
     const date = formatDateKey(selectedDate);
 
     upsertEntryMutation.mutate(
-      { date, mood, note: note.trim() || undefined },
+      { date, mood, note: note.trim() || undefined, photos },
       {
         onSuccess: () => {
           setSelectedDate(null);
