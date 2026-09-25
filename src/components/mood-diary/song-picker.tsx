@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { useSearchSongs } from "@/features/songs/hooks/use-search-songs";
+import { useTrendingSongs } from "@/features/songs/hooks/use-trending-songs";
 import type { Song } from "@/features/songs/types/song.types";
 import { ApiError } from "@/lib/api/http-error";
 
@@ -21,7 +22,11 @@ interface SongPickerProps {
 export function SongPicker({ value, onChange, disabled = false }: SongPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const { data: songs, error, isPending, isFetching, isQueryReady } = useSearchSongs(query);
+  const search = useSearchSongs(query);
+  const trending = useTrendingSongs({ enabled: isOpen });
+  // Until the user has typed enough to search, suggest what's trending instead of an empty box.
+  const isShowingTrending = !search.isQueryReady;
+  const { data: songs, error, isPending } = isShowingTrending ? trending : search;
 
   const closeList = () => {
     setIsOpen(false);
@@ -66,15 +71,11 @@ export function SongPicker({ value, onChange, disabled = false }: SongPickerProp
   }
 
   const renderResults = () => {
-    if (!isQueryReady) {
-      return <StatusMessage>Type a song or artist to start searching ♪</StatusMessage>;
-    }
     if (error) {
-      return (
-        <StatusMessage>
-          {error instanceof ApiError ? error.message : "Couldn't search songs. Please try again."}
-        </StatusMessage>
-      );
+      const fallback = isShowingTrending
+        ? "Couldn't load trending songs. Try searching instead ♪"
+        : "Couldn't search songs. Please try again.";
+      return <StatusMessage>{error instanceof ApiError ? error.message : fallback}</StatusMessage>;
     }
     if (isPending) {
       return (
@@ -84,12 +85,18 @@ export function SongPicker({ value, onChange, disabled = false }: SongPickerProp
       );
     }
     if (songs.length === 0) {
-      return <StatusMessage>No songs found. Try another name?</StatusMessage>;
+      return (
+        <StatusMessage>
+          {isShowingTrending
+            ? "Type a song or artist to start searching ♪"
+            : "No songs found. Try another name?"}
+        </StatusMessage>
+      );
     }
 
     return (
       <ul className="-mx-1 flex max-h-52 flex-col overflow-y-auto">
-        {songs.map((song) => {
+        {songs.map((song, index) => {
           const isSelected = value?.id === song.id;
           return (
             <li key={song.id}>
@@ -103,6 +110,11 @@ export function SongPicker({ value, onChange, disabled = false }: SongPickerProp
                   isSelected && "bg-primary/10 hover:bg-primary/15",
                 )}
               >
+                {isShowingTrending && (
+                  <span className="w-5 shrink-0 text-center font-heading text-sm text-muted-foreground">
+                    {index + 1}
+                  </span>
+                )}
                 <SongArtwork url={song.artworkUrl} className="size-10 rounded-lg" />
                 <span className="flex min-w-0 flex-1 flex-col">
                   <span className="truncate text-sm font-medium text-foreground">{song.title}</span>
@@ -135,7 +147,7 @@ export function SongPicker({ value, onChange, disabled = false }: SongPickerProp
             aria-label="Search songs"
             className="pr-8 pl-8"
           />
-          {isFetching && (
+          {search.isFetching && (
             <Spinner size="sm" className="absolute top-1/2 right-2.5 -translate-y-1/2" />
           )}
         </div>
@@ -150,6 +162,11 @@ export function SongPicker({ value, onChange, disabled = false }: SongPickerProp
         </Button>
       </div>
 
+      {isShowingTrending && (
+        <p className="px-1 text-xs font-medium text-muted-foreground">
+          <span aria-hidden>🔥</span> Trending in Vietnam
+        </p>
+      )}
       {renderResults()}
     </div>
   );
