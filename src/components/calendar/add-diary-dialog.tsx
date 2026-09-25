@@ -18,6 +18,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { MoodSelector } from "@/components/mood-diary/mood-selector";
 import type { Mood } from "@/components/mood-diary/mood.constants";
+import { SongPicker } from "@/components/mood-diary/song-picker";
+import type { Song } from "@/components/mood-diary/song.constants";
 import { formatDateKey } from "@/components/calendar/calendar.utils";
 import type { DiaryEntry } from "@/components/calendar/calendar.types";
 
@@ -77,12 +79,15 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
   const [mood, setMood] = useState<Mood | null>(existingEntry?.mood ?? null);
   const [note, setNote] = useState(existingEntry?.note ?? "");
   const [photos, setPhotos] = useState<SelectedPhoto[]>([]);
+  const [song, setSong] = useState<Song | null>(null);
   const photosRef = useRef(photos);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const savedPhotoUrls = existingEntry?.photoUrls ?? [];
-  // Saving uploads a fresh set that replaces what's stored, so saved photos only show until new ones are picked.
   const showSavedPhotos = photos.length === 0 && savedPhotoUrls.length > 0;
+  const displayedPhotoCount = showSavedPhotos ? savedPhotoUrls.length : photos.length;
+  const canAddPhoto = displayedPhotoCount < MAX_PHOTOS;
+  const openFilePicker = () => fileInputRef.current?.click();
 
   useEffect(() => {
     photosRef.current = photos;
@@ -158,11 +163,6 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
           </DialogTitle>
           <DialogDescription>{formattedDate}</DialogDescription>
         </div>
-        <span aria-hidden className="hidden items-center gap-1.5 sm:flex">
-          <span className="size-2.5 rounded-full bg-mood-happy" />
-          <span className="size-2.5 rounded-full bg-mood-neutral" />
-          <span className="size-2.5 rounded-full bg-mood-sad" />
-        </span>
         <DialogClose
           disabled={isSaving}
           className="flex size-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors outline-none hover:bg-black/5 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
@@ -172,7 +172,7 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
         </DialogClose>
       </div>
 
-      <div className="flex flex-col gap-5 px-6 py-5">
+      <div className="flex max-h-[min(70vh,40rem)] flex-col gap-5 overflow-y-auto px-6 py-5">
         <MoodSelector value={mood} onChange={setMood} />
 
         <Field>
@@ -225,11 +225,11 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
               </div>
             ))}
 
-            {photos.length < MAX_PHOTOS && (
+            {canAddPhoto && (
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => fileInputRef.current?.click()}
+                onClick={openFilePicker}
                 disabled={isSaving}
                 className="h-16 w-16 flex-col gap-1 border-dashed border-primary/40 px-0 text-primary-hover hover:border-primary hover:bg-primary/5 hover:text-primary-hover sm:h-20 sm:w-20"
               >
@@ -238,11 +238,6 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
               </Button>
             )}
           </div>
-          {showSavedPhotos && (
-            <p className="text-xs text-muted-foreground">
-              New photos will replace the ones you saved before.
-            </p>
-          )}
           <input
             ref={fileInputRef}
             type="file"
@@ -252,6 +247,14 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
             onChange={handleFilesSelected}
             disabled={isSaving}
           />
+        </Field>
+
+        <Field>
+          <FieldLabel>
+            Song of the day{" "}
+            <span className="font-normal text-muted-foreground">(optional)</span>
+          </FieldLabel>
+          <SongPicker mood={mood} value={song} onChange={setSong} disabled={isSaving} />
         </Field>
       </div>
 

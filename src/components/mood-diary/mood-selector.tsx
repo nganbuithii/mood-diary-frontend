@@ -2,6 +2,7 @@
 
 import { cn } from "cn";
 
+import { MoodFace } from "@/components/mood-diary/mood-face";
 import { MOOD_OPTIONS, type Mood } from "@/components/mood-diary/mood.constants";
 
 interface MoodSelectorProps {
@@ -29,7 +30,7 @@ export function MoodSelector({ value, onChange }: MoodSelectorProps) {
           >
             <span
               className={cn(
-                "flex size-12 items-center justify-center rounded-full text-2xl transition-all sm:size-14 sm:text-3xl",
+                "flex size-12 items-center justify-center rounded-full p-1 transition-all sm:size-14",
                 mood.bgClass,
                 isSelected
                   ? "scale-110 ring-2 ring-primary-hover ring-offset-2 ring-offset-surface"
@@ -37,7 +38,7 @@ export function MoodSelector({ value, onChange }: MoodSelectorProps) {
                 "group-focus-visible:ring-2 group-focus-visible:ring-ring/60 group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-surface",
               )}
             >
-              <span aria-hidden>{mood.emoji}</span>
+              <MoodFace mood={mood.value} />
             </span>
             <span
               className={cn(

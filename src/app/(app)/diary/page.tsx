@@ -42,7 +42,7 @@ export default function DiaryCalendarPage() {
         date: entry.date,
         mood: entry.mood,
         note: entry.note ?? undefined,
-        photoUrls: entry.photoUrls ?? [],
+        photoUrls: entry.photoUrls,
       };
     }
     return map;

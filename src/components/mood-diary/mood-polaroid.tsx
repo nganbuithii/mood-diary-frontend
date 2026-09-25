@@ -1,5 +1,6 @@
 import { cn } from "cn";
 
+import { MoodFace } from "@/components/mood-diary/mood-face";
 import { MOOD_META, type Mood } from "@/components/mood-diary/mood.constants";
 
 interface MoodPolaroidProps {
@@ -48,11 +49,13 @@ export function MoodPolaroid({
       />
       <div
         className={cn(
-          "flex h-24 items-center justify-center rounded-sm text-3xl sm:h-28 sm:text-4xl",
+          "flex h-24 items-center justify-center rounded-sm sm:h-28",
           meta.bgClassMuted,
         )}
       >
-        <span aria-hidden>{meta.emoji}</span>
+        <span className={cn("size-16 rounded-full p-1 shadow-sm sm:size-20", meta.bgClass)}>
+          <MoodFace mood={mood} />
+        </span>
       </div>
       <div className="flex flex-col gap-0.5 px-1 text-left">
         <span className="font-heading text-sm text-foreground">

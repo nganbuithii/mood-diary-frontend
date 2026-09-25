@@ -6,6 +6,7 @@ import { cn } from "cn";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
 import { formatDateKey, isSameDay } from "@/components/calendar/calendar.utils";
 import type { DiaryEntry } from "@/components/calendar/calendar.types";
+import { MoodFace } from "@/components/mood-diary/mood-face";
 
 const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -37,7 +38,7 @@ export function MonthGrid({
         ))}
       </div>
 
-      <div className="grid aspect-[7/6] grid-cols-7 grid-rows-6">
+      <div className="grid auto-rows-fr grid-cols-7">
         {days.map((date) => {
           const key = formatDateKey(date);
           const entry = entries[key];
@@ -52,7 +53,7 @@ export function MonthGrid({
               disabled={!inCurrentMonth}
               onClick={() => onSelectDay(date)}
               className={cn(
-                "group relative flex flex-col items-start gap-1.5 overflow-hidden border-r border-b border-dashed border-border/60 p-1.5 text-left transition-colors last:border-r-0 hover:bg-primary/5 focus-visible:z-10 focus-visible:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset disabled:cursor-default disabled:hover:bg-transparent sm:p-2.5",
+                "group relative flex min-h-20 min-w-0 flex-col items-start gap-1.5 overflow-hidden border-r border-b border-dashed border-border/60 p-1.5 text-left transition-colors last:border-r-0 hover:bg-primary/5 focus-visible:z-10 focus-visible:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset disabled:cursor-default disabled:hover:bg-transparent sm:p-2.5 md:min-h-28",
                 !inCurrentMonth && "bg-muted/20 text-muted-foreground/50",
                 isToday && "bg-primary/5",
               )}
@@ -69,22 +70,36 @@ export function MonthGrid({
               </span>
 
               {meta ? (
-                <span
-                  className={cn(
-                    "flex w-full flex-col gap-0.5 rounded-xl px-1.5 py-1 text-left shadow-sm transition-transform group-hover:-translate-y-0.5",
-                    meta.bgClassMuted,
-                  )}
-                >
-                  <span className="flex items-center gap-1 text-xs font-medium text-foreground">
-                    <span aria-hidden>{meta.emoji}</span>
-                    {meta.label}
+                <>
+                  <span
+                    className={cn(
+                      "mx-auto size-7 shrink-0 rounded-full shadow-sm transition-transform group-hover:-translate-y-0.5 sm:size-8 md:hidden",
+                      meta.bgClass,
+                    )}
+                  >
+                    <MoodFace mood={meta.value} />
+                    <span className="sr-only">{meta.label}</span>
                   </span>
-                  {entry?.note && (
-                    <span className="line-clamp-1 text-[0.7rem] text-foreground/70">
-                      {entry.note}
+
+                  <span
+                    className={cn(
+                      "hidden w-full min-w-0 flex-col gap-0.5 rounded-xl px-1.5 py-1 text-left shadow-sm transition-transform group-hover:-translate-y-0.5 md:flex",
+                      meta.bgClassMuted,
+                    )}
+                  >
+                    <span className="flex min-w-0 items-center gap-1 text-xs font-medium text-foreground">
+                      <span className={cn("size-5 shrink-0 rounded-full", meta.bgClass)}>
+                        <MoodFace mood={meta.value} />
+                      </span>
+                      <span className="truncate">{meta.label}</span>
                     </span>
-                  )}
-                </span>
+                    {entry?.note && (
+                      <span className="line-clamp-1 text-[0.7rem] text-foreground/70">
+                        {entry.note}
+                      </span>
+                    )}
+                  </span>
+                </>
               ) : (
                 inCurrentMonth && (
                   <span
