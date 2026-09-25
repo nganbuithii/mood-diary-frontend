@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { CalendarHeader } from "@/components/calendar/calendar-header";
 import { MonthGrid } from "@/components/calendar/month-grid";
-import { AddDiaryDialog } from "@/components/calendar/add-diary-dialog";
+import { AddDiaryDialog, type DiaryFormValues } from "@/components/calendar/add-diary-dialog";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -13,7 +13,6 @@ import {
   getMonthGrid,
 } from "@/components/calendar/calendar.utils";
 import type { DiaryEntry } from "@/components/calendar/calendar.types";
-import type { Mood } from "@/components/mood-diary/mood.constants";
 import { useDiaryEntries } from "@/features/diary/hooks/use-diary-entries";
 import { useUpsertDiaryEntry } from "@/features/diary/hooks/use-upsert-diary-entry";
 import { ApiError } from "@/lib/api/http-error";
@@ -43,6 +42,7 @@ export default function DiaryCalendarPage() {
         mood: entry.mood,
         note: entry.note ?? undefined,
         photoUrls: entry.photoUrls,
+        song: entry.song,
       };
     }
     return map;
@@ -60,12 +60,12 @@ export default function DiaryCalendarPage() {
     setViewDate((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1));
   const goToToday = () => setViewDate(new Date(today.getFullYear(), today.getMonth(), 1));
 
-  const handleSaveEntry = (mood: Mood, note: string, photos: File[]) => {
+  const handleSaveEntry = ({ mood, note, photos, songId }: DiaryFormValues) => {
     if (!selectedDate) return;
     const date = formatDateKey(selectedDate);
 
     upsertEntryMutation.mutate(
-      { date, mood, note: note.trim() || undefined, photos },
+      { date, mood, note: note.trim() || undefined, photos, songId },
       {
         onSuccess: () => {
           setSelectedDate(null);

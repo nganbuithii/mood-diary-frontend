@@ -20,7 +20,7 @@ theo lịch tháng. Repo này là phần frontend (Next.js App Router).
 | Profile + upload avatar | `/profile` | ✅ Nối API |
 | Lịch diary theo tháng, tạo/sửa entry (mood, note, tối đa 3 ảnh) | `/diary` | ✅ Nối API |
 | Home: check-in mood, recent memories | `/home` | 🟡 UI xong, **memories đang dùng mock data** |
-| Chọn bài hát cho ngày (Song of the day) | trong modal diary | 🟡 UI xong, **chưa lưu**. Chờ backend API `/songs` |
+| Chọn bài hát cho ngày (Song of the day), tìm qua iTunes | trong modal diary | ✅ Nối API (chưa có nút nghe thử) |
 | Quên mật khẩu | `/forgot-password` | ⬜ Chưa có page (link ở form login đang dẫn tới 404) |
 | Đăng nhập Google | nút ở `/login`, `/register` | ⬜ Chỉ có UI |
 | Memories, Friends, Favorites | `/memories`, `/friends`, `/favorites` | ⬜ Chưa có page (link trên navbar dẫn tới 404) |
@@ -98,7 +98,7 @@ src/
     auth/ profile/        # UI theo domain
     calendar/             # Lịch tháng + modal tạo/sửa diary
     mood-diary/           # Mood selector, MoodFace (icon SVG), polaroid, song picker
-  features/<domain>/      # Data layer theo domain: auth, diary, profile, health
+  features/<domain>/      # Data layer theo domain: auth, diary, profile, songs, health
     api/                  #   Hàm gọi API + type request/response
     hooks/                #   Hook TanStack Query (useQuery / useMutation)
     schemas/ types/ constants/
@@ -132,10 +132,17 @@ src/
 | Health | `GET /health` |
 | Auth | `POST /auth/register`, `/auth/login`, `/auth/refresh`, `/auth/logout`, `/auth/change-password` · `GET /auth/me` |
 | Users | `POST /users/me/avatar` (multipart, field `file`, tối đa 5MB) |
-| Diaries | `GET /diaries?month=YYYY-MM` · `POST /diaries` (multipart: `date`, `mood`, `note`, `photos[]` tối đa 3 ảnh × 5MB) |
+| Diaries | `GET /diaries?month=YYYY-MM` · `POST /diaries` (multipart: `date`, `mood`, `note`, `photos[]` tối đa 3 ảnh × 5MB, `songId`) |
+| Songs | `GET /songs/search?q=` (tối đa 10 kết quả, giới hạn 30 lần/phút cho mỗi user) |
 
-Một quy ước của `POST /diaries` cần nhớ: đây là **upsert theo ngày**. Không gửi `photos` thì
-**giữ nguyên ảnh cũ**. Gửi `photos` thì **thay toàn bộ** bộ ảnh cũ.
+Quy ước của `POST /diaries` cần nhớ: đây là **upsert theo ngày**, và field nào không gửi thì **giữ nguyên**.
+
+- `photos`: không gửi thì giữ ảnh cũ, gửi thì **thay toàn bộ** bộ ảnh cũ.
+- `songId`: không gửi thì giữ bài cũ, gửi `""` thì xoá bài, gửi id thì thay bài. Modal diary chỉ gửi
+  `songId` khi người dùng đổi bài.
+
+Ô tìm bài hát được debounce 400ms và chỉ gọi API khi đã gõ từ 2 ký tự trở lên, để không chạm giới hạn
+30 lần/phút.
 
 ## Deploy
 
