@@ -1,41 +1,52 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { CalendarHeader } from "@/components/calendar/calendar-header";
 import { MonthGrid } from "@/components/calendar/month-grid";
 import { AddDiaryDialog } from "@/components/calendar/add-diary-dialog";
-import { formatDateKey, getMonthGrid } from "@/components/calendar/calendar.utils";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  formatDateKey,
+  formatMonthKey,
+  getMonthGrid,
+} from "@/components/calendar/calendar.utils";
 import type { DiaryEntry } from "@/components/calendar/calendar.types";
 import type { Mood } from "@/components/mood-diary/mood.constants";
+import { useDiaryEntries } from "@/features/diary/hooks/use-diary-entries";
+import { useUpsertDiaryEntry } from "@/features/diary/hooks/use-upsert-diary-entry";
+import { ApiError } from "@/lib/api/http-error";
 
 const today = new Date();
-
-const DEMO_ENTRIES: { dayOffset: number; mood: Mood; note?: string }[] = [
-  { dayOffset: -11, mood: "HAPPY", note: "Coffee with an old friend, felt so nice." },
-  { dayOffset: -7, mood: "VERY_HAPPY", note: "Finished my side project demo!" },
-  { dayOffset: -3, mood: "NEUTRAL", note: "Quiet day, lots of rain." },
-  { dayOffset: -1, mood: "SAD", note: "Missed the bus twice, rough morning." },
-];
-
-function buildDemoEntries(): Record<string, DiaryEntry> {
-  const entries: Record<string, DiaryEntry> = {};
-  for (const item of DEMO_ENTRIES) {
-    const date = new Date(today);
-    date.setDate(date.getDate() + item.dayOffset);
-    const key = formatDateKey(date);
-    entries[key] = { date: key, mood: item.mood, note: item.note };
-  }
-  return entries;
-}
 
 export default function DiaryCalendarPage() {
   const [viewDate, setViewDate] = useState(
     () => new Date(today.getFullYear(), today.getMonth(), 1),
   );
-  const [entries, setEntries] = useState<Record<string, DiaryEntry>>(buildDemoEntries);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  const monthKey = formatMonthKey(viewDate);
+  const {
+    data: entryList,
+    isError,
+    isFetching,
+    refetch,
+  } = useDiaryEntries(monthKey);
+  const upsertEntryMutation = useUpsertDiaryEntry();
+
+  const entries = useMemo<Record<string, DiaryEntry>>(() => {
+    const map: Record<string, DiaryEntry> = {};
+    for (const entry of entryList ?? []) {
+      map[entry.date] = {
+        date: entry.date,
+        mood: entry.mood,
+        note: entry.note ?? undefined,
+      };
+    }
+    return map;
+  }, [entryList]);
 
   const days = getMonthGrid(viewDate.getFullYear(), viewDate.getMonth());
   const monthLabel = viewDate.toLocaleDateString("en-US", {
@@ -51,13 +62,24 @@ export default function DiaryCalendarPage() {
 
   const handleSaveEntry = (mood: Mood, note: string) => {
     if (!selectedDate) return;
-    const key = formatDateKey(selectedDate);
-    setEntries((current) => ({
-      ...current,
-      [key]: { date: key, mood, note: note.trim() || undefined },
-    }));
-    setSelectedDate(null);
-    toast.success("Saved your day ♡");
+    const date = formatDateKey(selectedDate);
+
+    upsertEntryMutation.mutate(
+      { date, mood, note: note.trim() || undefined },
+      {
+        onSuccess: () => {
+          setSelectedDate(null);
+          toast.success("Saved your day ♡");
+        },
+        onError: (error) => {
+          toast.error(
+            error instanceof ApiError
+              ? error.message
+              : "Couldn't save your day. Please try again.",
+          );
+        },
+      },
+    );
   };
 
   return (
@@ -79,17 +101,36 @@ export default function DiaryCalendarPage() {
           onToday={goToToday}
         />
 
-        <MonthGrid
-          days={days}
-          currentMonth={viewDate.getMonth()}
-          today={today}
-          entries={entries}
-          onSelectDay={setSelectedDate}
-        />
+        {isError ? (
+          <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed border-border bg-surface/60 px-6 py-16 text-center">
+            <p className="text-sm text-muted-foreground">
+              Couldn&apos;t load your diary. Please try again.
+            </p>
+            <Button type="button" variant="outline" onClick={() => refetch()}>
+              Retry
+            </Button>
+          </div>
+        ) : (
+          <div className="relative">
+            <MonthGrid
+              days={days}
+              currentMonth={viewDate.getMonth()}
+              today={today}
+              entries={entries}
+              onSelectDay={setSelectedDate}
+            />
+            {isFetching && !entryList && (
+              <div className="absolute inset-0 flex items-center justify-center rounded-3xl bg-surface/60">
+                <Spinner />
+              </div>
+            )}
+          </div>
+        )}
 
         <AddDiaryDialog
           date={selectedDate}
           existingEntry={selectedDate ? entries[formatDateKey(selectedDate)] : undefined}
+          isSaving={upsertEntryMutation.isPending}
           onOpenChange={(open) => !open && setSelectedDate(null)}
           onSave={handleSaveEntry}
         />
