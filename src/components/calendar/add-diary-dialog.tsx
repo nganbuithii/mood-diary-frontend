@@ -19,9 +19,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { MoodSelector } from "@/components/mood-diary/mood-selector";
 import type { Mood } from "@/components/mood-diary/mood.constants";
 import { SongPicker } from "@/components/mood-diary/song-picker";
-import type { Song } from "@/components/mood-diary/song.constants";
 import { formatDateKey } from "@/components/calendar/calendar.utils";
 import type { DiaryEntry } from "@/components/calendar/calendar.types";
+import type { Song } from "@/features/songs/types/song.types";
 
 const MAX_PHOTOS = 3;
 const MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024;
@@ -31,12 +31,19 @@ interface SelectedPhoto {
   previewUrl: string;
 }
 
+export interface DiaryFormValues {
+  mood: Mood;
+  note: string;
+  photos: File[];
+  songId?: string;
+}
+
 interface AddDiaryDialogProps {
   date: Date | null;
   existingEntry?: DiaryEntry;
   isSaving?: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (mood: Mood, note: string, photos: File[]) => void;
+  onSave: (values: DiaryFormValues) => void;
 }
 
 export function AddDiaryDialog({
@@ -72,14 +79,14 @@ interface DiaryFormProps {
   existingEntry?: DiaryEntry;
   isSaving: boolean;
   onCancel: () => void;
-  onSave: (mood: Mood, note: string, photos: File[]) => void;
+  onSave: (values: DiaryFormValues) => void;
 }
 
 function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFormProps) {
   const [mood, setMood] = useState<Mood | null>(existingEntry?.mood ?? null);
   const [note, setNote] = useState(existingEntry?.note ?? "");
   const [photos, setPhotos] = useState<SelectedPhoto[]>([]);
-  const [song, setSong] = useState<Song | null>(null);
+  const [song, setSong] = useState<Song | null>(existingEntry?.song ?? null);
   const photosRef = useRef(photos);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -109,11 +116,14 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     if (!mood) return;
-    onSave(
+
+    const isSongChanged = song?.id !== existingEntry?.song?.id;
+    onSave({
       mood,
       note,
-      photos.map((photo) => photo.file),
-    );
+      photos: photos.map((photo) => photo.file),
+      songId: isSongChanged ? (song?.id ?? "") : undefined,
+    });
   };
 
   const handleFilesSelected = (event: ChangeEvent<HTMLInputElement>) => {
@@ -254,7 +264,7 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
             Song of the day{" "}
             <span className="font-normal text-muted-foreground">(optional)</span>
           </FieldLabel>
-          <SongPicker mood={mood} value={song} onChange={setSong} disabled={isSaving} />
+          <SongPicker value={song} onChange={setSong} disabled={isSaving} />
         </Field>
       </div>
 

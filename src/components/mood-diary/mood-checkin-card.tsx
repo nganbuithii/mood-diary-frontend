@@ -12,7 +12,6 @@ import type { Mood } from "@/components/mood-diary/mood.constants";
 const DIARY_ACTIONS = [
   { label: "Photo", emoji: "📷" },
   { label: "Music", emoji: "🎵" },
-  { label: "Tag", emoji: "🎀" },
 ] as const;
 
 export function MoodCheckinCard() {
