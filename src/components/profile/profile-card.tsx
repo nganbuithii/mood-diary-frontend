@@ -60,7 +60,11 @@ export function ProfileCard() {
         />
         <div className="flex flex-col items-center gap-1 px-6 pt-0 pb-6 text-center">
           <div className="-mt-14 sm:-mt-16">
-            <AvatarUpload initial={initial} size="lg" />
+            <AvatarUpload
+              initial={initial}
+              avatarUrl={currentUser.avatarUrl}
+              size="lg"
+            />
           </div>
           <p className="mt-2 font-heading text-2xl text-foreground">
             {currentUser.displayName} <span aria-hidden>♡</span>

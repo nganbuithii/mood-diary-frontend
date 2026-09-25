@@ -21,6 +21,7 @@ export interface AuthUser {
   displayName: string;
   email: string;
   createdAt: string;
+  avatarUrl: string | null;
 }
 
 export interface LoginResponse {

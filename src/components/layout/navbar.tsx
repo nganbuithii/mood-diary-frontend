@@ -99,8 +99,16 @@ export function Navbar() {
                 {currentUser.displayName}
               </span>
             )}
-            <span className="flex size-10 items-center justify-center rounded-full bg-primary/20 font-heading text-base text-foreground">
-              {initial ?? <User className="size-5" />}
+            <span className="flex size-10 items-center justify-center overflow-hidden rounded-full bg-primary/20 font-heading text-base text-foreground">
+              {currentUser?.avatarUrl ? (
+                <img
+                  src={currentUser.avatarUrl}
+                  alt=""
+                  className="size-full object-cover"
+                />
+              ) : (
+                (initial ?? <User className="size-5" />)
+              )}
             </span>
           </Link>
 
