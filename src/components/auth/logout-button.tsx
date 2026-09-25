@@ -11,12 +11,14 @@ import { useLogout } from "@/features/auth/hooks/use-logout";
 interface LogoutButtonProps
   extends Pick<VariantProps<typeof buttonVariants>, "variant" | "size"> {
   className?: string;
+  showLabel?: boolean;
 }
 
 export function LogoutButton({
   variant = "ghost",
   size = "sm",
   className,
+  showLabel = true,
 }: LogoutButtonProps) {
   const router = useRouter();
   const logoutMutation = useLogout();
@@ -37,9 +39,11 @@ export function LogoutButton({
       className={cn("gap-1.5", className)}
       onClick={handleLogout}
       disabled={logoutMutation.isPending}
+      aria-label={showLabel ? undefined : "Log out"}
+      title={showLabel ? undefined : "Log out"}
     >
       <LogOut className="size-4" />
-      Log out
+      {showLabel && "Log out"}
     </Button>
   );
 }
