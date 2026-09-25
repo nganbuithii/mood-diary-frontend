@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { X } from "lucide-react";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import { ImagePlus, X } from "lucide-react";
+import { toast } from "sonner";
 
 import {
   Dialog,
@@ -19,6 +20,9 @@ import { MoodSelector } from "@/components/mood-diary/mood-selector";
 import type { Mood } from "@/components/mood-diary/mood.constants";
 import { formatDateKey } from "@/components/calendar/calendar.utils";
 import type { DiaryEntry } from "@/components/calendar/calendar.types";
+
+const MAX_PHOTOS = 3;
+const MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024;
 
 interface AddDiaryDialogProps {
   date: Date | null;
@@ -67,6 +71,19 @@ interface DiaryFormProps {
 function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFormProps) {
   const [mood, setMood] = useState<Mood | null>(existingEntry?.mood ?? null);
   const [note, setNote] = useState(existingEntry?.note ?? "");
+  const [photos, setPhotos] = useState<string[]>([]);
+  const photosRef = useRef(photos);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    photosRef.current = photos;
+  }, [photos]);
+
+  useEffect(() => {
+    return () => {
+      photosRef.current.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, []);
 
   const formattedDate = date.toLocaleDateString("en-US", {
     weekday: "long",
@@ -79,6 +96,44 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
     event.preventDefault();
     if (!mood) return;
     onSave(mood, note);
+  };
+
+  const handleFilesSelected = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    event.target.value = "";
+    if (files.length === 0) return;
+
+    const remainingSlots = MAX_PHOTOS - photos.length;
+    if (remainingSlots <= 0) {
+      toast.error(`You can add up to ${MAX_PHOTOS} photos.`);
+      return;
+    }
+
+    const accepted: string[] = [];
+    for (const file of files) {
+      if (accepted.length >= remainingSlots) {
+        toast.error(`You can add up to ${MAX_PHOTOS} photos.`);
+        break;
+      }
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please choose image files only.");
+        continue;
+      }
+      if (file.size > MAX_PHOTO_SIZE_BYTES) {
+        toast.error("Each photo must be smaller than 5MB.");
+        continue;
+      }
+      accepted.push(URL.createObjectURL(file));
+    }
+
+    if (accepted.length > 0) {
+      setPhotos((current) => [...current, ...accepted]);
+    }
+  };
+
+  const handleRemovePhoto = (url: string) => {
+    URL.revokeObjectURL(url);
+    setPhotos((current) => current.filter((photoUrl) => photoUrl !== url));
   };
 
   return (
@@ -116,6 +171,57 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
             value={note}
             disabled={isSaving}
             onChange={(event) => setNote(event.target.value)}
+          />
+        </Field>
+
+        <Field>
+          <FieldLabel>
+            Add a few photos{" "}
+            <span className="font-normal text-muted-foreground">
+              (up to {MAX_PHOTOS})
+            </span>
+          </FieldLabel>
+          <div className="flex flex-wrap gap-2">
+            {photos.map((url) => (
+              <div
+                key={url}
+                className="group/photo relative size-16 shrink-0 overflow-hidden rounded-xl border border-border shadow-sm sm:size-20"
+              >
+                <img src={url} alt="" className="size-full object-cover" />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={() => handleRemovePhoto(url)}
+                  disabled={isSaving}
+                  aria-label="Remove photo"
+                  className="absolute top-1 right-1 size-5 rounded-full bg-foreground/70 text-background opacity-0 hover:bg-foreground/90 hover:text-background group-hover/photo:opacity-100 focus-visible:opacity-100"
+                >
+                  <X className="size-3" />
+                </Button>
+              </div>
+            ))}
+
+            {photos.length < MAX_PHOTOS && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isSaving}
+                className="h-16 w-16 flex-col gap-1 border-dashed border-primary/40 px-0 text-primary-hover hover:border-primary hover:bg-primary/5 hover:text-primary-hover sm:h-20 sm:w-20"
+              >
+                <ImagePlus className="size-5" />
+                <span className="text-[0.65rem]">Add</span>
+              </Button>
+            )}
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            className="sr-only"
+            onChange={handleFilesSelected}
           />
         </Field>
       </div>
