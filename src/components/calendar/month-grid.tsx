@@ -49,9 +49,10 @@ export function MonthGrid({
             <button
               key={key}
               type="button"
+              disabled={!inCurrentMonth}
               onClick={() => onSelectDay(date)}
               className={cn(
-                "group relative flex flex-col items-start gap-1.5 overflow-hidden border-r border-b border-dashed border-border/60 p-1.5 text-left transition-colors last:border-r-0 hover:bg-primary/5 focus-visible:z-10 focus-visible:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset sm:p-2.5",
+                "group relative flex flex-col items-start gap-1.5 overflow-hidden border-r border-b border-dashed border-border/60 p-1.5 text-left transition-colors last:border-r-0 hover:bg-primary/5 focus-visible:z-10 focus-visible:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset disabled:cursor-default disabled:hover:bg-transparent sm:p-2.5",
                 !inCurrentMonth && "bg-muted/20 text-muted-foreground/50",
                 isToday && "bg-primary/5",
               )}

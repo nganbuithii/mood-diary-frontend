@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { MoodSelector } from "@/components/mood-diary/mood-selector";
 import type { Mood } from "@/components/mood-diary/mood.constants";
@@ -22,6 +23,7 @@ import type { DiaryEntry } from "@/components/calendar/calendar.types";
 interface AddDiaryDialogProps {
   date: Date | null;
   existingEntry?: DiaryEntry;
+  isSaving?: boolean;
   onOpenChange: (open: boolean) => void;
   onSave: (mood: Mood, note: string) => void;
 }
@@ -29,11 +31,12 @@ interface AddDiaryDialogProps {
 export function AddDiaryDialog({
   date,
   existingEntry,
+  isSaving = false,
   onOpenChange,
   onSave,
 }: AddDiaryDialogProps) {
   return (
-    <Dialog open={date !== null} onOpenChange={onOpenChange}>
+    <Dialog open={date !== null} onOpenChange={(open) => !isSaving && onOpenChange(open)}>
       <DialogContent
         showCloseButton={false}
         className="gap-0 overflow-hidden rounded-2xl p-0 sm:max-w-md"
@@ -43,6 +46,7 @@ export function AddDiaryDialog({
             key={formatDateKey(date)}
             date={date}
             existingEntry={existingEntry}
+            isSaving={isSaving}
             onCancel={() => onOpenChange(false)}
             onSave={onSave}
           />
@@ -55,11 +59,12 @@ export function AddDiaryDialog({
 interface DiaryFormProps {
   date: Date;
   existingEntry?: DiaryEntry;
+  isSaving: boolean;
   onCancel: () => void;
   onSave: (mood: Mood, note: string) => void;
 }
 
-function DiaryForm({ date, existingEntry, onCancel, onSave }: DiaryFormProps) {
+function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFormProps) {
   const [mood, setMood] = useState<Mood | null>(existingEntry?.mood ?? null);
   const [note, setNote] = useState(existingEntry?.note ?? "");
 
@@ -90,7 +95,10 @@ function DiaryForm({ date, existingEntry, onCancel, onSave }: DiaryFormProps) {
           <span className="size-2.5 rounded-full bg-mood-neutral" />
           <span className="size-2.5 rounded-full bg-mood-sad" />
         </span>
-        <DialogClose className="flex size-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors outline-none hover:bg-black/5 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50">
+        <DialogClose
+          disabled={isSaving}
+          className="flex size-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors outline-none hover:bg-black/5 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
+        >
           <X className="size-4" />
           <span className="sr-only">Close</span>
         </DialogClose>
@@ -106,17 +114,24 @@ function DiaryForm({ date, existingEntry, onCancel, onSave }: DiaryFormProps) {
             placeholder="Tell me about it..."
             rows={4}
             value={note}
+            disabled={isSaving}
             onChange={(event) => setNote(event.target.value)}
           />
         </Field>
       </div>
 
       <DialogFooter className="border-t border-border bg-muted/30 px-6 py-4">
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button type="button" variant="outline" disabled={isSaving} onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="submit" disabled={!mood}>
-          Save my day <span aria-hidden>♡</span>
+        <Button type="submit" disabled={!mood || isSaving}>
+          {isSaving ? (
+            <Spinner size="sm" className="border-primary-foreground border-t-transparent" />
+          ) : (
+            <>
+              Save my day <span aria-hidden>♡</span>
+            </>
+          )}
         </Button>
       </DialogFooter>
     </form>

@@ -14,7 +14,7 @@ export function MoodSelector({ value, onChange }: MoodSelectorProps) {
     <div
       role="radiogroup"
       aria-label="How are you feeling today?"
-      className="flex flex-wrap justify-center gap-2 sm:gap-4"
+      className="flex flex-wrap justify-center gap-3 sm:gap-4"
     >
       {MOOD_OPTIONS.map((mood) => {
         const isSelected = value === mood.value;
@@ -25,24 +25,23 @@ export function MoodSelector({ value, onChange }: MoodSelectorProps) {
             role="radio"
             aria-checked={isSelected}
             onClick={() => onChange(mood.value)}
-            className={cn(
-              "flex flex-col items-center gap-1.5 rounded-2xl border border-transparent px-2 py-2 transition-all hover:-translate-y-0.5",
-              isSelected && "border-border bg-surface shadow-sm",
-            )}
+            className="group flex flex-col items-center gap-1.5 rounded-full border-0 outline-none transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:outline-none active:outline-none"
           >
             <span
               className={cn(
-                "flex size-12 items-center justify-center rounded-full text-2xl transition-transform sm:size-14 sm:text-3xl",
+                "flex size-12 items-center justify-center rounded-full text-2xl transition-all sm:size-14 sm:text-3xl",
                 mood.bgClass,
-                isSelected &&
-                  "scale-110 ring-2 ring-primary-hover ring-offset-2 ring-offset-background",
+                isSelected
+                  ? "scale-110 ring-2 ring-primary-hover ring-offset-2 ring-offset-surface"
+                  : "group-hover:scale-105",
+                "group-focus-visible:ring-2 group-focus-visible:ring-ring/60 group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-surface",
               )}
             >
               <span aria-hidden>{mood.emoji}</span>
             </span>
             <span
               className={cn(
-                "text-xs text-muted-foreground",
+                "text-xs text-muted-foreground transition-colors",
                 isSelected && "font-medium text-foreground",
               )}
             >
