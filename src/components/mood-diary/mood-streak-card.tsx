@@ -60,7 +60,7 @@ export function MoodStreakCard({ streak, today = new Date() }: MoodStreakCardPro
               <span
                 aria-hidden
                 className={cn(
-                  "flex size-8 items-center justify-center rounded-full sm:size-10",
+                  "flex aspect-square w-full max-w-10 items-center justify-center rounded-full",
                   meta
                     ? cn("shadow-sm", meta.bgClass)
                     : "border-2 border-dashed border-border",

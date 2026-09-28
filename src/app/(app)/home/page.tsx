@@ -32,7 +32,7 @@ export default function HomePage() {
         className="pointer-events-none absolute bottom-0 left-[-10%] size-72 rounded-full bg-secondary/15 blur-3xl"
       />
 
-      <main className="relative mx-auto flex w-full max-w-3xl flex-col gap-10 px-4 py-10 sm:px-6 lg:px-10">
+      <main className="relative mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-10 sm:px-6 lg:px-10">
         <section className="flex flex-col items-center gap-2 text-center">
           <h1 className="font-heading text-3xl text-foreground sm:text-4xl">
             {greeting}
@@ -44,12 +44,15 @@ export default function HomePage() {
           </p>
         </section>
 
-        <MoodStreakCard streak={mockMoodStreak} />
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:gap-8">
+          <MoodCheckinCard />
 
-        <MoodCheckinCard />
-
-        {/* TODO: replace with data from the little-memory API. */}
-        <LittleMemoryCard memory={LITTLE_MEMORY_MOCK} />
+          <aside className="flex flex-col gap-6 lg:gap-8">
+            <MoodStreakCard streak={mockMoodStreak} />
+            {/* TODO: replace with data from the little-memory API. */}
+            <LittleMemoryCard memory={LITTLE_MEMORY_MOCK} />
+          </aside>
+        </div>
 
         <RecentMemoriesSection />
       </main>
