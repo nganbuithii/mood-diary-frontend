@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
-import { ImagePlus, X } from "lucide-react";
-import { toast } from "sonner";
+import { useState, type FormEvent } from "react";
+import { X } from "lucide-react";
 
 import {
   Dialog,
@@ -17,19 +16,16 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { MoodSelector } from "@/components/mood-diary/mood-selector";
+import {
+  DiaryPhotoPicker,
+  MAX_PHOTOS,
+  useDiaryPhotos,
+} from "@/components/mood-diary/diary-photo-picker";
 import type { Mood } from "@/components/mood-diary/mood.constants";
 import { SongPicker } from "@/components/mood-diary/song-picker";
 import { formatDateKey } from "@/components/calendar/calendar.utils";
 import type { DiaryEntry } from "@/components/calendar/calendar.types";
 import type { Song } from "@/features/songs/types/song.types";
-
-const MAX_PHOTOS = 3;
-const MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024;
-
-interface SelectedPhoto {
-  file: File;
-  previewUrl: string;
-}
 
 export interface DiaryFormValues {
   mood: Mood;
@@ -85,32 +81,15 @@ interface DiaryFormProps {
 function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFormProps) {
   const [mood, setMood] = useState<Mood | null>(existingEntry?.mood ?? null);
   const [note, setNote] = useState(existingEntry?.note ?? "");
-  const [photos, setPhotos] = useState<SelectedPhoto[]>([]);
   const [song, setSong] = useState<Song | null>(existingEntry?.song ?? null);
-  const photosRef = useRef(photos);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { photos, addFiles, removePhoto } = useDiaryPhotos();
 
-  const savedPhotoUrls = existingEntry?.photoUrls ?? [];
-  const showSavedPhotos = photos.length === 0 && savedPhotoUrls.length > 0;
-  const displayedPhotoCount = showSavedPhotos ? savedPhotoUrls.length : photos.length;
-  const canAddPhoto = displayedPhotoCount < MAX_PHOTOS;
-  const openFilePicker = () => fileInputRef.current?.click();
   const isSongChanged = song?.id !== existingEntry?.song?.id;
   const isDirty =
     mood !== (existingEntry?.mood ?? null) ||
     note.trim() !== (existingEntry?.note ?? "").trim() ||
     photos.length > 0 ||
     isSongChanged;
-
-  useEffect(() => {
-    photosRef.current = photos;
-  }, [photos]);
-
-  useEffect(() => {
-    return () => {
-      photosRef.current.forEach((photo) => URL.revokeObjectURL(photo.previewUrl));
-    };
-  }, []);
 
   const formattedDate = date.toLocaleDateString("en-US", {
     weekday: "long",
@@ -129,44 +108,6 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
       photos: photos.map((photo) => photo.file),
       songId: isSongChanged ? (song?.id ?? "") : undefined,
     });
-  };
-
-  const handleFilesSelected = (event: ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files ?? []);
-    event.target.value = "";
-    if (files.length === 0) return;
-
-    const remainingSlots = MAX_PHOTOS - photos.length;
-    if (remainingSlots <= 0) {
-      toast.error(`You can add up to ${MAX_PHOTOS} photos.`);
-      return;
-    }
-
-    const accepted: SelectedPhoto[] = [];
-    for (const file of files) {
-      if (accepted.length >= remainingSlots) {
-        toast.error(`You can add up to ${MAX_PHOTOS} photos.`);
-        break;
-      }
-      if (!file.type.startsWith("image/")) {
-        toast.error("Please choose image files only.");
-        continue;
-      }
-      if (file.size > MAX_PHOTO_SIZE_BYTES) {
-        toast.error("Each photo must be smaller than 5MB.");
-        continue;
-      }
-      accepted.push({ file, previewUrl: URL.createObjectURL(file) });
-    }
-
-    if (accepted.length > 0) {
-      setPhotos((current) => [...current, ...accepted]);
-    }
-  };
-
-  const handleRemovePhoto = (previewUrl: string) => {
-    URL.revokeObjectURL(previewUrl);
-    setPhotos((current) => current.filter((photo) => photo.previewUrl !== previewUrl));
   };
 
   return (
@@ -209,58 +150,12 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
               (up to {MAX_PHOTOS})
             </span>
           </FieldLabel>
-          <div className="flex flex-wrap gap-2">
-            {showSavedPhotos &&
-              savedPhotoUrls.map((url) => (
-                <div
-                  key={url}
-                  className="relative size-16 shrink-0 overflow-hidden rounded-xl border border-border shadow-sm sm:size-20"
-                >
-                  <img src={url} alt="" className="size-full object-cover" />
-                </div>
-              ))}
-
-            {photos.map(({ previewUrl }) => (
-              <div
-                key={previewUrl}
-                className="group/photo relative size-16 shrink-0 overflow-hidden rounded-xl border border-border shadow-sm sm:size-20"
-              >
-                <img src={previewUrl} alt="" className="size-full object-cover" />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  onClick={() => handleRemovePhoto(previewUrl)}
-                  disabled={isSaving}
-                  aria-label="Remove photo"
-                  className="absolute top-1 right-1 size-5 rounded-full bg-foreground/70 text-background opacity-0 hover:bg-foreground/90 hover:text-background group-hover/photo:opacity-100 focus-visible:opacity-100"
-                >
-                  <X className="size-3" />
-                </Button>
-              </div>
-            ))}
-
-            {canAddPhoto && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={openFilePicker}
-                disabled={isSaving}
-                className="h-16 w-16 flex-col gap-1 border-dashed border-primary/40 px-0 text-primary-hover hover:border-primary hover:bg-primary/5 hover:text-primary-hover sm:h-20 sm:w-20"
-              >
-                <ImagePlus className="size-5" />
-                <span className="text-[0.65rem]">Add</span>
-              </Button>
-            )}
-          </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            multiple
-            className="sr-only"
-            onChange={handleFilesSelected}
+          <DiaryPhotoPicker
+            photos={photos}
+            savedPhotoUrls={existingEntry?.photoUrls}
             disabled={isSaving}
+            onAddFiles={addFiles}
+            onRemove={removePhoto}
           />
         </Field>
 
