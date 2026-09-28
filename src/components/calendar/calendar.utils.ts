@@ -43,3 +43,22 @@ export function parseDateKey(key: string): Date {
   const [year, month, day] = key.split("-").map(Number);
   return new Date(year, month - 1, day);
 }
+
+const relativeTimeFormat = new Intl.RelativeTimeFormat("en-US", { numeric: "auto" });
+
+export function formatRelativeDay(date: Date, today: Date): string {
+  const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const days = Math.round((end.getTime() - start.getTime()) / 86_400_000);
+
+  if (days < 7) return relativeTimeFormat.format(-days, "day");
+  if (days < 30) return relativeTimeFormat.format(-Math.floor(days / 7), "week");
+
+  const months =
+    (end.getFullYear() - start.getFullYear()) * 12 +
+    end.getMonth() -
+    start.getMonth() -
+    (end.getDate() < start.getDate() ? 1 : 0);
+  if (months < 12) return relativeTimeFormat.format(-Math.max(months, 1), "month");
+  return relativeTimeFormat.format(-Math.floor(months / 12), "year");
+}
