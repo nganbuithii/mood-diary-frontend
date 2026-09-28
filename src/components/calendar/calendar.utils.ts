@@ -34,3 +34,7 @@ export function isSameDay(a: Date, b: Date): boolean {
     a.getDate() === b.getDate()
   );
 }
+
+export function isAfterDay(a: Date, b: Date): boolean {
+  return formatDateKey(a) > formatDateKey(b);
+}

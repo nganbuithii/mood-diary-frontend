@@ -11,6 +11,7 @@ import {
   formatDateKey,
   formatMonthKey,
   getMonthGrid,
+  isAfterDay,
 } from "@/components/calendar/calendar.utils";
 import type { DiaryEntry } from "@/components/calendar/calendar.types";
 import { useDiaryEntries } from "@/features/diary/hooks/use-diary-entries";
@@ -61,7 +62,7 @@ export default function DiaryCalendarPage() {
   const goToToday = () => setViewDate(new Date(today.getFullYear(), today.getMonth(), 1));
 
   const handleSaveEntry = ({ mood, note, photos, songId }: DiaryFormValues) => {
-    if (!selectedDate) return;
+    if (!selectedDate || isAfterDay(selectedDate, today)) return;
     const date = formatDateKey(selectedDate);
 
     upsertEntryMutation.mutate(
@@ -117,7 +118,7 @@ export default function DiaryCalendarPage() {
               currentMonth={viewDate.getMonth()}
               today={today}
               entries={entries}
-              onSelectDay={setSelectedDate}
+              onSelectDay={(date) => !isAfterDay(date, today) && setSelectedDate(date)}
             />
             {isFetching && !entryList && (
               <div className="absolute inset-0 flex items-center justify-center rounded-3xl bg-surface/60">

@@ -95,6 +95,12 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
   const displayedPhotoCount = showSavedPhotos ? savedPhotoUrls.length : photos.length;
   const canAddPhoto = displayedPhotoCount < MAX_PHOTOS;
   const openFilePicker = () => fileInputRef.current?.click();
+  const isSongChanged = song?.id !== existingEntry?.song?.id;
+  const isDirty =
+    mood !== (existingEntry?.mood ?? null) ||
+    note.trim() !== (existingEntry?.note ?? "").trim() ||
+    photos.length > 0 ||
+    isSongChanged;
 
   useEffect(() => {
     photosRef.current = photos;
@@ -115,9 +121,8 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    if (!mood) return;
+    if (!mood || !isDirty) return;
 
-    const isSongChanged = song?.id !== existingEntry?.song?.id;
     onSave({
       mood,
       note,
@@ -272,7 +277,7 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
         <Button type="button" variant="outline" disabled={isSaving} onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="submit" disabled={!mood || isSaving}>
+        <Button type="submit" disabled={!mood || !isDirty || isSaving}>
           {isSaving ? (
             <Spinner size="sm" className="border-primary-foreground border-t-transparent" />
           ) : (

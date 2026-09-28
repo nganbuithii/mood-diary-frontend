@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { cn } from "cn";
 
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
-import { formatDateKey, isSameDay } from "@/components/calendar/calendar.utils";
+import { formatDateKey, isAfterDay, isSameDay } from "@/components/calendar/calendar.utils";
 import type { DiaryEntry } from "@/components/calendar/calendar.types";
 import { MoodFace } from "@/components/mood-diary/mood-face";
 
@@ -45,16 +45,19 @@ export function MonthGrid({
           const meta = entry ? MOOD_META[entry.mood] : null;
           const inCurrentMonth = date.getMonth() === currentMonth;
           const isToday = isSameDay(date, today);
+          const isFuture = isAfterDay(date, today);
+          const isSelectable = inCurrentMonth && !isFuture;
 
           return (
             <button
               key={key}
               type="button"
-              disabled={!inCurrentMonth}
+              disabled={!isSelectable}
               onClick={() => onSelectDay(date)}
               className={cn(
                 "group relative flex min-h-20 min-w-0 flex-col items-start gap-1.5 overflow-hidden border-r border-b border-dashed border-border/60 p-1.5 text-left transition-colors last:border-r-0 hover:bg-primary/5 focus-visible:z-10 focus-visible:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset disabled:cursor-default disabled:hover:bg-transparent sm:p-2.5 md:min-h-28",
                 !inCurrentMonth && "bg-muted/20 text-muted-foreground/50",
+                inCurrentMonth && isFuture && "text-muted-foreground/50",
                 isToday && "bg-primary/5",
               )}
             >
@@ -63,7 +66,9 @@ export function MonthGrid({
                   "flex size-7 shrink-0 items-center justify-center rounded-full font-heading text-base transition-colors",
                   isToday
                     ? "bg-primary-hover text-primary-foreground shadow-sm"
-                    : "text-foreground/80 group-hover:bg-surface",
+                    : isSelectable
+                      ? "text-foreground/80 group-hover:bg-surface"
+                      : "text-inherit",
                 )}
               >
                 {date.getDate()}
@@ -101,14 +106,14 @@ export function MonthGrid({
                   </span>
                 </>
               ) : (
-                inCurrentMonth && (
+                isSelectable && (
                   <span
                     aria-hidden
-                    className="absolute right-1.5 bottom-1.5 flex size-6 items-center justify-center rounded-full border border-dashed border-primary/30 text-primary-hover opacity-40 transition-all group-hover:scale-110 group-hover:border-solid group-hover:bg-primary/10 group-hover:opacity-100 sm:right-2 sm:bottom-2"
+                    className="absolute right-1.5 bottom-1.5 flex size-6 items-center justify-center text-primary-hover transition-transform group-hover:scale-110 sm:right-2 sm:bottom-2"
                   >
-                    <Plus className="size-3.5" />
+                    <Plus className="size-3.5" strokeWidth={2.5} />
                   </span>
-                )
+                ) 
               )}
             </button>
           );
