@@ -5,10 +5,6 @@ import { MoodCheckinCard } from "@/components/mood-diary/mood-checkin-card";
 import { MoodStreakCard } from "@/components/mood-diary/mood-streak-card";
 import { RecentMemoriesSection } from "@/components/mood-diary/recent-memories-section";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
-import { buildMockMoodStreak } from "@/features/diary/mocks/mood-streak.mock";
-
-// TODO: replace with data from GET /mood-entries/streak.
-const mockMoodStreak = buildMockMoodStreak();
 
 function getGreeting(hour: number) {
   if (hour < 12) return "Good morning";
@@ -47,7 +43,7 @@ export default function HomePage() {
           <MoodCheckinCard />
 
           <aside className="flex flex-col gap-6 lg:gap-8">
-            <MoodStreakCard streak={mockMoodStreak} />
+            <MoodStreakCard />
             <LittleMemoryCard />
           </aside>
         </div>
