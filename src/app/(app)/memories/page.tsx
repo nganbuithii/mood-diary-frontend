@@ -50,8 +50,16 @@ export default function MemoriesPage({ searchParams }: { searchParams: SearchPar
   const router = useRouter();
   const filters = parseFilters(use(searchParams));
   const hasFilters = Boolean(filters.mood || filters.month);
-  const { data, isPending, isError, refetch, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useDiaryFeed(filters);
+  const {
+    data,
+    isPending,
+    isError,
+    refetch,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+  } = useDiaryFeed(filters);
 
   const entries = data?.pages.flatMap((page) => page.items) ?? [];
   const groups = groupByMonth(entries);
@@ -68,7 +76,7 @@ export default function MemoriesPage({ searchParams }: { searchParams: SearchPar
   const sentinelRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const sentinel = sentinelRef.current;
-    if (!sentinel || !hasNextPage) return;
+    if (!sentinel || !hasNextPage || isFetchNextPageError) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -78,7 +86,7 @@ export default function MemoriesPage({ searchParams }: { searchParams: SearchPar
     );
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [hasNextPage, isFetchingNextPage, isFetchNextPageError, fetchNextPage]);
 
   return (
     <div className="relative isolate overflow-hidden">
@@ -103,7 +111,8 @@ export default function MemoriesPage({ searchParams }: { searchParams: SearchPar
 
         <MemoryFilters value={filters} onChange={setFilters} />
 
-        {isError ? (
+        {/* Only a failed first load replaces the grid; later failures keep what's already loaded. */}
+        {isError && !data ? (
           <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed border-border bg-surface/60 px-6 py-16 text-center">
             <p className="text-sm text-muted-foreground">
               Couldn&apos;t load your memories. Please try again.
@@ -122,16 +131,19 @@ export default function MemoriesPage({ searchParams }: { searchParams: SearchPar
           <EmptyState hasFilters={hasFilters} onClearFilters={() => setFilters({})} />
         ) : (
           <div className="flex flex-col gap-10">
-            {groups.map((group) => (
+            {groups.map((group, groupIndex) => (
               <section key={group.key} aria-labelledby={`month-${group.key}`} className="flex flex-col gap-4">
                 <div className="flex items-center gap-3">
                   <h2 id={`month-${group.key}`} className="shrink-0 font-heading text-lg text-foreground sm:text-xl">
                     ୨୧ {group.label}
                   </h2>
                   <span aria-hidden className="h-px flex-1 border-t border-dashed border-border" />
-                  <span className="shrink-0 text-xs text-muted-foreground">
-                    {group.entries.length} {group.entries.length === 1 ? "page" : "pages"}
-                  </span>
+                  {/* The last month may continue on the next page, so its count isn't final yet. */}
+                  {(groupIndex < groups.length - 1 || !hasNextPage) && (
+                    <span className="shrink-0 text-xs text-muted-foreground">
+                      {group.entries.length} {group.entries.length === 1 ? "page" : "pages"}
+                    </span>
+                  )}
                 </div>
                 <div className={GRID_CLASS}>
                   {group.entries.map((entry, index) => (
@@ -144,6 +156,13 @@ export default function MemoriesPage({ searchParams }: { searchParams: SearchPar
             <div ref={sentinelRef} className="flex justify-center py-4">
               {isFetchingNextPage ? (
                 <Spinner />
+              ) : isFetchNextPageError ? (
+                <div className="flex flex-col items-center gap-2 text-center">
+                  <p className="text-sm text-muted-foreground">Couldn&apos;t load more memories.</p>
+                  <Button type="button" variant="outline" className="rounded-full" onClick={() => fetchNextPage()}>
+                    Retry
+                  </Button>
+                </div>
               ) : hasNextPage ? (
                 // Fallback for when the observer doesn't fire (e.g. very tall screens).
                 <Button type="button" variant="outline" className="rounded-full" onClick={() => fetchNextPage()}>
