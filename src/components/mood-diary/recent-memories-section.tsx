@@ -1,49 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { cn } from "cn";
 
-import { MoodPolaroid } from "@/components/mood-diary/mood-polaroid";
-import type { Mood } from "@/components/mood-diary/mood.constants";
+import { MemoryTile, MemoryTileSkeleton } from "@/components/memories/memory-tile";
+import { useDiaryFeed } from "@/features/diary/hooks/use-diary-feed";
 
-interface RecentMemory {
-  id: string;
-  mood: Mood;
-  date: string;
-  note?: string;
-  rotate: "left" | "none" | "right";
-}
-
-const MY_MEMORIES: RecentMemory[] = [
-  {
-    id: "1",
-    mood: "HAPPY",
-    date: "Sep 14",
-    note: "Coffee with an old friend, felt so nice.",
-    rotate: "left",
-  },
-  {
-    id: "2",
-    mood: "VERY_HAPPY",
-    date: "Sep 12",
-    note: "Finished my side project demo!",
-    rotate: "none",
-  },
-  {
-    id: "3",
-    mood: "NEUTRAL",
-    date: "Sep 10",
-    note: "Quiet Tuesday, lots of rain.",
-    rotate: "right",
-  },
-  {
-    id: "4",
-    mood: "SAD",
-    date: "Sep 8",
-    note: "Missed the bus twice, rough morning.",
-    rotate: "left",
-  },
-];
+const RECENT_LIMIT = 4;
 
 type FeedTab = "mine" | "friends";
 
@@ -93,17 +57,7 @@ export function RecentMemoriesSection() {
       </div>
 
       {tab === "mine" ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {MY_MEMORIES.map((memory) => (
-            <MoodPolaroid
-              key={memory.id}
-              mood={memory.mood}
-              date={memory.date}
-              note={memory.note}
-              rotate={memory.rotate}
-            />
-          ))}
-        </div>
+        <MyRecentMemories />
       ) : (
         <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-border bg-surface/60 px-6 py-10 text-center">
           <span aria-hidden className="text-2xl">
@@ -118,5 +72,49 @@ export function RecentMemoriesSection() {
         </div>
       )}
     </section>
+  );
+}
+
+function MyRecentMemories() {
+  // Same feed as /memories, just the first page.
+  const { data, isPending, isError } = useDiaryFeed({}, RECENT_LIMIT);
+  const entries = data?.pages[0]?.items ?? [];
+
+  if (isError) {
+    return (
+      <p className="py-6 text-center text-sm text-muted-foreground">
+        Couldn&apos;t load your memories right now.
+      </p>
+    );
+  }
+
+  if (!isPending && entries.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-border bg-surface/60 px-6 py-10 text-center">
+        <span aria-hidden className="text-2xl">📔</span>
+        <p className="font-heading text-lg text-foreground">No memories yet</p>
+        <p className="text-sm text-muted-foreground">
+          Every day you write becomes a little polaroid here.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <div className="grid w-full grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        {isPending
+          ? Array.from({ length: RECENT_LIMIT }, (_, index) => <MemoryTileSkeleton key={index} />)
+          : entries.map((entry, index) => <MemoryTile key={entry.id} entry={entry} index={index} />)}
+      </div>
+      {!isPending && (
+        <Link
+          href="/memories"
+          className="rounded-full px-3 py-1 text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+        >
+          See all memories <span aria-hidden>→</span>
+        </Link>
+      )}
+    </div>
   );
 }

@@ -7,6 +7,8 @@ interface MoodPolaroidProps {
   mood: Mood;
   date: string;
   note?: string;
+  photoUrl?: string;
+  hasSong?: boolean;
   rotate?: "left" | "none" | "right";
   className?: string;
 }
@@ -27,6 +29,8 @@ export function MoodPolaroid({
   mood,
   date,
   note,
+  photoUrl,
+  hasSong = false,
   rotate = "none",
   className,
 }: MoodPolaroidProps) {
@@ -49,13 +53,30 @@ export function MoodPolaroid({
       />
       <div
         className={cn(
-          "flex h-24 items-center justify-center rounded-sm sm:h-28",
-          meta.bgClassMuted,
+          "relative flex h-24 items-center justify-center overflow-hidden rounded-sm sm:h-28",
+          !photoUrl && meta.bgClassMuted,
         )}
       >
-        <span className={cn("size-16 rounded-full p-1 shadow-sm sm:size-20", meta.bgClass)}>
-          <MoodFace mood={mood} />
-        </span>
+        {photoUrl ? (
+          <>
+            <img src={photoUrl} alt="" className="size-full object-cover" />
+            <span className={cn("absolute right-1.5 bottom-1.5 size-7 rounded-full p-0.5 shadow-sm", meta.bgClass)}>
+              <MoodFace mood={mood} />
+            </span>
+          </>
+        ) : (
+          <span className={cn("size-16 rounded-full p-1 shadow-sm sm:size-20", meta.bgClass)}>
+            <MoodFace mood={mood} />
+          </span>
+        )}
+        {hasSong && (
+          <span
+            aria-label="Has a song"
+            className="absolute top-1.5 left-1.5 rounded-full bg-surface/85 px-1.5 py-0.5 text-[0.65rem] shadow-sm"
+          >
+            🎵
+          </span>
+        )}
       </div>
       <div className="flex flex-col gap-0.5 px-1 text-left">
         <span className="font-heading text-sm text-foreground">
