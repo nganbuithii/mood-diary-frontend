@@ -7,7 +7,9 @@ import { Bell, BookHeart, Flame, Heart, House, Images, User, Users } from "lucid
 import { cn } from "cn";
 
 import { LogoutButton } from "@/components/auth/logout-button";
+import { formatDateKey } from "@/components/calendar/calendar.utils";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
+import { useMoodStreak } from "@/features/diary/hooks/use-mood-streak";
 
 const NAV_LINKS = [
   { href: "/home", label: "Home", icon: House },
@@ -40,15 +42,7 @@ export function Navbar() {
         <NavTabs className="mx-auto hidden md:flex" />
 
         <div className="ml-auto flex shrink-0 items-center gap-1 md:ml-0">
-          <button
-            type="button"
-            disabled
-            title="Daily streak — coming soon"
-            aria-label="Daily streak — coming soon"
-            className={cn(ICON_BUTTON_CLASS, "hidden text-muted-foreground/60 sm:flex")}
-          >
-            <Flame className="size-5" />
-          </button>
+          <StreakBadge />
 
           <button
             type="button"
@@ -95,6 +89,31 @@ export function Navbar() {
         <NavTabs className="flex w-full" />
       </div>
     </header>
+  );
+}
+
+function StreakBadge() {
+  const { data: streak } = useMoodStreak(formatDateKey(new Date()));
+  const current = streak?.current ?? 0;
+  const label = streak
+    ? current > 0
+      ? `${current}-day streak${streak.writtenToday ? "" : " — write today to keep it going"}`
+      : "No streak yet — write today to start one"
+    : "Daily streak";
+
+  return (
+    <Link
+      href="/home"
+      title={label}
+      aria-label={label}
+      className={cn(
+        "hidden h-9 items-center gap-1 rounded-full px-2.5 transition-colors hover:bg-primary/10 sm:flex sm:h-10",
+        streak?.writtenToday ? "text-primary-hover" : "text-muted-foreground",
+      )}
+    >
+      <Flame className="size-5" fill={streak?.writtenToday ? "currentColor" : "none"} />
+      {streak && <span className="font-heading text-base tabular-nums">{current}</span>}
+    </Link>
   );
 }
 

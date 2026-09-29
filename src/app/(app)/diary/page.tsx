@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { use, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { CalendarHeader } from "@/components/calendar/calendar-header";
 import { MonthGrid } from "@/components/calendar/month-grid";
@@ -12,6 +12,7 @@ import {
   formatMonthKey,
   getMonthGrid,
   isAfterDay,
+  parseDateKey,
 } from "@/components/calendar/calendar.utils";
 import type { DiaryEntry } from "@/components/calendar/calendar.types";
 import { useDiaryEntries } from "@/features/diary/hooks/use-diary-entries";
@@ -20,11 +21,24 @@ import { ApiError } from "@/lib/api/http-error";
 
 const today = new Date();
 
-export default function DiaryCalendarPage() {
-  const [viewDate, setViewDate] = useState(
-    () => new Date(today.getFullYear(), today.getMonth(), 1),
-  );
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+function parseDateParam(value: string | string[] | undefined): Date | null {
+  if (typeof value !== "string" || !/^d{4}-d{2}-d{2}$/.test(value)) return null;
+  const date = parseDateKey(value);
+  if (formatDateKey(date) !== value || isAfterDay(date, today)) return null;
+  return date;
+}
+
+export default function DiaryCalendarPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ date?: string | string[] }>;
+}) {
+  const initialDate = parseDateParam(use(searchParams).date);
+  const [viewDate, setViewDate] = useState(() => {
+    const monthOf = initialDate ?? today;
+    return new Date(monthOf.getFullYear(), monthOf.getMonth(), 1);
+  });
+  const [selectedDate, setSelectedDate] = useState<Date | null>(initialDate);
 
   const monthKey = formatMonthKey(viewDate);
   const {

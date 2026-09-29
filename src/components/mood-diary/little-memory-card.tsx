@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cn } from "cn";
 
 import { Button } from "@/components/ui/button";
@@ -83,9 +84,16 @@ function LittleMemoryContent({ memory }: LittleMemoryContentProps) {
         )}
       </div>
 
-      <Button type="button" variant="outline" size="sm" className="mx-1 rounded-full">
-        View memory <span aria-hidden>♡</span>
-      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        className="mx-1 rounded-full"
+        render={
+          <Link href={`/diary?date=${memory.entryDate}`}>
+            View memory <span aria-hidden>♡</span>
+          </Link>
+        }
+      />
     </article>
   );
 }
