@@ -5,7 +5,6 @@ import { MoodCheckinCard } from "@/components/mood-diary/mood-checkin-card";
 import { MoodStreakCard } from "@/components/mood-diary/mood-streak-card";
 import { RecentMemoriesSection } from "@/components/mood-diary/recent-memories-section";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
-import { LITTLE_MEMORY_MOCK } from "@/features/diary/mocks/little-memory.mock";
 import { buildMockMoodStreak } from "@/features/diary/mocks/mood-streak.mock";
 
 // TODO: replace with data from GET /mood-entries/streak.
@@ -49,8 +48,7 @@ export default function HomePage() {
 
           <aside className="flex flex-col gap-6 lg:gap-8">
             <MoodStreakCard streak={mockMoodStreak} />
-            {/* TODO: replace with data from the little-memory API. */}
-            <LittleMemoryCard memory={LITTLE_MEMORY_MOCK} />
+            <LittleMemoryCard />
           </aside>
         </div>
 

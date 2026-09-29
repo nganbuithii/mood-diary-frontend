@@ -1,20 +1,27 @@
-import { Music2 } from "lucide-react";
 import { cn } from "cn";
 
 import { Button } from "@/components/ui/button";
 import { MoodFace } from "@/components/mood-diary/mood-face";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
-import { formatRelativeDay, parseDateKey } from "@/components/calendar/calendar.utils";
+import { formatDateKey, parseDateKey } from "@/components/calendar/calendar.utils";
 import type { LittleMemoryDto } from "@/features/diary/api/little-memory.types";
+import { useDailyMemory } from "@/features/diary/hooks/use-daily-memory";
 
-interface LittleMemoryCardProps {
-  memory: LittleMemoryDto;
-  today?: Date;
+export function LittleMemoryCard() {
+  const { data: memory } = useDailyMemory(formatDateKey(new Date()));
+
+  if (!memory) return null;
+
+  return <LittleMemoryContent memory={memory} />;
 }
 
-export function LittleMemoryCard({ memory, today = new Date() }: LittleMemoryCardProps) {
+interface LittleMemoryContentProps {
+  memory: LittleMemoryDto;
+}
+
+function LittleMemoryContent({ memory }: LittleMemoryContentProps) {
   const meta = MOOD_META[memory.mood];
-  const date = parseDateKey(memory.date);
+  const date = parseDateKey(memory.entryDate);
   const formattedDate = date.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -25,7 +32,7 @@ export function LittleMemoryCard({ memory, today = new Date() }: LittleMemoryCar
     <article className="relative mx-auto flex w-full max-w-sm rotate-1 flex-col gap-3 rounded-md border border-border bg-surface p-3 pb-4 shadow-sm transition-transform hover:rotate-0 lg:max-w-none">
       <span
         aria-hidden
-        className="absolute -top-1.5 left-1/2 h-3 w-12 -translate-x-1/2 -rotate-3 rounded-[2px] bg-secondary/50"
+        className="absolute -top-1.5 left-1/2 h-3 w-12 -translate-x-1/2 -rotate-3 rounded-xs bg-secondary/50"
       />
 
       <div className="flex items-center justify-between gap-2 px-1 pt-1">
@@ -33,7 +40,7 @@ export function LittleMemoryCard({ memory, today = new Date() }: LittleMemoryCar
           <span aria-hidden>💌</span> A little memory
         </h2>
         <span className="shrink-0 rounded-full bg-accent-blue/25 px-2 py-0.5 text-[0.7rem] text-muted-foreground">
-          {formatRelativeDay(date, today)}
+          {memory.relativeLabel}
         </span>
       </div>
 
@@ -66,27 +73,13 @@ export function LittleMemoryCard({ memory, today = new Date() }: LittleMemoryCar
             )}
             <span className="truncate">{meta.label}</span>
           </span>
-          <time dateTime={memory.date} className="shrink-0 text-xs text-muted-foreground">
+          <time dateTime={memory.entryDate} className="shrink-0 text-xs text-muted-foreground">
             {formattedDate}
           </time>
         </div>
 
-        <p className="line-clamp-2 text-sm text-foreground/80">{memory.content}</p>
-
-        {memory.song && (
-          <div className="mt-1 flex min-w-0 items-center gap-2 rounded-full bg-muted/60 py-1 pr-3 pl-1">
-            <span className="flex size-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent-blue/30 text-foreground">
-              {memory.song.artworkUrl ? (
-                <img src={memory.song.artworkUrl} alt="" className="size-full object-cover" />
-              ) : (
-                <Music2 className="size-3" />
-              )}
-            </span>
-            <span className="min-w-0 truncate text-xs">
-              <span className="font-medium text-foreground">{memory.song.title}</span>
-              <span className="text-muted-foreground"> · {memory.song.artist}</span>
-            </span>
-          </div>
+        {memory.content && (
+          <p className="line-clamp-2 text-sm text-foreground/80">{memory.content}</p>
         )}
       </div>
 

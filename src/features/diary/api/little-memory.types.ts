@@ -1,11 +1,14 @@
 import type { Mood } from "@/components/mood-diary/mood.constants";
-import type { Song } from "@/features/songs/types/song.types";
 
 export interface LittleMemoryDto {
   id: string;
   mood: Mood;
-  date: string;
-  content: string;
+  entryDate: string;
+  relativeLabel: string;
+  content: string | null;
   photoUrl: string | null;
-  song: Song | null;
+}
+
+export interface DailyMemoryResponseDto {
+  memory: LittleMemoryDto | null;
 }
