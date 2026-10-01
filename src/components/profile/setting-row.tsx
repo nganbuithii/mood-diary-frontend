@@ -9,6 +9,8 @@ interface SettingRowProps {
   tint: string;
   href?: string;
   comingSoon?: boolean;
+  /** A control shown at the end of the row (e.g. a switch); the row itself is then not a link. */
+  action?: React.ReactNode;
 }
 
 export function SettingRow({
@@ -18,6 +20,7 @@ export function SettingRow({
   tint,
   href,
   comingSoon,
+  action,
 }: SettingRowProps) {
   const content = (
     <>
@@ -35,18 +38,22 @@ export function SettingRow({
           {description}
         </span>
       </div>
-      {comingSoon ? (
+      {action ?? (comingSoon ? (
         <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
           Coming soon
         </span>
       ) : (
         <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
-      )}
+      ))}
     </>
   );
 
   const rowClassName =
     "flex w-full items-center gap-3 rounded-lg px-2 py-2.5 transition-colors";
+
+  if (action) {
+    return <div className={rowClassName}>{content}</div>;
+  }
 
   if (comingSoon) {
     return (

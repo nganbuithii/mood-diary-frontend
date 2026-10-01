@@ -222,7 +222,7 @@ function SelectedSongCard({ song, disabled, onChangeSong, onRemove }: SelectedSo
     </>
   );
   const vinylClassName =
-    "relative flex size-14 shrink-0 items-center justify-center rounded-full bg-foreground shadow-md";
+    "relative flex size-14 shrink-0 items-center justify-center rounded-full bg-foreground shadow-md dark:bg-background dark:ring-1 dark:ring-border";
 
   return (
     <div className="relative flex items-center gap-3 rounded-2xl border border-border bg-surface p-3 pt-4 shadow-sm">

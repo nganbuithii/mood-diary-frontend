@@ -112,30 +112,43 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+/* A warm "late-night journal" take on the light palette, not a plain inverted gray.
+   Tokens derived from these in :root (--card, --muted, --accent, --input, --ring, ...)
+   follow along automatically, so only the base colors are redefined here. */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  color-scheme: dark;
+
+  /* Base */
+  --background: #1d1719;
+  --surface: #282023;
+  --foreground: #f4e9e4;
+
+  /* Brand */
+  --primary: #d98a9c;
+  --primary-hover: #f0a6b6;
+  --secondary: #9f8cc4;
+
+  /* Accent */
+  --accent-green: #7f9878;
+  --accent-blue: #7d9fb3;
+
+  /* Semantic */
+  --destructive: #e57f8e;
+  --success: #9cbf95;
+  --border: #5c4d4f;
+
+  /* Mood: deeper versions, so the light ink of MoodFace and labels stays readable on them */
+  --mood-very-sad: #526a83;
+  --mood-sad: #5e6d53;
+  --mood-neutral: #756848;
+  --mood-happy: #905866;
+  --mood-very-happy: #74608e;
+
+  /* Text on the pink/lilac buttons stays dark, like in the light theme */
+  --primary-foreground: #2a1f22;
+  --secondary-foreground: #2a1f22;
+  --muted-foreground: #b9aaa5;
+
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);

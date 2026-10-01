@@ -24,6 +24,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { SettingRow } from "@/components/profile/setting-row";
+import { ThemeSwitcher } from "@/components/profile/theme-switcher";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 
 function formatMemberSince(dateString: string) {
@@ -165,7 +166,7 @@ export function ProfileCard() {
             title="Dark mode"
             description="Easier on the eyes for late-night entries"
             tint="bg-mood-very-happy/40"
-            comingSoon
+            action={<ThemeSwitcher />}
           />
           <SettingRow
             icon={Download}

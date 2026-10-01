@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, BookHeart, Flame, Heart, House, Images, User, Users } from "lucide-react";
+import { Bell, BookHeart, Flame, Heart, House, Images, User } from "lucide-react";
 import { cn } from "cn";
 
 import { LogoutButton } from "@/components/auth/logout-button";
@@ -15,7 +15,7 @@ const NAV_LINKS = [
   { href: "/home", label: "Home", icon: House },
   { href: "/diary", label: "My Diary", icon: BookHeart },
   { href: "/memories", label: "Memories", icon: Images },
-  { href: "/friends", label: "Friends", icon: Users },
+  // Friends goes back here once /friends exists.
 ] as const;
 
 const ICON_BUTTON_CLASS =

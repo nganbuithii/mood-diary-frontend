@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Music2 } from "lucide-react";
+import { Music2, Pause, Play } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "cn";
 
 import { FavoriteHeartButton } from "@/components/favorites/favorite-heart-button";
@@ -9,15 +10,14 @@ import { MoodFace } from "@/components/mood-diary/mood-face";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
 import { parseDateKey } from "@/components/calendar/calendar.utils";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
+import { useSongPreview } from "@/features/songs/hooks/use-song-preview";
+import type { Song } from "@/features/songs/types/song.types";
 
 interface FavoriteCardProps {
   entry: DiaryEntryDto;
-  /** The spotlight card takes a 2×2 cell at the top of the bento grid. */
   featured?: boolean;
 }
 
-// Cards sit in a grid with fixed row height (see FAVORITES_GRID_CLASS); photo cards and the
-// spotlight span extra rows so the wall gets its bento rhythm.
 export const FAVORITES_GRID_CLASS =
   "grid grid-flow-dense auto-rows-[8.5rem] grid-cols-2 gap-3 sm:auto-rows-[9.5rem] sm:grid-cols-3 sm:gap-4 lg:grid-cols-4";
 
@@ -35,7 +35,6 @@ export function FavoriteCard({ entry, featured = false }: FavoriteCardProps) {
         "group relative transition-[opacity,filter] duration-300",
         variant === "featured" && "col-span-2 row-span-2",
         variant === "photo" && "row-span-2",
-        // Just un-hearted: fade out until the refetch takes it off the wall (or Undo brings it back).
         !entry.isFavorite && "opacity-45 grayscale",
       )}
     >
@@ -56,8 +55,8 @@ export function FavoriteCard({ entry, featured = false }: FavoriteCardProps) {
               alt=""
               className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
             />
-            {/* Keeps the caption readable on any photo. */}
-            <span aria-hidden className="absolute inset-0 bg-linear-to-t from-foreground/75 via-foreground/15 to-transparent" />
+
+            <span aria-hidden className="absolute inset-0 bg-linear-to-t from-black/70 via-black/15 to-transparent" />
             <Caption entry={entry} date={featured ? longDate : shortDate} featured={featured} onPhoto />
           </>
         ) : (
@@ -80,7 +79,35 @@ export function FavoriteCard({ entry, featured = false }: FavoriteCardProps) {
         isFavorite={entry.isFavorite}
         className="absolute top-3 right-3 group-hover:-translate-y-1"
       />
+
+      {featured && entry.song?.previewUrl && (
+        <SongPreviewButton song={entry.song} className="absolute top-3 right-13 group-hover:-translate-y-1" />
+      )}
     </div>
+  );
+}
+
+function SongPreviewButton({ song, className }: { song: Song; className?: string }) {
+  const { isPlaying, toggle } = useSongPreview(song.previewUrl);
+
+  return (
+    <button
+      type="button"
+      aria-pressed={isPlaying}
+      aria-label={isPlaying ? `Pause preview of ${song.title}` : `Play a preview of ${song.title}`}
+      onClick={() => toggle().catch(() => toast.error("Couldn't play this preview."))}
+      className={cn(
+        "flex size-8 items-center justify-center rounded-full bg-surface/90 text-foreground shadow-sm backdrop-blur-sm transition-all outline-none hover:scale-110 focus-visible:ring-2 focus-visible:ring-ring/60 active:scale-95 motion-reduce:transition-none motion-reduce:hover:scale-100",
+        isPlaying && "text-primary-hover",
+        className,
+      )}
+    >
+      {isPlaying ? (
+        <Pause aria-hidden className="size-3.5 fill-current" />
+      ) : (
+        <Play aria-hidden className="size-3.5 translate-x-px fill-current" />
+      )}
+    </button>
   );
 }
 
@@ -101,7 +128,7 @@ function Caption({
     <div
       className={cn(
         "relative mt-auto flex w-full flex-col gap-1 p-3 text-left sm:p-4",
-        onPhoto ? "text-surface" : "text-foreground",
+        onPhoto ? "text-white" : "text-foreground",
         featured && "gap-2 sm:p-6",
       )}
     >
@@ -117,7 +144,7 @@ function Caption({
         </span>
         <div className="flex min-w-0 flex-col leading-tight">
           <span className={cn("font-heading", featured ? "text-lg sm:text-xl" : "text-base")}>{meta.label}</span>
-          <span className={cn("truncate text-xs", onPhoto ? "text-surface/85" : "text-muted-foreground")}>
+          <span className={cn("truncate text-xs", onPhoto ? "text-white/85" : "text-muted-foreground")}>
             {date}
           </span>
         </div>
@@ -128,7 +155,7 @@ function Caption({
           className={cn(
             "font-heading leading-snug",
             featured ? "line-clamp-3 text-base sm:text-lg" : "line-clamp-2 text-sm",
-            onPhoto ? "text-surface/95" : "text-foreground/80",
+            onPhoto ? "text-white/95" : "text-foreground/80",
           )}
         >
           “{entry.note}”
@@ -139,7 +166,7 @@ function Caption({
         <span
           className={cn(
             "flex w-fit max-w-full items-center gap-1.5 rounded-full px-2 py-0.5 text-xs",
-            onPhoto ? "bg-surface/20 text-surface backdrop-blur-sm" : "bg-surface/70 text-foreground",
+            onPhoto ? "bg-white/20 text-white backdrop-blur-sm" : "bg-surface/70 text-foreground",
           )}
         >
           <Music2 aria-hidden className="size-3 shrink-0" />
@@ -152,7 +179,6 @@ function Caption({
   );
 }
 
-// A few hand-placed marks so photo-less cards don't feel empty.
 function Doodles() {
   return (
     <span aria-hidden className="pointer-events-none absolute inset-0 font-heading text-foreground/15">

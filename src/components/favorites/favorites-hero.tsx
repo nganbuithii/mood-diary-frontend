@@ -72,8 +72,8 @@ function Stickers() {
       <span className="absolute -top-6 -right-6 size-32 rounded-full bg-surface/30 blur-2xl" />
       <span className="absolute -bottom-10 left-1/3 size-40 rounded-full bg-primary/30 blur-3xl" />
       <span className="absolute top-5 right-[38%] rotate-12 text-3xl text-primary-hover/40">♡</span>
-      <span className="absolute right-6 bottom-6 -rotate-12 text-2xl text-surface/90 sm:right-[45%]">✦</span>
-      <span className="absolute top-1/2 right-10 hidden rotate-6 text-4xl text-surface/70 sm:block">♡</span>
+      <span className="absolute right-6 bottom-6 -rotate-12 text-2xl text-white/90 sm:right-[45%]">✦</span>
+      <span className="absolute top-1/2 right-10 hidden rotate-6 text-4xl text-white/70 sm:block">♡</span>
       <span className="absolute bottom-3 left-[55%] text-lg text-primary-hover/40">✿</span>
     </div>
   );
