@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 
 import { MoodPolaroid } from "@/components/mood-diary/mood-polaroid";
 import { parseDateKey } from "@/components/calendar/calendar.utils";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
+import { FavoriteHeartButton } from "@/components/favorites/favorite-heart-button";
 
 const ROTATIONS = ["left", "none", "right", "none"] as const;
 
@@ -18,20 +21,30 @@ export function MemoryTile({ entry, index }: MemoryTileProps) {
   });
 
   return (
-    <Link
-      href={`/diary?date=${entry.date}`}
-      aria-label={`Open your diary for ${date}`}
-      className="block rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-    >
-      <MoodPolaroid
-        mood={entry.mood}
-        date={date}
-        note={entry.note ?? undefined}
-        photoUrl={entry.photoUrls[0]}
-        hasSong={entry.song !== null}
-        rotate={ROTATIONS[index % ROTATIONS.length]}
+    // The heart sits next to the link rather than inside it: a button can't live inside an <a>.
+    <div className="group relative">
+      <Link
+        href={`/diary?date=${entry.date}`}
+        aria-label={`Open your diary for ${date}`}
+        className="block rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      >
+        <MoodPolaroid
+          mood={entry.mood}
+          date={date}
+          note={entry.note ?? undefined}
+          photoUrl={entry.photoUrls[0]}
+          hasSong={entry.song !== null}
+          rotate={ROTATIONS[index % ROTATIONS.length]}
+        />
+      </Link>
+      <FavoriteHeartButton
+        date={entry.date}
+        label={date}
+        isFavorite={entry.isFavorite}
+        // Follows the polaroid's hover lift so the heart stays pinned to the photo corner.
+        className="absolute top-4 right-4 group-hover:-translate-y-1"
       />
-    </Link>
+    </div>
   );
 }
 

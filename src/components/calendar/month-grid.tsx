@@ -74,6 +74,13 @@ export function MonthGrid({
                 {date.getDate()}
               </span>
 
+              {entry?.isFavorite && (
+                <span className="absolute top-1.5 right-1.5 text-xs text-primary-hover sm:top-2.5 sm:right-2.5">
+                  <span aria-hidden>♥</span>
+                  <span className="sr-only">Favorite</span>
+                </span>
+              )}
+
               {meta ? (
                 <>
                   <span

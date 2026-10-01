@@ -4,6 +4,7 @@ import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 export interface DiaryFeedFilters {
   mood?: Mood;
   month?: string;
+  favorite?: boolean;
 }
 
 export interface DiaryFeedQuery extends DiaryFeedFilters {

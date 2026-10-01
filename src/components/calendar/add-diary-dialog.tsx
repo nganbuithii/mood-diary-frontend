@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
+import { FavoriteHeartButton } from "@/components/favorites/favorite-heart-button";
 import { MoodSelector } from "@/components/mood-diary/mood-selector";
 import {
   DiaryPhotoPicker,
@@ -119,6 +120,16 @@ function DiaryForm({ date, existingEntry, isSaving, onCancel, onSave }: DiaryFor
           </DialogTitle>
           <DialogDescription>{formattedDate}</DialogDescription>
         </div>
+
+        {existingEntry && (
+          <FavoriteHeartButton
+            date={existingEntry.date}
+            label={formattedDate}
+            isFavorite={existingEntry.isFavorite}
+            className="ml-auto"
+          />
+        )}
+        
         <DialogClose
           disabled={isSaving}
           className="flex size-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors outline-none hover:bg-black/5 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"

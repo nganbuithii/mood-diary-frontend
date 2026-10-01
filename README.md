@@ -19,12 +19,15 @@ theo lịch tháng. Repo này là phần frontend (Next.js App Router).
 | Đổi mật khẩu | `/change-password` | ✅ Nối API |
 | Profile + upload avatar | `/profile` | ✅ Nối API |
 | Lịch diary theo tháng, tạo/sửa entry (mood, note, tối đa 3 ảnh) | `/diary` | ✅ Nối API |
-| Home: check-in mood, recent memories | `/home` | 🟡 UI xong, **memories đang dùng mock data** |
+| Home: check-in mood, little memory, recent memories | `/home` | ✅ Nối API (tab Friends' moments chưa có) |
 | Chọn bài hát cho ngày (Song of the day), tìm qua iTunes | trong modal diary | ✅ Nối API (chưa có nút nghe thử) |
-| Quên mật khẩu | `/forgot-password` | ⬜ Chưa có page (link ở form login đang dẫn tới 404) |
+| Quên / đặt lại mật khẩu | `/forgot-password`, `/reset-password` | ✅ Nối API |
 | Đăng nhập Google | nút ở `/login`, `/register` | ⬜ Chỉ có UI |
-| Memories, Friends, Favorites | `/memories`, `/friends`, `/favorites` | ⬜ Chưa có page (link trên navbar dẫn tới 404) |
-| Streak, thông báo | icon trên navbar | ⬜ Đang disable, "coming soon" |
+| Memories: scrapbook, lọc theo mood / tháng / favorite | `/memories` | ✅ Nối API |
+| Favorites: thả ♡ ở mọi polaroid và trong modal diary, trang "treasure box" | `/favorites` | ✅ Nối API |
+| Friends | `/friends` | ⬜ Chưa có page (link trên navbar dẫn tới 404) |
+| Streak | icon trên navbar, card ở `/home` | ✅ Nối API |
+| Thông báo | icon trên navbar | ⬜ Đang disable, "coming soon" |
 
 ## Tech stack
 

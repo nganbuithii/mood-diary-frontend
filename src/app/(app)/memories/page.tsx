@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useRef } from "react";
+import { use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -13,8 +13,13 @@ import { parseDateKey } from "@/components/calendar/calendar.utils";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 import type { DiaryFeedFilters } from "@/features/diary/api/diary-feed.types";
 import { useDiaryFeed } from "@/features/diary/hooks/use-diary-feed";
+import { useLoadMoreOnScroll } from "@/lib/hooks/use-load-more-on-scroll";
 
-type SearchParams = Promise<{ mood?: string | string[]; month?: string | string[] }>;
+type SearchParams = Promise<{
+  mood?: string | string[];
+  month?: string | string[];
+  favorite?: string | string[];
+}>;
 
 // Anything malformed in the URL is ignored rather than sent to the API.
 function parseFilters(params: Awaited<SearchParams>): DiaryFeedFilters {
@@ -23,7 +28,8 @@ function parseFilters(params: Awaited<SearchParams>): DiaryFeedFilters {
     typeof params.month === "string" && /^\d{4}-(0[1-9]|1[0-2])$/.test(params.month)
       ? params.month
       : undefined;
-  return { mood, month };
+  const favorite = params.favorite === "true" || undefined;
+  return { mood, month, favorite };
 }
 
 function groupByMonth(entries: DiaryEntryDto[]) {
@@ -49,7 +55,6 @@ const GRID_CLASS = "grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-
 export default function MemoriesPage({ searchParams }: { searchParams: SearchParams }) {
   const router = useRouter();
   const filters = parseFilters(use(searchParams));
-  const hasFilters = Boolean(filters.mood || filters.month);
   const {
     data,
     isPending,
@@ -68,25 +73,17 @@ export default function MemoriesPage({ searchParams }: { searchParams: SearchPar
     const params = new URLSearchParams();
     if (next.mood) params.set("mood", next.mood);
     if (next.month) params.set("month", next.month);
+    if (next.favorite) params.set("favorite", "true");
     const query = params.toString();
     router.replace(query ? `/memories?${query}` : "/memories", { scroll: false });
   };
 
-  // Load the next page shortly before the bottom comes into view.
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel || !hasNextPage || isFetchNextPageError) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !isFetchingNextPage) fetchNextPage();
-      },
-      { rootMargin: "400px" },
-    );
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [hasNextPage, isFetchingNextPage, isFetchNextPageError, fetchNextPage]);
+  const sentinelRef = useLoadMoreOnScroll({
+    hasNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+    fetchNextPage,
+  });
 
   return (
     <div className="relative isolate overflow-hidden">
@@ -102,10 +99,12 @@ export default function MemoriesPage({ searchParams }: { searchParams: SearchPar
       <main className="relative mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8 sm:px-6 lg:px-10">
         <header className="flex flex-col gap-1">
           <h1 className="font-heading text-2xl text-foreground sm:text-3xl">
-            <span aria-hidden>♡</span> Memories
+            <span aria-hidden>♡</span> {filters.favorite ? "Favorite memories" : "Memories"}
           </h1>
           <p className="text-sm text-muted-foreground">
-            Every little page you&apos;ve kept, tucked into one scrapbook.
+            {filters.favorite
+              ? "The pages you never want to lose, all in one place."
+              : "Every little page you've kept, tucked into one scrapbook."}
           </p>
         </header>
 
@@ -128,7 +127,7 @@ export default function MemoriesPage({ searchParams }: { searchParams: SearchPar
             ))}
           </div>
         ) : entries.length === 0 ? (
-          <EmptyState hasFilters={hasFilters} onClearFilters={() => setFilters({})} />
+          <EmptyState filters={filters} onClearFilters={() => setFilters({})} />
         ) : (
           <div className="flex flex-col gap-10">
             {groups.map((group, groupIndex) => (
@@ -179,7 +178,34 @@ export default function MemoriesPage({ searchParams }: { searchParams: SearchPar
   );
 }
 
-function EmptyState({ hasFilters, onClearFilters }: { hasFilters: boolean; onClearFilters: () => void }) {
+function EmptyState({
+  filters,
+  onClearFilters,
+}: {
+  filters: DiaryFeedFilters;
+  onClearFilters: () => void;
+}) {
+  // Favorites alone gets its own hint; combined with other filters it's just "nothing matches".
+  const favoritesOnly = filters.favorite && !filters.mood && !filters.month;
+  const hasFilters = Boolean(filters.mood || filters.month || filters.favorite);
+
+  if (favoritesOnly) {
+    return (
+      <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed border-border bg-surface/60 px-6 py-16 text-center">
+        <span aria-hidden className="text-3xl">
+          💗
+        </span>
+        <p className="font-heading text-lg text-foreground">No favorites yet</p>
+        <p className="text-sm text-muted-foreground">
+          Tap the ♡ on any memory to keep it here.
+        </p>
+        <Button type="button" variant="outline" className="rounded-full" onClick={onClearFilters}>
+          Browse all memories
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed border-border bg-surface/60 px-6 py-16 text-center">
       <span aria-hidden className="text-3xl">

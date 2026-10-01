@@ -24,6 +24,7 @@ const ICON_BUTTON_CLASS =
 export function Navbar() {
   const { data: currentUser } = useCurrentUser();
   const initial = currentUser?.displayName.charAt(0).toUpperCase();
+  const isFavoritesPage = usePathname() === "/favorites";
 
   return (
     <header className="sticky top-0 z-20 border-b border-dashed border-primary/30 bg-surface/85 backdrop-blur supports-[backdrop-filter]:bg-surface/70">
@@ -57,7 +58,12 @@ export function Navbar() {
           <Link
             href="/favorites"
             aria-label="Favorites"
-            className={cn(ICON_BUTTON_CLASS, "text-primary-hover hover:bg-primary/10")}
+            aria-current={isFavoritesPage ? "page" : undefined}
+            className={cn(
+              ICON_BUTTON_CLASS,
+              "text-primary-hover hover:bg-primary/10",
+              isFavoritesPage && "bg-primary/20 ring-1 ring-primary/50",
+            )}
           >
             <Heart className="size-5" fill="currentColor" />
           </Link>

@@ -1,5 +1,6 @@
 "use client";
 
+import { Heart } from "lucide-react";
 import { cn } from "cn";
 
 import { MoodFace } from "@/components/mood-diary/mood-face";
@@ -78,21 +79,42 @@ export function MemoryFilters({ value, onChange }: MemoryFiltersProps) {
         })}
       </div>
 
-      <label className="flex shrink-0 items-center gap-2 text-sm text-muted-foreground">
-        <span className="sr-only sm:not-sr-only">Month</span>
-        <select
-          value={value.month ?? ""}
-          onChange={(event) => onChange({ ...value, month: event.target.value || undefined })}
-          className="h-8 w-full rounded-full border border-border bg-surface px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/60 sm:w-auto"
+      <div className="flex shrink-0 items-center gap-2">
+        <button
+          type="button"
+          aria-pressed={Boolean(value.favorite)}
+          onClick={() => onChange({ ...value, favorite: value.favorite ? undefined : true })}
+          className={cn(
+            chipClass,
+            value.favorite
+              ? "border-primary/60 bg-primary/15 font-medium text-foreground"
+              : "border-border bg-surface text-muted-foreground hover:text-foreground",
+          )}
         >
-          <option value="">All time</option>
-          {months.map((month) => (
-            <option key={month.value} value={month.value}>
-              {month.label}
-            </option>
-          ))}
-        </select>
-      </label>
+          <Heart
+            aria-hidden
+            className={cn("size-4", value.favorite && "text-primary-hover")}
+            fill={value.favorite ? "currentColor" : "none"}
+          />
+          Favorites
+        </button>
+
+        <label className="flex flex-1 items-center gap-2 text-sm text-muted-foreground sm:flex-none">
+          <span className="sr-only sm:not-sr-only">Month</span>
+          <select
+            value={value.month ?? ""}
+            onChange={(event) => onChange({ ...value, month: event.target.value || undefined })}
+            className="h-8 w-full rounded-full border border-border bg-surface px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/60 sm:w-auto"
+          >
+            <option value="">All time</option>
+            {months.map((month) => (
+              <option key={month.value} value={month.value}>
+                {month.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
     </div>
   );
 }

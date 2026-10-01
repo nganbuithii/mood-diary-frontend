@@ -8,6 +8,7 @@ export interface DiaryEntryDto {
   note: string | null;
   photoUrls: string[];
   song: Song | null;
+  isFavorite: boolean;
   createdAt: string;
   updatedAt: string;
 }

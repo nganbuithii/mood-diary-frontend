@@ -7,4 +7,5 @@ export interface DiaryEntry {
   note?: string;
   photoUrls: string[];
   song: Song | null;
+  isFavorite: boolean;
 }

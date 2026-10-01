@@ -58,6 +58,7 @@ export default function DiaryCalendarPage({
         note: entry.note ?? undefined,
         photoUrls: entry.photoUrls,
         song: entry.song,
+        isFavorite: entry.isFavorite,
       };
     }
     return map;

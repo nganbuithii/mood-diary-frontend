@@ -5,10 +5,10 @@ import { ApiError } from "@/lib/api/http-error";
 
 const MAX_RETRIES = 3;
 
-export function useDiaryFeed({ mood, month }: DiaryFeedFilters, limit = 12) {
+export function useDiaryFeed({ mood, month, favorite }: DiaryFeedFilters, limit = 12) {
   return useInfiniteQuery({
-    queryKey: ["diaries", "feed", { mood, month, limit }],
-    queryFn: ({ pageParam }) => getDiaryFeed({ mood, month, limit, cursor: pageParam }),
+    queryKey: ["diaries", "feed", { mood, month, favorite, limit }],
+    queryFn: ({ pageParam }) => getDiaryFeed({ mood, month, favorite, limit, cursor: pageParam }),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     retry: (failureCount, error) =>
