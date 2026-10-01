@@ -1,5 +1,6 @@
 "use client";
 
+import { LetterboxCard } from "@/components/letters/letterbox-card";
 import { LittleMemoryCard } from "@/components/mood-diary/little-memory-card";
 import { MoodCheckinCard } from "@/components/mood-diary/mood-checkin-card";
 import { MoodStreakCard } from "@/components/mood-diary/mood-streak-card";
@@ -45,6 +46,7 @@ export default function HomePage() {
           <aside className="flex flex-col gap-6 lg:gap-8">
             <MoodStreakCard />
             <LittleMemoryCard />
+            <LetterboxCard />
           </aside>
         </div>
 

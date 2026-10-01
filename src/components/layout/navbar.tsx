@@ -3,13 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, BookHeart, ChartPie, Flame, Heart, House, Images, User } from "lucide-react";
+import { BookHeart, ChartPie, Flame, Heart, House, Images, Mail, User } from "lucide-react";
 import { cn } from "cn";
 
 import { LogoutButton } from "@/components/auth/logout-button";
 import { formatDateKey } from "@/components/calendar/calendar.utils";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 import { useMoodStreak } from "@/features/diary/hooks/use-mood-streak";
+import { useReadyLetterCount } from "@/features/letters/hooks/use-letters";
 
 const NAV_LINKS = [
   { href: "/home", label: "Home", icon: House },
@@ -45,15 +46,7 @@ export function Navbar() {
         <div className="ml-auto flex shrink-0 items-center gap-1 md:ml-0">
           <StreakBadge />
 
-          <button
-            type="button"
-            disabled
-            title="Notifications — coming soon"
-            aria-label="Notifications — coming soon"
-            className={cn(ICON_BUTTON_CLASS, "hidden text-muted-foreground/60 sm:flex")}
-          >
-            <Bell className="size-5" />
-          </button>
+<LetterboxLink />
 
           <Link
             href="/favorites"
@@ -95,6 +88,40 @@ export function Navbar() {
         <NavTabs className="flex w-full" />
       </div>
     </header>
+  );
+}
+
+function LetterboxLink() {
+  const pathname = usePathname();
+  const readyCount = useReadyLetterCount();
+  const isActive = pathname.startsWith("/letters");
+  const label =
+    readyCount > 0
+      ? `Letterbox, ${readyCount} ${readyCount === 1 ? "letter" : "letters"} ready to open`
+      : "Letterbox";
+
+  return (
+    <Link
+      href="/letters"
+      title={label}
+      aria-label={label}
+      aria-current={isActive ? "page" : undefined}
+      className={cn(
+        ICON_BUTTON_CLASS,
+        "relative text-muted-foreground hover:bg-primary/10 hover:text-foreground",
+        isActive && "bg-primary/20 text-foreground ring-1 ring-primary/50",
+      )}
+    >
+      <Mail className="size-5" />
+      {readyCount > 0 && (
+        <span
+          aria-hidden
+          className="absolute top-0.5 right-0.5 flex min-w-4 items-center justify-center rounded-full bg-primary-hover px-1 text-[0.65rem] leading-4 font-semibold text-primary-foreground ring-2 ring-surface"
+        >
+          {readyCount}
+        </span>
+      )}
+    </Link>
   );
 }
 
