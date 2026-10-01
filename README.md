@@ -27,6 +27,7 @@ theo lịch tháng. Repo này là phần frontend (Next.js App Router).
 | Favorites: thả ♡ ở mọi polaroid và trong modal diary, trang "treasure box" | `/favorites` | ✅ Nối API |
 | Insights: thống kê mood theo tháng, heatmap, so với tháng trước | `/insights` | ✅ Nối API |
 | Dark mode (light / dark / theo thiết bị) | `/profile` | ✅ Xong |
+| Thư gửi tương lai: viết, niêm phong, mở đúng ngày, email báo | `/letters` | ✅ Nối API |
 | Friends | `/friends` | ⬜ Chưa có page (đã ẩn khỏi navbar) |
 | Streak | icon trên navbar, card ở `/home` | ✅ Nối API |
 | Thông báo | icon trên navbar | ⬜ Đang disable, "coming soon" |

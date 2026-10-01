@@ -27,4 +27,3 @@ export interface CreateLetterRequest {
 }
 
 export const MAX_LETTER_LENGTH = 5000;
-export const MAX_SEALED_LETTERS = 50;

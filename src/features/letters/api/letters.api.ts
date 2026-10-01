@@ -1,30 +1,25 @@
-import {
-  mockCreateLetter,
-  mockDeleteLetter,
-  mockListLetters,
-  mockOpenLetter,
-} from "@/features/letters/api/letters.mock";
+import { apiClient } from "@/lib/api/api-client";
 import type {
   CreateLetterRequest,
   LetterSummaryDto,
   OpenedLetterDto,
 } from "@/features/letters/types/letter.types";
 
-// TODO: swap each body for apiClient once the backend ships:
-// GET /letters, POST /letters, POST /letters/:id/open, DELETE /letters/:id
-
-export function listLetters(): Promise<LetterSummaryDto[]> {
-  return mockListLetters();
+export async function listLetters(): Promise<LetterSummaryDto[]> {
+  const { data } = await apiClient.get<LetterSummaryDto[]>("/letters");
+  return data;
 }
 
-export function createLetter(input: CreateLetterRequest): Promise<LetterSummaryDto> {
-  return mockCreateLetter(input);
+export async function createLetter(input: CreateLetterRequest): Promise<LetterSummaryDto> {
+  const { data } = await apiClient.post<LetterSummaryDto>("/letters", input);
+  return data;
 }
 
-export function openLetter(id: string): Promise<OpenedLetterDto> {
-  return mockOpenLetter(id);
+export async function openLetter(id: string): Promise<OpenedLetterDto> {
+  const { data } = await apiClient.post<OpenedLetterDto>(`/letters/${id}/open`);
+  return data;
 }
 
-export function deleteLetter(id: string): Promise<void> {
-  return mockDeleteLetter(id);
+export async function deleteLetter(id: string): Promise<void> {
+  await apiClient.delete(`/letters/${id}`);
 }
