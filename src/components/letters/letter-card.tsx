@@ -4,12 +4,11 @@ import { cn } from "cn";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Envelope } from "@/components/letters/envelope";
 import { OpenedLetterPreview } from "@/components/letters/opened-letter";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
 import type { LetterSummaryDto } from "@/features/letters/types/letter.types";
-import { daysToGo, formatLongDate, journeyProgress, opensInLabel } from "@/features/letters/utils/letter-dates";
+import { daysToGo, formatLongDate, opensInLabel } from "@/features/letters/utils/letter-dates";
 
 const LINK_CLASS = "group block rounded-3xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60";
 const CARD_CLASS =
@@ -58,16 +57,9 @@ export function LetterCard({ letter, isNew = false }: { letter: LetterSummaryDto
           </div>
 
           {letter.status === "sealed" && (
-            <div className="flex items-center gap-2">
-              <Progress
-                value={journeyProgress(letter.createdAt, letter.deliverAt)}
-                label="How far along its journey the letter is"
-                className="flex-1"
-              />
-              <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
-                {days} {days === 1 ? "day" : "days"} to go
-              </span>
-            </div>
+            <span className="text-xs text-muted-foreground tabular-nums">
+              {days} {days === 1 ? "day" : "days"} to go
+            </span>
           )}
 
           <span className="text-xs text-muted-foreground">

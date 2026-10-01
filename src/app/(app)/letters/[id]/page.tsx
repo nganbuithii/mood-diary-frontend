@@ -1,9 +1,10 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useCallback, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Lock, PenLine, Trash2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { cn } from "cn";
 
@@ -12,12 +13,14 @@ import { ConfirmBar } from "@/components/ui/confirm-bar";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Spinner } from "@/components/ui/spinner";
 import { BackLink, PageShell } from "@/components/layout/page-shell";
+import { Countdown, useNow } from "@/components/letters/countdown";
 import { Envelope } from "@/components/letters/envelope";
+import { JourneyTrack } from "@/components/letters/journey-track";
 import { LetterPaper } from "@/components/letters/opened-letter";
 import { formatRelativeDay } from "@/components/calendar/calendar.utils";
 import { useDeleteLetter, useLetters, useOpenLetter } from "@/features/letters/hooks/use-letters";
 import type { LetterSummaryDto } from "@/features/letters/types/letter.types";
-import { formatLongDate, opensInLabel } from "@/features/letters/utils/letter-dates";
+import { formatLongDate } from "@/features/letters/utils/letter-dates";
 import { ApiError } from "@/lib/api/http-error";
 
 function errorMessage(error: unknown, fallback: string) {
@@ -156,15 +159,7 @@ function ClosedLetter({
       </button>
 
       {isSealed ? (
-        <div className="flex flex-col items-center gap-1">
-          <p className="flex items-center gap-1.5 font-heading text-xl text-foreground">
-            <Lock aria-hidden className="size-4 text-primary-hover" />
-            {opensInLabel(summary.deliverAt)}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Sealed on {formatLongDate(summary.createdAt)} · arrives {formatLongDate(summary.deliverAt)}
-          </p>
-        </div>
+        <SealedCountdown summary={summary} />
       ) : (
         <div className="flex flex-col items-center gap-1">
           <p className="font-heading text-xl text-foreground">
@@ -185,5 +180,36 @@ function ClosedLetter({
         </div>
       )}
     </section>
+  );
+}
+
+function SealedCountdown({ summary }: { summary: LetterSummaryDto }) {
+  const queryClient = useQueryClient();
+  const now = useNow();
+  const refreshLetters = useCallback(() => queryClient.invalidateQueries({ queryKey: ["letters"] }), [queryClient]);
+
+  return (
+    <div className="flex w-full flex-col items-center gap-5">
+      <div className="flex flex-col items-center gap-1">
+        <p className="flex items-center gap-1.5 font-heading text-xl text-foreground">
+          <Lock aria-hidden className="size-4 text-primary-hover" />
+          Still sealed · no peeking
+        </p>
+        <p className="text-sm text-muted-foreground">
+          It opens on <span className="font-medium text-foreground">{formatLongDate(summary.deliverAt)}</span> at 8:00
+          am
+        </p>
+      </div>
+
+      <Countdown target={summary.deliverAt} now={now} onComplete={refreshLetters} className="w-full" />
+
+      <JourneyTrack
+        createdAt={summary.createdAt}
+        deliverAt={summary.deliverAt}
+        now={now}
+        size="md"
+        className="w-full rounded-2xl bg-surface/70 px-4 py-3 ring-1 ring-foreground/5"
+      />
+    </div>
   );
 }
