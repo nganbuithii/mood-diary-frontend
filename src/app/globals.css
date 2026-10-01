@@ -17,6 +17,11 @@
   --color-mood-neutral: var(--mood-neutral);
   --color-mood-happy: var(--mood-happy);
   --color-mood-very-happy: var(--mood-very-happy);
+  --color-chart-mood-very-sad: var(--chart-mood-very-sad);
+  --color-chart-mood-sad: var(--chart-mood-sad);
+  --color-chart-mood-neutral: var(--chart-mood-neutral);
+  --color-chart-mood-happy: var(--chart-mood-happy);
+  --color-chart-mood-very-happy: var(--chart-mood-very-happy);
   --font-sans: var(--font-nunito);
   --font-heading: var(--font-patrick-hand);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -84,6 +89,15 @@
   --mood-happy: #f2c5cf;
   --mood-very-happy: #d2bde8;
 
+  /* Mood colors for charts: the same hues as above, stepped so all five stay apart side by side,
+     including for color-blind readers (checked pairwise against --surface). The pastels above
+     are too light for chart marks; keep using them for UI. */
+  --chart-mood-very-sad: #4489bb;
+  --chart-mood-sad: #94b866;
+  --chart-mood-neutral: #846715;
+  --chart-mood-happy: #bb6d81;
+  --chart-mood-very-happy: #c29ee6;
+
   --card: var(--surface);
   --card-foreground: var(--foreground);
   --popover: var(--surface);
@@ -143,6 +157,13 @@
   --mood-neutral: #756848;
   --mood-happy: #905866;
   --mood-very-happy: #74608e;
+
+  /* Re-stepped against the dark --surface, not just inverted */
+  --chart-mood-very-sad: #438dc2;
+  --chart-mood-sad: #506e23;
+  --chart-mood-neutral: #ac8825;
+  --chart-mood-happy: #cb6e88;
+  --chart-mood-very-happy: #735092;
 
   /* Text on the pink/lilac buttons stays dark, like in the light theme */
   --primary-foreground: #2a1f22;

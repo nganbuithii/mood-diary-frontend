@@ -25,7 +25,9 @@ theo lịch tháng. Repo này là phần frontend (Next.js App Router).
 | Đăng nhập Google | nút ở `/login`, `/register` | ⬜ Chỉ có UI |
 | Memories: scrapbook, lọc theo mood / tháng / favorite | `/memories` | ✅ Nối API |
 | Favorites: thả ♡ ở mọi polaroid và trong modal diary, trang "treasure box" | `/favorites` | ✅ Nối API |
-| Friends | `/friends` | ⬜ Chưa có page (link trên navbar dẫn tới 404) |
+| Insights: thống kê mood theo tháng, heatmap, so với tháng trước | `/insights` | ✅ Nối API |
+| Dark mode (light / dark / theo thiết bị) | `/profile` | ✅ Xong |
+| Friends | `/friends` | ⬜ Chưa có page (đã ẩn khỏi navbar) |
 | Streak | icon trên navbar, card ở `/home` | ✅ Nối API |
 | Thông báo | icon trên navbar | ⬜ Đang disable, "coming soon" |
 
