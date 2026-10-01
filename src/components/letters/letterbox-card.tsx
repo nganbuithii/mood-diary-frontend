@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { cn } from "cn";
 
+import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+
 import { useLetters } from "@/features/letters/hooks/use-letters";
 import { opensInLabel } from "@/features/letters/utils/letter-dates";
 
@@ -25,23 +27,24 @@ export function LetterboxCard() {
         : { href: "/letters/new", title: "Write to future you", subtitle: "Seal it today, open it on the day you choose." };
 
   return (
-    <Link
-      href={href}
-      className={cn(
-        "group flex items-center gap-3 rounded-3xl bg-surface/90 p-4 shadow-sm ring-1 ring-foreground/5 transition-all outline-none hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring/60 motion-reduce:hover:translate-y-0",
-        ready.length > 0 && "ring-2 ring-primary-hover/50",
-      )}
-    >
-      <span
-        aria-hidden
-        className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/20 text-2xl transition-transform group-hover:-rotate-6"
+    <Link href={href} className="group block rounded-3xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60">
+      <Card
+        className={cn(
+          "flex-row items-center gap-3 rounded-3xl border-transparent bg-surface/90 p-4 ring-1 ring-foreground/5 transition-all group-hover:-translate-y-0.5 group-hover:shadow-md motion-reduce:group-hover:translate-y-0",
+          ready.length > 0 && "ring-2 ring-primary-hover/50",
+        )}
       >
-        💌
-      </span>
-      <span className="flex min-w-0 flex-col">
-        <span className="font-heading text-base text-foreground">{title}</span>
-        <span className="text-xs text-muted-foreground">{subtitle}</span>
-      </span>
+        <span
+          aria-hidden
+          className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/20 text-2xl transition-transform group-hover:-rotate-6"
+        >
+          💌
+        </span>
+        <span className="flex min-w-0 flex-col">
+          <CardTitle className="font-normal text-foreground">{title}</CardTitle>
+          <CardDescription className="text-xs">{subtitle}</CardDescription>
+        </span>
+      </Card>
     </Link>
   );
 }
