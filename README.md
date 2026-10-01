@@ -18,7 +18,7 @@ theo lịch tháng. Repo này là phần frontend (Next.js App Router).
 | Đăng ký / đăng nhập / đăng xuất | `/register`, `/login` | ✅ Nối API |
 | Đổi mật khẩu | `/change-password` | ✅ Nối API |
 | Profile + upload avatar | `/profile` | ✅ Nối API |
-| Lịch diary theo tháng, tạo/sửa entry (mood, note, tối đa 3 ảnh) | `/diary` | ✅ Nối API |
+| Lịch diary theo tháng, tạo/sửa/xoá entry (mood, note, tối đa 3 ảnh) | `/diary` | ✅ Nối API |
 | Home: check-in mood, little memory, recent memories | `/home` | ✅ Nối API (tab Friends' moments chưa có) |
 | Chọn bài hát cho ngày (Song of the day), tìm qua iTunes | trong modal diary | ✅ Nối API (chưa có nút nghe thử) |
 | Quên / đặt lại mật khẩu | `/forgot-password`, `/reset-password` | ✅ Nối API |

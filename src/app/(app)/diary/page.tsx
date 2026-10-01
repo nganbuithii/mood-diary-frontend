@@ -15,6 +15,7 @@ import {
   parseDateKey,
 } from "@/components/calendar/calendar.utils";
 import type { DiaryEntry } from "@/components/calendar/calendar.types";
+import { useDeleteDiaryEntry } from "@/features/diary/hooks/use-delete-diary-entry";
 import { useDiaryEntries } from "@/features/diary/hooks/use-diary-entries";
 import { useUpsertDiaryEntry } from "@/features/diary/hooks/use-upsert-diary-entry";
 import { ApiError } from "@/lib/api/http-error";
@@ -22,7 +23,7 @@ import { ApiError } from "@/lib/api/http-error";
 const today = new Date();
 
 function parseDateParam(value: string | string[] | undefined): Date | null {
-  if (typeof value !== "string" || !/^d{4}-d{2}-d{2}$/.test(value)) return null;
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
   const date = parseDateKey(value);
   if (formatDateKey(date) !== value || isAfterDay(date, today)) return null;
   return date;
@@ -48,6 +49,7 @@ export default function DiaryCalendarPage({
     refetch,
   } = useDiaryEntries(monthKey);
   const upsertEntryMutation = useUpsertDiaryEntry();
+  const deleteEntryMutation = useDeleteDiaryEntry();
 
   const entries = useMemo<Record<string, DiaryEntry>>(() => {
     const map: Record<string, DiaryEntry> = {};
@@ -96,6 +98,24 @@ export default function DiaryCalendarPage({
         },
       },
     );
+  };
+
+  const handleDeleteEntry = () => {
+    if (!selectedDate) return;
+
+    deleteEntryMutation.mutate(formatDateKey(selectedDate), {
+      onSuccess: () => {
+        setSelectedDate(null);
+        toast.success("Deleted that day from your diary");
+      },
+      onError: (error) => {
+        toast.error(
+          error instanceof ApiError
+            ? error.message
+            : "Couldn't delete this day. Please try again.",
+        );
+      },
+    });
   };
 
   return (
@@ -147,8 +167,10 @@ export default function DiaryCalendarPage({
           date={selectedDate}
           existingEntry={selectedDate ? entries[formatDateKey(selectedDate)] : undefined}
           isSaving={upsertEntryMutation.isPending}
+          isDeleting={deleteEntryMutation.isPending}
           onOpenChange={(open) => !open && setSelectedDate(null)}
           onSave={handleSaveEntry}
+          onDelete={handleDeleteEntry}
         />
       </main>
     </div>
