@@ -8,6 +8,7 @@ import { AddDiaryDialog, type DiaryFormValues } from "@/components/calendar/add-
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import {
+  canOpenDay,
   formatDateKey,
   formatMonthKey,
   getMonthGrid,
@@ -66,6 +67,10 @@ export default function DiaryCalendarPage({
     return map;
   }, [entryList]);
 
+  const selectedEntry = selectedDate ? entries[formatDateKey(selectedDate)] : undefined;
+  const openDate =
+    selectedDate && canOpenDay(selectedDate, today, Boolean(selectedEntry)) ? selectedDate : null;
+
   const days = getMonthGrid(viewDate.getFullYear(), viewDate.getMonth());
   const monthLabel = viewDate.toLocaleDateString("en-US", {
     month: "long",
@@ -79,8 +84,8 @@ export default function DiaryCalendarPage({
   const goToToday = () => setViewDate(new Date(today.getFullYear(), today.getMonth(), 1));
 
   const handleSaveEntry = ({ mood, note, photos, songId }: DiaryFormValues) => {
-    if (!selectedDate || isAfterDay(selectedDate, today)) return;
-    const date = formatDateKey(selectedDate);
+    if (!openDate) return;
+    const date = formatDateKey(openDate);
 
     upsertEntryMutation.mutate(
       { date, mood, note: note.trim() || undefined, photos, songId },
@@ -101,9 +106,9 @@ export default function DiaryCalendarPage({
   };
 
   const handleDeleteEntry = () => {
-    if (!selectedDate) return;
+    if (!openDate) return;
 
-    deleteEntryMutation.mutate(formatDateKey(selectedDate), {
+    deleteEntryMutation.mutate(formatDateKey(openDate), {
       onSuccess: () => {
         setSelectedDate(null);
         toast.success("Deleted that day from your diary");
@@ -153,7 +158,9 @@ export default function DiaryCalendarPage({
               currentMonth={viewDate.getMonth()}
               today={today}
               entries={entries}
-              onSelectDay={(date) => !isAfterDay(date, today) && setSelectedDate(date)}
+              onSelectDay={(date) =>
+                canOpenDay(date, today, Boolean(entries[formatDateKey(date)])) && setSelectedDate(date)
+              }
             />
             {isFetching && !entryList && (
               <div className="absolute inset-0 flex items-center justify-center rounded-3xl bg-surface/60">
@@ -164,8 +171,8 @@ export default function DiaryCalendarPage({
         )}
 
         <AddDiaryDialog
-          date={selectedDate}
-          existingEntry={selectedDate ? entries[formatDateKey(selectedDate)] : undefined}
+          date={openDate}
+          existingEntry={selectedEntry}
           isSaving={upsertEntryMutation.isPending}
           isDeleting={deleteEntryMutation.isPending}
           onOpenChange={(open) => !open && setSelectedDate(null)}

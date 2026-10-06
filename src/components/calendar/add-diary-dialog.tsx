@@ -24,7 +24,7 @@ import {
 } from "@/components/mood-diary/diary-photo-picker";
 import type { Mood } from "@/components/mood-diary/mood.constants";
 import { SongPicker } from "@/components/mood-diary/song-picker";
-import { formatDateKey } from "@/components/calendar/calendar.utils";
+import { formatDateKey, isSameDay } from "@/components/calendar/calendar.utils";
 import type { DiaryEntry } from "@/components/calendar/calendar.types";
 import type { Song } from "@/features/songs/types/song.types";
 
@@ -110,6 +110,8 @@ function DiaryForm({
     note.trim() !== (existingEntry?.note ?? "").trim() ||
     photos.length > 0 ||
     isSongChanged;
+
+  const isPastDay = !isSameDay(date, new Date());
 
   const formattedDate = date.toLocaleDateString("en-US", {
     weekday: "long",
@@ -206,6 +208,7 @@ function DiaryForm({
         >
           <p className="text-center text-sm text-foreground sm:text-left">
             Delete this day? It&apos;ll disappear from your diary, memories and streak.
+            {isPastDay && " Past days can't be written again."}
           </p>
           <div className="flex shrink-0 flex-col-reverse gap-2 sm:flex-row">
             <Button
