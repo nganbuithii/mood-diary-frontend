@@ -1,6 +1,7 @@
 import type { Mood } from "@/components/mood-diary/mood.constants";
+import type { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
 
-export type LetterStatus = "sealed" | "ready" | "opened";
+export type LetterStatus = (typeof LETTER_STATUS)[keyof typeof LETTER_STATUS];
 
 export interface LetterSummaryDto {
   id: string;

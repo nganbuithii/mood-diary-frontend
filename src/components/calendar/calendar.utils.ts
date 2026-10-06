@@ -1,3 +1,5 @@
+import { DAY_MS } from "@/lib/constants/time";
+
 export function getMonthGrid(year: number, month: number): Date[] {
   const firstOfMonth = new Date(year, month, 1);
   const startOffset = firstOfMonth.getDay();
@@ -49,7 +51,7 @@ const relativeTimeFormat = new Intl.RelativeTimeFormat("en-US", { numeric: "auto
 export function formatRelativeDay(date: Date, today: Date): string {
   const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   const end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const days = Math.round((end.getTime() - start.getTime()) / 86_400_000);
+  const days = Math.round((end.getTime() - start.getTime()) / DAY_MS);
 
   if (days < 7) return relativeTimeFormat.format(-days, "day");
   if (days < 30) return relativeTimeFormat.format(-Math.floor(days / 7), "week");

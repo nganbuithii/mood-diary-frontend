@@ -1,8 +1,9 @@
 import { apiClient } from "@/lib/api/api-client";
 import type { Mood } from "@/components/mood-diary/mood.constants";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
+import { SECOND_MS } from "@/lib/constants/time";
 
-const UPSERT_WITH_PHOTOS_TIMEOUT_MS = 90_000;
+const UPSERT_WITH_PHOTOS_TIMEOUT_MS = 90 * SECOND_MS;
 
 export interface UpsertDiaryEntryRequest {
   date: string;

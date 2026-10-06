@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "cn";
 
+import { DAY_MS, HOUR_MS, MINUTE_MS, SECOND_MS } from "@/lib/constants/time";
+
 const UNITS = [
-  { label: "days", ms: 86_400_000 },
-  { label: "hours", ms: 3_600_000 },
-  { label: "minutes", ms: 60_000 },
-  { label: "seconds", ms: 1_000 },
+  { label: "days", ms: DAY_MS },
+  { label: "hours", ms: HOUR_MS },
+  { label: "minutes", ms: MINUTE_MS },
+  { label: "seconds", ms: SECOND_MS },
 ] as const;
 
 function splitRemaining(ms: number) {
@@ -17,7 +19,7 @@ function splitRemaining(ms: number) {
   });
 }
 
-export function useNow(intervalMs = 1_000) {
+export function useNow(intervalMs = SECOND_MS) {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), intervalMs);

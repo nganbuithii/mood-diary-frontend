@@ -7,9 +7,10 @@ import {
   addMonthsClamped,
   deliverAtFor,
   earliestDeliveryDay,
+  formatOpeningTime,
   fromDateInputValue,
   latestDeliveryDay,
-  opensInLabel,
+  timeUntilLabel,
   toDateInputValue,
 } from "@/features/letters/utils/letter-dates";
 
@@ -133,7 +134,7 @@ export function DeliveryDayPicker({ value, onChange }: DeliveryDayPickerProps) {
           <span className="text-xs text-muted-foreground">Your letter arrives on</span>
           <span className="font-heading text-lg leading-tight text-foreground">{formatDeliveryDay(value)}</span>
           <span className="text-xs text-muted-foreground">
-            at 8:00 am · {opensInLabel(deliverAtFor(value)).replace(/^Opens /, "")}
+            at {formatOpeningTime()} · {timeUntilLabel(deliverAtFor(value))}
           </span>
         </div>
       </div>

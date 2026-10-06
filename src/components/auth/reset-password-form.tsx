@@ -21,6 +21,7 @@ import {
   type ResetPasswordFormValues,
 } from "@/features/auth/schemas/reset-password.schema";
 import { ApiError } from "@/lib/api/http-error";
+import { HTTP_STATUS } from "@/lib/api/http-status";
 
 interface ResetPasswordFormProps {
   token: string | undefined;
@@ -44,7 +45,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   const isSubmitting = resetPasswordMutation.isPending;
   const isTokenRejected =
     resetPasswordMutation.error instanceof ApiError &&
-    resetPasswordMutation.error.status === 401;
+    resetPasswordMutation.error.status === HTTP_STATUS.UNAUTHORIZED;
 
   const onSubmit = handleSubmit(async (values) => {
     if (!token) return;
@@ -55,7 +56,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         newPassword: values.newPassword,
       });
     } catch (error) {
-      if (error instanceof ApiError && error.status === 401) return;
+      if (error instanceof ApiError && error.status === HTTP_STATUS.UNAUTHORIZED) return;
 
       setError("root", {
         message:

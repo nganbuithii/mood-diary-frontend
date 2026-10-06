@@ -1,10 +1,9 @@
 "use client";
 
-import { use, useCallback, useState } from "react";
+import { use, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Lock, PenLine, Trash2 } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { cn } from "cn";
 
@@ -18,9 +17,10 @@ import { Envelope } from "@/components/letters/envelope";
 import { JourneyTrack } from "@/components/letters/journey-track";
 import { LetterPaper } from "@/components/letters/opened-letter";
 import { formatRelativeDay } from "@/components/calendar/calendar.utils";
-import { useDeleteLetter, useLetters, useOpenLetter } from "@/features/letters/hooks/use-letters";
+import { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
+import { useDeleteLetter, useLetters, useOpenLetter, useRefreshLetters } from "@/features/letters/hooks/use-letters";
 import type { LetterSummaryDto } from "@/features/letters/types/letter.types";
-import { formatLongDate } from "@/features/letters/utils/letter-dates";
+import { formatLongDate, formatOpeningTime } from "@/features/letters/utils/letter-dates";
 import { ApiError } from "@/lib/api/http-error";
 
 function errorMessage(error: unknown, fallback: string) {
@@ -100,7 +100,7 @@ export default function LetterPage({ params }: { params: Promise<{ id: string }>
               message={
                 <>
                   Delete this letter for good?
-                  {summary.status === "sealed" && " You'll never get to read it."}
+                  {summary.status === LETTER_STATUS.SEALED && " You'll never get to read it."}
                 </>
               }
               confirmLabel="Delete"
@@ -135,7 +135,7 @@ function ClosedLetter({
   isOpening: boolean;
   onOpen: () => void;
 }) {
-  const isSealed = summary.status === "sealed";
+  const isSealed = summary.status === LETTER_STATUS.SEALED;
 
   return (
     <section className="flex flex-col items-center gap-6 text-center">
@@ -163,7 +163,7 @@ function ClosedLetter({
       ) : (
         <div className="flex flex-col items-center gap-1">
           <p className="font-heading text-xl text-foreground">
-            {summary.status === "ready" ? "A letter from your past self ♡" : "You've read this one before"}
+            {summary.status === LETTER_STATUS.READY ? "A letter from your past self ♡" : "You've read this one before"}
           </p>
           <p className="text-sm text-muted-foreground">
             Sealed {formatRelativeDay(new Date(summary.createdAt), new Date())}, on {formatLongDate(summary.createdAt)}.
@@ -184,9 +184,8 @@ function ClosedLetter({
 }
 
 function SealedCountdown({ summary }: { summary: LetterSummaryDto }) {
-  const queryClient = useQueryClient();
   const now = useNow();
-  const refreshLetters = useCallback(() => queryClient.invalidateQueries({ queryKey: ["letters"] }), [queryClient]);
+  const refreshLetters = useRefreshLetters();
 
   return (
     <div className="flex w-full flex-col items-center gap-5">
@@ -196,8 +195,8 @@ function SealedCountdown({ summary }: { summary: LetterSummaryDto }) {
           Still sealed · no peeking
         </p>
         <p className="text-sm text-muted-foreground">
-          It opens on <span className="font-medium text-foreground">{formatLongDate(summary.deliverAt)}</span> at 8:00
-          am
+          It opens on <span className="font-medium text-foreground">{formatLongDate(summary.deliverAt)}</span> at{" "}
+          {formatOpeningTime()}
         </p>
       </div>
 

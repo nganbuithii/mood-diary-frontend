@@ -7,23 +7,25 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Envelope } from "@/components/letters/envelope";
 import { OpenedLetterPreview } from "@/components/letters/opened-letter";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
-import type { LetterSummaryDto } from "@/features/letters/types/letter.types";
+import { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
+import type { LetterStatus, LetterSummaryDto } from "@/features/letters/types/letter.types";
 import { daysToGo, formatLongDate, opensInLabel } from "@/features/letters/utils/letter-dates";
 
 const LINK_CLASS = "group block rounded-3xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60";
 const CARD_CLASS =
   "h-full gap-3 rounded-3xl border-transparent bg-surface/90 p-4 ring-1 ring-foreground/5 transition-all group-hover:-translate-y-1 group-hover:shadow-md motion-reduce:group-hover:translate-y-0";
 
-function captionFor(letter: LetterSummaryDto) {
-  if (letter.status === "sealed") return opensInLabel(letter.deliverAt);
-  if (letter.status === "ready") return "It's here! ♡";
-  return `Opened · arrived ${formatLongDate(letter.deliverAt)}`;
-}
+const CAPTION_BY_STATUS: Record<LetterStatus, (letter: LetterSummaryDto) => string> = {
+  [LETTER_STATUS.SEALED]: (letter) => opensInLabel(letter.deliverAt),
+  [LETTER_STATUS.READY]: () => "It's here! ♡",
+  [LETTER_STATUS.OPENED]: (letter) => `Opened · arrived ${formatLongDate(letter.deliverAt)}`,
+};
 
 export function LetterCard({ letter, isNew = false }: { letter: LetterSummaryDto; isNew?: boolean }) {
   const written = formatLongDate(letter.createdAt);
   const mood = letter.moodAtWriting ? MOOD_META[letter.moodAtWriting].label : null;
-  const caption = captionFor(letter);
+  const caption = CAPTION_BY_STATUS[letter.status](letter);
+  const isReady = letter.status === LETTER_STATUS.READY;
   const days = daysToGo(letter.deliverAt);
 
   return (
@@ -32,8 +34,8 @@ export function LetterCard({ letter, isNew = false }: { letter: LetterSummaryDto
       aria-label={`Letter written ${written}. ${caption}`}
       className={cn(LINK_CLASS, isNew && "motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 motion-safe:duration-500")}
     >
-      <Card className={cn(CARD_CLASS, letter.status === "ready" && "ring-2 ring-primary-hover/60")}>
-        {letter.status === "opened" ? (
+      <Card className={cn(CARD_CLASS, isReady && "ring-2 ring-primary-hover/60")}>
+        {letter.status === LETTER_STATUS.OPENED ? (
           <OpenedLetterPreview mood={letter.moodAtWriting} preview={letter.preview} />
         ) : (
           <Envelope
@@ -45,10 +47,12 @@ export function LetterCard({ letter, isNew = false }: { letter: LetterSummaryDto
 
         <CardContent className="flex flex-col gap-1.5 px-1">
           <div className="flex items-center justify-between gap-2">
-            <span className={cn("font-heading text-base", letter.status === "ready" ? "text-primary-hover" : "text-foreground")}>
+            <span className={cn("font-heading text-base", isReady ? "text-primary-hover" : "text-foreground")}>
               {caption}
             </span>
-            {letter.status === "ready" && <Badge>Open me</Badge>}
+
+            {isReady && <Badge>Open me</Badge>}
+            
             {isNew && (
               <Badge variant="soft" className="-rotate-3">
                 just sealed
@@ -56,7 +60,7 @@ export function LetterCard({ letter, isNew = false }: { letter: LetterSummaryDto
             )}
           </div>
 
-          {letter.status === "sealed" && (
+          {letter.status === LETTER_STATUS.SEALED && (
             <span className="text-xs text-muted-foreground tabular-nums">
               {days} {days === 1 ? "day" : "days"} to go
             </span>

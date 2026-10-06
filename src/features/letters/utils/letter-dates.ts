@@ -1,7 +1,13 @@
-const DAY_MS = 86_400_000;
+import { OPENING_HOUR } from "@/features/letters/constants/letter.constants";
+import { DAY_MS } from "@/lib/constants/time";
+
 const relative = new Intl.RelativeTimeFormat("en-US", { numeric: "auto" });
 
-export const OPENING_HOUR = 8;
+const MAX_DELIVERY_YEARS = 10;
+const SHOW_DAYS_BELOW = 45;
+const SHOW_MONTHS_BELOW = 550;
+const DAYS_PER_MONTH = 30.4;
+const DAYS_PER_YEAR = 365.25;
 
 export function startOfDay(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -13,7 +19,7 @@ export function addMonthsClamped(date: Date, months: number) {
   return new Date(target.getFullYear(), target.getMonth(), Math.min(date.getDate(), lastDay));
 }
 
-/** The letter opens at 8:00 in the writer's own time zone; the browser knows it, so it's computed here. */
+/** The letter opens at OPENING_HOUR in the writer's own time zone; the browser knows it, so it's computed here. */
 export function deliverAtFor(day: Date) {
   return new Date(day.getFullYear(), day.getMonth(), day.getDate(), OPENING_HOUR).toISOString();
 }
@@ -23,14 +29,22 @@ export function earliestDeliveryDay(today = new Date()) {
 }
 
 export function latestDeliveryDay(today = new Date()) {
-  return new Date(today.getFullYear() + 10, today.getMonth(), today.getDate());
+  return new Date(today.getFullYear() + MAX_DELIVERY_YEARS, today.getMonth(), today.getDate());
+}
+
+export function timeUntilLabel(deliverAt: string, now = new Date()) {
+  const days = Math.round((startOfDay(new Date(deliverAt)).getTime() - startOfDay(now).getTime()) / DAY_MS);
+  if (days < SHOW_DAYS_BELOW) return relative.format(days, "day");
+  if (days < SHOW_MONTHS_BELOW) return relative.format(Math.round(days / DAYS_PER_MONTH), "month");
+  return relative.format(Math.round(days / DAYS_PER_YEAR), "year");
 }
 
 export function opensInLabel(deliverAt: string, now = new Date()) {
-  const days = Math.round((startOfDay(new Date(deliverAt)).getTime() - startOfDay(now).getTime()) / DAY_MS);
-  if (days < 45) return `Opens ${relative.format(days, "day")}`;
-  if (days < 550) return `Opens ${relative.format(Math.round(days / 30.4), "month")}`;
-  return `Opens ${relative.format(Math.round(days / 365.25), "year")}`;
+  return `Opens ${timeUntilLabel(deliverAt, now)}`;
+}
+
+export function formatOpeningTime() {
+  return new Date(2000, 0, 1, OPENING_HOUR).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
 }
 
 export function formatLongDate(iso: string) {

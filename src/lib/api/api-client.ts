@@ -2,7 +2,9 @@ import axios, { type InternalAxiosRequestConfig } from "axios";
 
 import { apiBaseUrl } from "@/lib/env";
 import { ApiError } from "@/lib/api/http-error";
+import { HTTP_STATUS } from "@/lib/api/http-status";
 import { ENDPOINTS } from "@/features/auth/constants/endpoints";
+import { SECOND_MS } from "@/lib/constants/time";
 
 interface ErrorResponseBody {
   message?: string | string[];
@@ -14,7 +16,7 @@ interface RetryableRequestConfig extends InternalAxiosRequestConfig {
 
 export const apiClient = axios.create({
   baseURL: apiBaseUrl,
-  timeout: 30_000,
+  timeout: 30 * SECOND_MS,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -39,12 +41,12 @@ apiClient.interceptors.response.use(
     if (!error.response) {
       if (error.code === "ECONNABORTED") {
         return Promise.reject(
-          new ApiError(0, "The server took too long to respond. Please try again."),
+          new ApiError(HTTP_STATUS.NETWORK_ERROR, "The server took too long to respond. Please try again."),
         );
       }
 
       return Promise.reject(
-        new ApiError(0, "Unable to reach the server. Please try again."),
+        new ApiError(HTTP_STATUS.NETWORK_ERROR, "Unable to reach the server. Please try again."),
       );
     }
 
@@ -58,7 +60,7 @@ apiClient.interceptors.response.use(
       originalRequest?.url === ENDPOINTS.RESET_PASSWORD;
 
     if (
-      error.response.status === 401 &&
+      error.response.status === HTTP_STATUS.UNAUTHORIZED &&
       originalRequest &&
       !originalRequest._retry &&
       !isAuthEntryCall

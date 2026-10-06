@@ -21,6 +21,7 @@ import {
   type ChangePasswordFormValues,
 } from "@/features/auth/schemas/change-password.schema";
 import { ApiError } from "@/lib/api/http-error";
+import { HTTP_STATUS } from "@/lib/api/http-status";
 
 export function ChangePasswordForm() {
   const changePasswordMutation = useChangePassword();
@@ -47,7 +48,7 @@ export function ChangePasswordForm() {
         newPassword: values.newPassword,
       });
     } catch (error) {
-      if (error instanceof ApiError && error.status === 401) {
+      if (error instanceof ApiError && error.status === HTTP_STATUS.UNAUTHORIZED) {
         setError("currentPassword", {
           message: error.message || "Current password is incorrect.",
         });

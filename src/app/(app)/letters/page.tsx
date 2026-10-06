@@ -10,6 +10,7 @@ import { PageHeader, PageSection, PageShell } from "@/components/layout/page-she
 import { Envelope } from "@/components/letters/envelope";
 import { LetterCard, LetterCardSkeleton, NewLetterTile } from "@/components/letters/letter-card";
 import { MailArrivedBanner } from "@/components/letters/mail-arrived-banner";
+import { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
 import { useLetters } from "@/features/letters/hooks/use-letters";
 import type { LetterSummaryDto } from "@/features/letters/types/letter.types";
 
@@ -34,9 +35,9 @@ export default function LettersPage({ searchParams }: { searchParams: Promise<{ 
   const { data: letters, isPending, isError, refetch } = useLetters();
 
   const byStatus = (status: LetterSummaryDto["status"]) => letters?.filter((letter) => letter.status === status) ?? [];
-  const ready = byStatus("ready");
-  const sealed = byStatus("sealed");
-  const opened = byStatus("opened");
+  const ready = byStatus(LETTER_STATUS.READY);
+  const sealed = byStatus(LETTER_STATUS.SEALED);
+  const opened = byStatus(LETTER_STATUS.OPENED);
 
   return (
     <PageShell glows={["bg-primary/20", "bg-mood-very-happy/20"]}>
@@ -74,7 +75,7 @@ export default function LettersPage({ searchParams }: { searchParams: Promise<{ 
         <EmptyState
           illustration={
             <div className="w-full max-w-56 -rotate-3">
-              <Envelope status="sealed" mood={null} />
+              <Envelope status={LETTER_STATUS.SEALED} mood={null} />
             </div>
           }
           title="Your letterbox is empty"

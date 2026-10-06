@@ -5,6 +5,7 @@ import { cn } from "cn";
 
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 
+import { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
 import { useLetters } from "@/features/letters/hooks/use-letters";
 import { opensInLabel } from "@/features/letters/utils/letter-dates";
 
@@ -12,8 +13,8 @@ export function LetterboxCard() {
   const { data: letters } = useLetters();
   if (!letters) return null;
 
-  const ready = letters.filter((letter) => letter.status === "ready");
-  const nextSealed = letters.find((letter) => letter.status === "sealed");
+  const ready = letters.filter((letter) => letter.status === LETTER_STATUS.READY);
+  const nextSealed = letters.find((letter) => letter.status === LETTER_STATUS.SEALED);
 
   const { href, title, subtitle } =
     ready.length > 0

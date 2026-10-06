@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Envelope } from "@/components/letters/envelope";
+import { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
 import type { LetterSummaryDto } from "@/features/letters/types/letter.types";
 import { formatLongDate } from "@/features/letters/utils/letter-dates";
 
@@ -20,7 +21,7 @@ export function MailArrivedBanner({ letters }: { letters: LetterSummaryDto[] }) 
           className="group w-full max-w-60 shrink-0 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
         >
           <Envelope
-            status="ready"
+            status={LETTER_STATUS.READY}
             mood={first.moodAtWriting}
             className="-rotate-3 transition-transform group-hover:rotate-0 group-hover:scale-105 motion-reduce:transition-none"
           />

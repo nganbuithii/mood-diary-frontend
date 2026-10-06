@@ -1,6 +1,7 @@
 import { cn } from "cn";
 
 import { MOOD_META, type Mood } from "@/components/mood-diary/mood.constants";
+import { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
 import type { LetterStatus } from "@/features/letters/types/letter.types";
 
 interface EnvelopeProps {
@@ -13,7 +14,7 @@ interface EnvelopeProps {
 
 export function Envelope({ status, mood, isOpen = false, className, children }: EnvelopeProps) {
   const tint = mood ? MOOD_META[mood].bgClassMuted : "bg-secondary/40";
-  const flapOpen = isOpen || status === "opened";
+  const flapOpen = isOpen || status === LETTER_STATUS.OPENED;
 
   return (
     <div className={cn("relative aspect-[4/3] w-full [container-type:inline-size] [perspective:900px]", className)}>

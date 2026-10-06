@@ -30,6 +30,7 @@ import {
   type RegisterFormValues,
 } from "@/features/auth/schemas/register.schema";
 import { ApiError } from "@/lib/api/http-error";
+import { HTTP_STATUS } from "@/lib/api/http-status";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -61,7 +62,7 @@ export function RegisterForm() {
       });
       router.push("/login");
     } catch (error) {
-      if (error instanceof ApiError && error.status === 409) {
+      if (error instanceof ApiError && error.status === HTTP_STATUS.CONFLICT) {
         setError("email", { message: error.message });
         return;
       }
