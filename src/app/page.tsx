@@ -4,6 +4,7 @@ import { CalendarHeart, PenLine, Smile, Sparkles } from "lucide-react";
 
 import { Footer } from "@/components/layout/footer";
 import { PublicHeader } from "@/components/layout/public-header";
+import { ServerWarmUp } from "@/components/layout/server-wake-up-gate";
 import { Button } from "@/components/ui/button";
 import { MoodPolaroid } from "@/components/mood-diary/mood-polaroid";
 
@@ -28,6 +29,7 @@ const STEPS = [
 export default function LandingPage() {
   return (
     <div className="min-h-svh">
+      <ServerWarmUp />
       <PublicHeader />
 
       <div className="relative isolate overflow-hidden">

@@ -5,6 +5,7 @@ import { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
 import { MINUTE_MS } from "@/lib/constants/time";
 
 const LETTERS_KEY = ["letters"] as const;
+const openedLetterKey = (id: string) => ["opened-letters", id] as const;
 
 export function useLetters() {
   return useQuery({
@@ -33,11 +34,24 @@ export function useCreateLetter() {
   });
 }
 
+export function useOpenedLetter(id: string) {
+  return useQuery({
+    queryKey: openedLetterKey(id),
+    queryFn: () => openLetter(id),
+    enabled: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+}
+
 export function useOpenLetter() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: openLetter,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: LETTERS_KEY }),
+    onSuccess: (letter) => {
+      queryClient.setQueryData(openedLetterKey(letter.id), letter);
+      queryClient.invalidateQueries({ queryKey: LETTERS_KEY });
+    },
   });
 }
 
@@ -45,6 +59,9 @@ export function useDeleteLetter() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteLetter,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: LETTERS_KEY }),
+    onSuccess: (_data, id) => {
+      queryClient.removeQueries({ queryKey: openedLetterKey(id) });
+      queryClient.invalidateQueries({ queryKey: LETTERS_KEY });
+    },
   });
 }

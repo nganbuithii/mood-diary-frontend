@@ -18,7 +18,13 @@ import { JourneyTrack } from "@/components/letters/journey-track";
 import { LetterPaper } from "@/components/letters/opened-letter";
 import { formatRelativeDay } from "@/components/calendar/calendar.utils";
 import { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
-import { useDeleteLetter, useLetters, useOpenLetter, useRefreshLetters } from "@/features/letters/hooks/use-letters";
+import {
+  useDeleteLetter,
+  useLetters,
+  useOpenedLetter,
+  useOpenLetter,
+  useRefreshLetters,
+} from "@/features/letters/hooks/use-letters";
 import type { LetterSummaryDto } from "@/features/letters/types/letter.types";
 import { formatLongDate, formatOpeningTime } from "@/features/letters/utils/letter-dates";
 import { ApiError } from "@/lib/api/http-error";
@@ -36,7 +42,7 @@ export default function LetterPage({ params }: { params: Promise<{ id: string }>
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   const summary = letters?.find((letter) => letter.id === id);
-  const opened = openLetter.data;
+  const { data: opened } = useOpenedLetter(id);
 
   const handleOpen = () =>
     openLetter.mutate(id, {

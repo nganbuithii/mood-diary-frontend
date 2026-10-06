@@ -20,10 +20,9 @@ import { useDeleteDiaryEntry } from "@/features/diary/hooks/use-delete-diary-ent
 import { useDiaryEntries } from "@/features/diary/hooks/use-diary-entries";
 import { useUpsertDiaryEntry } from "@/features/diary/hooks/use-upsert-diary-entry";
 import { ApiError } from "@/lib/api/http-error";
+import { useToday } from "@/lib/hooks/use-today";
 
-const today = new Date();
-
-function parseDateParam(value: string | string[] | undefined): Date | null {
+function parseDateParam(value: string | string[] | undefined, today: Date): Date | null {
   if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
   const date = parseDateKey(value);
   if (formatDateKey(date) !== value || isAfterDay(date, today)) return null;
@@ -35,7 +34,8 @@ export default function DiaryCalendarPage({
 }: {
   searchParams: Promise<{ date?: string | string[] }>;
 }) {
-  const initialDate = parseDateParam(use(searchParams).date);
+  const today = useToday();
+  const initialDate = parseDateParam(use(searchParams).date, today);
   const [viewDate, setViewDate] = useState(() => {
     const monthOf = initialDate ?? today;
     return new Date(monthOf.getFullYear(), monthOf.getMonth(), 1);

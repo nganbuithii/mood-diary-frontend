@@ -11,6 +11,7 @@ import {
 } from "@/components/calendar/calendar.utils";
 import { useDiaryEntries } from "@/features/diary/hooks/use-diary-entries";
 import { useMoodStreak } from "@/features/diary/hooks/use-mood-streak";
+import { useToday } from "@/lib/hooks/use-today";
 
 interface WeekDay {
   date: Date;
@@ -29,7 +30,7 @@ function getWeekDates(today: Date): Date[] {
 }
 
 export function MoodStreakCard() {
-  const today = new Date();
+  const today = useToday();
   const todayKey = formatDateKey(today);
   const weekDates = getWeekDates(today);
   const { data: streak, isPending } = useMoodStreak(todayKey);
@@ -74,6 +75,7 @@ export function MoodStreakCard() {
             </span>
           )}
         </div>
+        
         {hasStreak && !writtenToday && (
           <p className="text-xs text-muted-foreground">
             Write today to keep it going <span aria-hidden>♡</span>

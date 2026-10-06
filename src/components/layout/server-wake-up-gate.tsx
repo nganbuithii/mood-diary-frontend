@@ -6,6 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useWakeUpServer } from "@/features/health/hooks/use-wake-up-server";
 
+export function ServerWarmUp() {
+  useWakeUpServer();
+  return null;
+}
+
 export function ServerWakeUpGate({ children }: { children: ReactNode }) {
   const { isSuccess, isError, isFetching, refetch } = useWakeUpServer();
 

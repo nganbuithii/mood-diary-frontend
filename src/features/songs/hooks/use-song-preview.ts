@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 // Shared across every preview button so starting one song stops whichever was playing.
 let currentAudio: HTMLAudioElement | null = null;
@@ -26,6 +27,7 @@ export function useSongPreview(previewUrl: string | null) {
       audio.addEventListener("play", () => setIsPlaying(true));
       audio.addEventListener("pause", () => setIsPlaying(false));
       audio.addEventListener("ended", () => setIsPlaying(false));
+      audio.addEventListener("error", () => setIsPlaying(false));
       audioRef.current = audio;
     }
 
@@ -35,7 +37,13 @@ export function useSongPreview(previewUrl: string | null) {
     }
     if (currentAudio && currentAudio !== audio) currentAudio.pause();
     currentAudio = audio;
-    await audio.play();
+    try {
+      await audio.play();
+    } catch (error) {
+      setIsPlaying(false);
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      toast.error("Couldn't play this preview. Please try again.");
+    }
   };
 
   return { isPlaying, toggle, canPlay: previewUrl !== null };

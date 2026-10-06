@@ -11,6 +11,7 @@ import { formatDateKey } from "@/components/calendar/calendar.utils";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 import { useMoodStreak } from "@/features/diary/hooks/use-mood-streak";
 import { useReadyLetterCount } from "@/features/letters/hooks/use-letters";
+import { useToday } from "@/lib/hooks/use-today";
 
 const NAV_LINKS = [
   { href: "/home", label: "Home", icon: House },
@@ -126,7 +127,8 @@ function LetterboxLink() {
 }
 
 function StreakBadge() {
-  const { data: streak } = useMoodStreak(formatDateKey(new Date()));
+  const today = useToday();
+  const { data: streak } = useMoodStreak(formatDateKey(today));
   const current = streak?.current ?? 0;
   const label = streak
     ? current > 0

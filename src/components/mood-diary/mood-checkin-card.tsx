@@ -22,9 +22,10 @@ import { useDiaryEntries } from "@/features/diary/hooks/use-diary-entries";
 import { useUpsertDiaryEntry } from "@/features/diary/hooks/use-upsert-diary-entry";
 import type { Song } from "@/features/songs/types/song.types";
 import { ApiError } from "@/lib/api/http-error";
+import { useToday } from "@/lib/hooks/use-today";
 
 export function MoodCheckinCard() {
-  const today = new Date();
+  const today = useToday();
   const todayKey = formatDateKey(today);
   const { data: entries, isPending } = useDiaryEntries(formatMonthKey(today));
   const todayEntry = entries?.find((entry) => entry.date === todayKey);

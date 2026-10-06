@@ -7,9 +7,11 @@ import { MOOD_META } from "@/components/mood-diary/mood.constants";
 import { formatDateKey, parseDateKey } from "@/components/calendar/calendar.utils";
 import type { LittleMemoryDto } from "@/features/diary/api/little-memory.types";
 import { useDailyMemory } from "@/features/diary/hooks/use-daily-memory";
+import { useToday } from "@/lib/hooks/use-today";
 
 export function LittleMemoryCard() {
-  const { data: memory } = useDailyMemory(formatDateKey(new Date()));
+  const today = useToday();
+  const { data: memory } = useDailyMemory(formatDateKey(today));
 
   if (!memory) return null;
 

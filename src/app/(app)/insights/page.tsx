@@ -12,6 +12,7 @@ import { formatDateKey, formatMonthKey } from "@/components/calendar/calendar.ut
 import { useDiaryEntries } from "@/features/diary/hooks/use-diary-entries";
 import { useMoodStats } from "@/features/diary/hooks/use-mood-stats";
 import { useMoodStreak } from "@/features/diary/hooks/use-mood-streak";
+import { useToday } from "@/lib/hooks/use-today";
 
 type SearchParams = Promise<{ month?: string | string[] }>;
 
@@ -29,7 +30,7 @@ function monthLabel(date: Date, withYear = true) {
 
 export default function InsightsPage({ searchParams }: { searchParams: SearchParams }) {
   const router = useRouter();
-  const today = new Date();
+  const today = useToday();
   const month = parseMonth(use(searchParams).month, today);
   const monthKey = formatMonthKey(month);
   const isCurrentMonth = monthKey === formatMonthKey(today);
