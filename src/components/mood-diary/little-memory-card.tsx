@@ -4,7 +4,7 @@ import { cn } from "cn";
 import { Button } from "@/components/ui/button";
 import { MoodFace } from "@/components/mood-diary/mood-face";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
-import { formatDateKey, parseDateKey } from "@/components/calendar/calendar.utils";
+import { formatDateKey, parseDateKey } from "@/lib/date";
 import type { LittleMemoryDto } from "@/features/diary/api/little-memory.types";
 import { useDailyMemory } from "@/features/diary/hooks/use-daily-memory";
 import { useToday } from "@/lib/hooks/use-today";

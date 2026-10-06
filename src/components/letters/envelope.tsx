@@ -1,6 +1,7 @@
 import { cn } from "cn";
 
-import { MOOD_META, type Mood } from "@/components/mood-diary/mood.constants";
+import { MOOD_META } from "@/components/mood-diary/mood.constants";
+import type { Mood } from "@/features/diary/types/mood.types";
 import { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
 import type { LetterStatus } from "@/features/letters/types/letter.types";
 

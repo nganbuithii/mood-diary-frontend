@@ -4,7 +4,8 @@ import { use, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { CalendarHeader } from "@/components/calendar/calendar-header";
 import { MonthGrid } from "@/components/calendar/month-grid";
-import { AddDiaryDialog, type DiaryFormValues } from "@/components/calendar/add-diary-dialog";
+import { AddDiaryDialog } from "@/components/calendar/add-diary-dialog";
+import type { DiaryEntryValues } from "@/components/mood-diary/diary-entry-fields";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -14,8 +15,7 @@ import {
   getMonthGrid,
   isAfterDay,
   parseDateKey,
-} from "@/components/calendar/calendar.utils";
-import type { DiaryEntry } from "@/components/calendar/calendar.types";
+} from "@/lib/date";
 import { useDeleteDiaryEntry } from "@/features/diary/hooks/use-delete-diary-entry";
 import { useDiaryEntries } from "@/features/diary/hooks/use-diary-entries";
 import { useUpsertDiaryEntry } from "@/features/diary/hooks/use-upsert-diary-entry";
@@ -52,20 +52,10 @@ export default function DiaryCalendarPage({
   const upsertEntryMutation = useUpsertDiaryEntry();
   const deleteEntryMutation = useDeleteDiaryEntry();
 
-  const entries = useMemo<Record<string, DiaryEntry>>(() => {
-    const map: Record<string, DiaryEntry> = {};
-    for (const entry of entryList ?? []) {
-      map[entry.date] = {
-        date: entry.date,
-        mood: entry.mood,
-        note: entry.note ?? undefined,
-        photoUrls: entry.photoUrls,
-        song: entry.song,
-        isFavorite: entry.isFavorite,
-      };
-    }
-    return map;
-  }, [entryList]);
+  const entries = useMemo(
+    () => Object.fromEntries((entryList ?? []).map((entry) => [entry.date, entry])),
+    [entryList],
+  );
 
   const selectedEntry = selectedDate ? entries[formatDateKey(selectedDate)] : undefined;
   const openDate =
@@ -83,12 +73,11 @@ export default function DiaryCalendarPage({
     setViewDate((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1));
   const goToToday = () => setViewDate(new Date(today.getFullYear(), today.getMonth(), 1));
 
-  const handleSaveEntry = ({ mood, note, photos, songId }: DiaryFormValues) => {
+  const handleSaveEntry = (values: DiaryEntryValues) => {
     if (!openDate) return;
-    const date = formatDateKey(openDate);
 
     upsertEntryMutation.mutate(
-      { date, mood, note: note.trim() || undefined, photos, songId },
+      { date: formatDateKey(openDate), ...values },
       {
         onSuccess: () => {
           setSelectedDate(null);

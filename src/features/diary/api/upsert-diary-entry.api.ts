@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api/api-client";
-import type { Mood } from "@/components/mood-diary/mood.constants";
+import type { Mood } from "@/features/diary/types/mood.types";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 import { SECOND_MS } from "@/lib/constants/time";
 

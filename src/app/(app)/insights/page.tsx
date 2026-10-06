@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { InsightsStats } from "@/components/insights/insights-stats";
 import { MoodBreakdown } from "@/components/insights/mood-breakdown";
 import { MoodHeatmap } from "@/components/insights/mood-heatmap";
-import { formatDateKey, formatMonthKey } from "@/components/calendar/calendar.utils";
+import { formatDateKey, formatMonthKey } from "@/lib/date";
 import { useDiaryEntries } from "@/features/diary/hooks/use-diary-entries";
 import { useMoodStats } from "@/features/diary/hooks/use-mood-stats";
 import { useMoodStreak } from "@/features/diary/hooks/use-mood-streak";

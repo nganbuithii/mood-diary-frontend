@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 import { MoodPolaroid } from "@/components/mood-diary/mood-polaroid";
-import { parseDateKey } from "@/components/calendar/calendar.utils";
+import { parseDateKey } from "@/lib/date";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 import { FavoriteHeartButton } from "@/components/favorites/favorite-heart-button";
 

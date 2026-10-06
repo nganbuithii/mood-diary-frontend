@@ -5,9 +5,12 @@ import { ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { compressImage } from "@/lib/image";
 
 export const MAX_PHOTOS = 3;
 const MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024;
+const MAX_SOURCE_PHOTO_SIZE_BYTES = 25 * 1024 * 1024;
 
 export interface SelectedPhoto {
   file: File;
@@ -16,26 +19,31 @@ export interface SelectedPhoto {
 
 export function useDiaryPhotos() {
   const [photos, setPhotos] = useState<SelectedPhoto[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
   const photosRef = useRef(photos);
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
     photosRef.current = photos;
   }, [photos]);
 
   useEffect(() => {
+    isMountedRef.current = true;
     return () => {
+      isMountedRef.current = false;
       photosRef.current.forEach((photo) => URL.revokeObjectURL(photo.previewUrl));
     };
   }, []);
 
-  const addFiles = (files: File[]) => {
+  const addFiles = async (files: File[]) => {
+    if (isProcessing) return;
     const remainingSlots = MAX_PHOTOS - photos.length;
     if (remainingSlots <= 0) {
       toast.error(`You can add up to ${MAX_PHOTOS} photos.`);
       return;
     }
 
-    const accepted: SelectedPhoto[] = [];
+    const accepted: File[] = [];
     for (const file of files) {
       if (accepted.length >= remainingSlots) {
         toast.error(`You can add up to ${MAX_PHOTOS} photos.`);
@@ -47,15 +55,28 @@ export function useDiaryPhotos() {
         continue;
       }
 
-      if (file.size > MAX_PHOTO_SIZE_BYTES) {
-        toast.error("Each photo must be smaller than 5MB.");
+      if (file.size > MAX_SOURCE_PHOTO_SIZE_BYTES) {
+        toast.error("That photo is too large. Please choose one under 25MB.");
         continue;
       }
-      accepted.push({ file, previewUrl: URL.createObjectURL(file) });
+      accepted.push(file);
     }
+    if (accepted.length === 0) return;
 
-    if (accepted.length > 0) {
-      setPhotos((current) => [...current, ...accepted]);
+    setIsProcessing(true);
+    const compressed = await Promise.all(accepted.map(compressImage));
+    if (!isMountedRef.current) return;
+    setIsProcessing(false);
+
+    const fitting = compressed.filter((file) => file.size <= MAX_PHOTO_SIZE_BYTES);
+    if (fitting.length < compressed.length) {
+      toast.error("Some photos are still larger than 5MB after resizing, so they were skipped.");
+    }
+    if (fitting.length > 0) {
+      setPhotos((current) => [
+        ...current,
+        ...fitting.map((file) => ({ file, previewUrl: URL.createObjectURL(file) })),
+      ]);
     }
   };
 
@@ -64,13 +85,14 @@ export function useDiaryPhotos() {
     setPhotos((current) => current.filter((photo) => photo.previewUrl !== previewUrl));
   };
 
-  return { photos, addFiles, removePhoto };
+  return { photos, addFiles, removePhoto, isProcessing };
 }
 
 interface DiaryPhotoPickerProps {
   photos: SelectedPhoto[];
   savedPhotoUrls?: string[];
   disabled?: boolean;
+  isProcessing?: boolean;
   onAddFiles: (files: File[]) => void;
   onRemove: (previewUrl: string) => void;
 }
@@ -79,6 +101,7 @@ export function DiaryPhotoPicker({
   photos,
   savedPhotoUrls = [],
   disabled = false,
+  isProcessing = false,
   onAddFiles,
   onRemove,
 }: DiaryPhotoPickerProps) {
@@ -129,7 +152,17 @@ export function DiaryPhotoPicker({
           </div>
         ))}
 
-        {canAddPhoto && (
+        {isProcessing && (
+          <div
+            role="status"
+            aria-label="Preparing photos"
+            className="flex size-16 shrink-0 items-center justify-center rounded-xl border border-dashed border-border sm:size-20"
+          >
+            <Spinner size="sm" />
+          </div>
+        )}
+
+        {canAddPhoto && !isProcessing && (
           <Button
             type="button"
             variant="outline"

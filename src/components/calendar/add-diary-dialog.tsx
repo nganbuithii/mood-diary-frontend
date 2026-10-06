@@ -12,36 +12,23 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Field, FieldLabel } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
-import { Textarea } from "@/components/ui/textarea";
 import { FavoriteHeartButton } from "@/components/favorites/favorite-heart-button";
-import { MoodSelector } from "@/components/mood-diary/mood-selector";
 import {
-  DiaryPhotoPicker,
-  MAX_PHOTOS,
-  useDiaryPhotos,
-} from "@/components/mood-diary/diary-photo-picker";
-import type { Mood } from "@/components/mood-diary/mood.constants";
-import { SongPicker } from "@/components/mood-diary/song-picker";
-import { formatDateKey, isSameDay } from "@/components/calendar/calendar.utils";
-import type { DiaryEntry } from "@/components/calendar/calendar.types";
-import type { Song } from "@/features/songs/types/song.types";
-
-export interface DiaryFormValues {
-  mood: Mood;
-  note: string;
-  photos: File[];
-  songId?: string;
-}
+  DiaryEntryFields,
+  useDiaryEntryForm,
+  type DiaryEntryValues,
+} from "@/components/mood-diary/diary-entry-fields";
+import { formatDateKey, isSameDay } from "@/lib/date";
+import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 
 interface AddDiaryDialogProps {
   date: Date | null;
-  existingEntry?: DiaryEntry;
+  existingEntry?: DiaryEntryDto;
   isSaving?: boolean;
   isDeleting?: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (values: DiaryFormValues) => void;
+  onSave: (values: DiaryEntryValues) => void;
   onDelete: () => void;
 }
 
@@ -79,11 +66,11 @@ export function AddDiaryDialog({
 
 interface DiaryFormProps {
   date: Date;
-  existingEntry?: DiaryEntry;
+  existingEntry?: DiaryEntryDto;
   isSaving: boolean;
   isDeleting: boolean;
   onCancel: () => void;
-  onSave: (values: DiaryFormValues) => void;
+  onSave: (values: DiaryEntryValues) => void;
   onDelete: () => void;
 }
 
@@ -99,17 +86,7 @@ function DiaryForm({
   // Everything in the form locks while either request is in flight.
   const isSaving = isSavingEntry || isDeleting;
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
-  const [mood, setMood] = useState<Mood | null>(existingEntry?.mood ?? null);
-  const [note, setNote] = useState(existingEntry?.note ?? "");
-  const [song, setSong] = useState<Song | null>(existingEntry?.song ?? null);
-  const { photos, addFiles, removePhoto } = useDiaryPhotos();
-
-  const isSongChanged = song?.id !== existingEntry?.song?.id;
-  const isDirty =
-    mood !== (existingEntry?.mood ?? null) ||
-    note.trim() !== (existingEntry?.note ?? "").trim() ||
-    photos.length > 0 ||
-    isSongChanged;
+  const form = useDiaryEntryForm(existingEntry);
 
   const isPastDay = !isSameDay(date, new Date());
 
@@ -122,14 +99,8 @@ function DiaryForm({
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    if (!mood || !isDirty) return;
-
-    onSave({
-      mood,
-      note,
-      photos: photos.map((photo) => photo.file),
-      songId: isSongChanged ? (song?.id ?? "") : undefined,
-    });
+    if (!form.values) return;
+    onSave(form.values);
   };
 
   return (
@@ -161,43 +132,13 @@ function DiaryForm({
       </div>
 
       <div className="flex max-h-[min(70vh,40rem)] flex-col gap-5 overflow-y-auto px-6 py-5">
-        <MoodSelector value={mood} onChange={setMood} />
-
-        <Field>
-          <FieldLabel htmlFor="diary-note">What happened that day?</FieldLabel>
-          <Textarea
-            id="diary-note"
-            placeholder="Tell me about it..."
-            rows={4}
-            value={note}
-            disabled={isSaving}
-            onChange={(event) => setNote(event.target.value)}
-          />
-        </Field>
-
-        <Field>
-          <FieldLabel>
-            Add a few photos{" "}
-            <span className="font-normal text-muted-foreground">
-              (up to {MAX_PHOTOS})
-            </span>
-          </FieldLabel>
-          <DiaryPhotoPicker
-            photos={photos}
-            savedPhotoUrls={existingEntry?.photoUrls}
-            disabled={isSaving}
-            onAddFiles={addFiles}
-            onRemove={removePhoto}
-          />
-        </Field>
-
-        <Field>
-          <FieldLabel>
-            Song of the day{" "}
-            <span className="font-normal text-muted-foreground">(optional)</span>
-          </FieldLabel>
-          <SongPicker value={song} onChange={setSong} disabled={isSaving} />
-        </Field>
+        <DiaryEntryFields
+          form={form}
+          disabled={isSaving}
+          noteId="diary-note"
+          noteLabel="What happened that day?"
+          notePlaceholder="Tell me about it..."
+        />
       </div>
 
       {isConfirmingDelete ? (
@@ -241,7 +182,7 @@ function DiaryForm({
           <Button type="button" variant="outline" disabled={isSaving} onClick={onCancel}>
             Cancel
           </Button>
-          <Button type="submit" disabled={!mood || !isDirty || isSaving}>
+          <Button type="submit" disabled={!form.values || isSaving}>
             {isSavingEntry ? (
               <Spinner size="sm" className="border-primary-foreground border-t-transparent" />
             ) : (

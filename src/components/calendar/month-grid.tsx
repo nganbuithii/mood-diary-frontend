@@ -4,8 +4,8 @@ import { Plus } from "lucide-react";
 import { cn } from "cn";
 
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
-import { canOpenDay, formatDateKey, isSameDay } from "@/components/calendar/calendar.utils";
-import type { DiaryEntry } from "@/components/calendar/calendar.types";
+import { canOpenDay, formatDateKey, isSameDay } from "@/lib/date";
+import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 import { MoodFace } from "@/components/mood-diary/mood-face";
 
 const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -14,7 +14,7 @@ interface MonthGridProps {
   days: Date[];
   currentMonth: number;
   today: Date;
-  entries: Record<string, DiaryEntry>;
+  entries: Record<string, DiaryEntryDto>;
   onSelectDay: (date: Date) => void;
 }
 

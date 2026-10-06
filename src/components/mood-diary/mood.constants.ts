@@ -1,4 +1,4 @@
-export type Mood = "VERY_SAD" | "SAD" | "NEUTRAL" | "HAPPY" | "VERY_HAPPY";
+import type { Mood } from "@/features/diary/types/mood.types";
 
 export interface MoodMeta {
   value: Mood;

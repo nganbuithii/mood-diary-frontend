@@ -7,20 +7,15 @@ import { cn } from "cn";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Field, FieldLabel } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
-import { Textarea } from "@/components/ui/textarea";
 import { RetroWindow } from "@/components/mood-diary/retro-window";
 import { MoodFace } from "@/components/mood-diary/mood-face";
-import { MoodSelector } from "@/components/mood-diary/mood-selector";
-import { DiaryPhotoPicker, useDiaryPhotos } from "@/components/mood-diary/diary-photo-picker";
-import { SongPicker } from "@/components/mood-diary/song-picker";
-import { MOOD_META, type Mood } from "@/components/mood-diary/mood.constants";
-import { formatDateKey, formatMonthKey } from "@/components/calendar/calendar.utils";
+import { DiaryEntryFields, useDiaryEntryForm } from "@/components/mood-diary/diary-entry-fields";
+import { MOOD_META } from "@/components/mood-diary/mood.constants";
+import { formatDateKey, formatMonthKey } from "@/lib/date";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 import { useDiaryEntries } from "@/features/diary/hooks/use-diary-entries";
 import { useUpsertDiaryEntry } from "@/features/diary/hooks/use-upsert-diary-entry";
-import type { Song } from "@/features/songs/types/song.types";
 import { ApiError } from "@/lib/api/http-error";
 import { useToday } from "@/lib/hooks/use-today";
 
@@ -179,118 +174,53 @@ interface CheckinFormProps {
 }
 
 function CheckinForm({ date, existingEntry, onSaved, onCancel }: CheckinFormProps) {
-  const [mood, setMood] = useState<Mood | null>(existingEntry?.mood ?? null);
-  const [note, setNote] = useState(existingEntry?.note ?? "");
-  const [song, setSong] = useState<Song | null>(existingEntry?.song ?? null);
-  const { photos, addFiles, removePhoto } = useDiaryPhotos();
-  const savedPhotoUrls = existingEntry?.photoUrls ?? [];
-  const [isPhotoOpen, setIsPhotoOpen] = useState(savedPhotoUrls.length > 0);
-  const [isMusicOpen, setIsMusicOpen] = useState(song !== null);
+  const form = useDiaryEntryForm(existingEntry);
   const upsertEntryMutation = useUpsertDiaryEntry();
   const isSaving = upsertEntryMutation.isPending;
 
-  const isSongChanged = song?.id !== existingEntry?.song?.id;
-  const isDirty =
-    mood !== (existingEntry?.mood ?? null) ||
-    note.trim() !== (existingEntry?.note ?? "").trim() ||
-    photos.length > 0 ||
-    isSongChanged;
-
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    if (!mood || !isDirty || isSaving) return;
+    if (!form.values || isSaving) return;
 
-    upsertEntryMutation
-      .mutateAsync({
-        date,
-        mood,
-        note: note.trim() || undefined,
-        photos: photos.map((photo) => photo.file),
-        songId: isSongChanged ? (song?.id ?? "") : undefined,
-      })
-      .then(
-        () => {
+    upsertEntryMutation.mutate(
+      { date, ...form.values },
+      {
+        onSuccess: () => {
           toast.success("Saved your day ♡");
           onSaved();
         },
-        (error: unknown) => {
+        onError: (error) => {
           toast.error(
             error instanceof ApiError
               ? error.message
               : "Couldn't save your day. Please try again.",
           );
         },
-      );
+      },
+    );
   };
-
-  const actions = [
-    { label: "Photo", emoji: "📷", isOpen: isPhotoOpen, toggle: () => setIsPhotoOpen((open) => !open) },
-    { label: "Music", emoji: "🎵", isOpen: isMusicOpen, toggle: () => setIsMusicOpen((open) => !open) },
-  ];
 
   return (
     <form onSubmit={handleSubmit} className="flex w-full flex-col items-center gap-6">
-      <MoodSelector value={mood} onChange={(value) => !isSaving && setMood(value)} />
-
-      <Field className="text-left">
-        <FieldLabel htmlFor="note" className="font-heading text-base">
-          What&apos;s on your mind today? <span aria-hidden>♡</span>
-        </FieldLabel>
-        <Textarea
-          id="note"
-          placeholder="Tell me about your day..."
-          value={note}
-          disabled={isSaving}
-          onChange={(event) => setNote(event.target.value)}
-          rows={4}
-        />
-      </Field>
-
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        {actions.map((action) => (
-          <Button
-            key={action.label}
-            type="button"
-            variant="outline"
-            size="sm"
-            aria-expanded={action.isOpen}
-            onClick={action.toggle}
-            className={cn(
-              "gap-1.5 rounded-full",
-              action.isOpen && "border-primary/60 bg-primary/10",
-            )}
-          >
-            <span aria-hidden>{action.emoji}</span>
-            {action.label}
-          </Button>
-        ))}
-      </div>
-
-      {isPhotoOpen && (
-        <Field className="text-left">
-          <FieldLabel>Add a few photos</FieldLabel>
-          <DiaryPhotoPicker
-            photos={photos}
-            savedPhotoUrls={savedPhotoUrls}
-            disabled={isSaving}
-            onAddFiles={addFiles}
-            onRemove={removePhoto}
-          />
-        </Field>
-      )}
-
-      {isMusicOpen && (
-        <Field className="text-left">
-          <FieldLabel>Song of the day</FieldLabel>
-          <SongPicker value={song} onChange={setSong} disabled={isSaving} />
-        </Field>
-      )}
+      <DiaryEntryFields
+        form={form}
+        disabled={isSaving}
+        noteId="note"
+        noteLabel={
+          <>
+            What&apos;s on your mind today? <span aria-hidden>♡</span>
+          </>
+        }
+        notePlaceholder="Tell me about your day..."
+        noteLabelClassName="font-heading text-base"
+        collapsibleExtras
+      />
 
       <div className="flex flex-col items-center gap-2">
         <Button
           type="submit"
           size="lg"
-          disabled={!mood || !isDirty || isSaving}
+          disabled={!form.values || isSaving}
           className="w-full sm:w-auto sm:px-8"
         >
           {isSaving ? (

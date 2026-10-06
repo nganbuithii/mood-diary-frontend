@@ -1,7 +1,8 @@
 import { cn } from "cn";
 
 import { MoodFace } from "@/components/mood-diary/mood-face";
-import { MOOD_META, type Mood } from "@/components/mood-diary/mood.constants";
+import { MOOD_META } from "@/components/mood-diary/mood.constants";
+import type { Mood } from "@/features/diary/types/mood.types";
 
 const RULED_PAPER =
   "[background-image:repeating-linear-gradient(to_bottom,transparent_0,transparent_calc(var(--line)-1px),color-mix(in_oklch,var(--border),transparent_45%)_calc(var(--line)-1px),color-mix(in_oklch,var(--border),transparent_45%)_var(--line))]";

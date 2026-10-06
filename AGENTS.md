@@ -23,5 +23,7 @@ Chạy `type-check` và `lint` sau mỗi thay đổi.
 - Comment tối thiểu; chỉ viết khi lý do không tự hiện ra từ code.
 - Ngày dùng key local `YYYY-MM-DD` (`formatDateKey`), không dùng `toISOString()` cho ngày. Lấy "hôm nay" trong component bằng `useToday()`, không khai báo `new Date()` ở cấp module.
 - Lỗi API là `ApiError`; hiển thị `error.message` qua `toast` từ `sonner`.
-- Mutation cập nhật cache bằng `setQueryData` rồi `invalidateQueries` theo prefix key (`["diaries"]`, `["letters"]`).
+- Query key lấy từ factory (`diaryKeys`, `letterKeys`, `authKeys` trong `features/*/constants/`), không viết mảng key tay. Sửa/xoá entry thì gọi `invalidateDiaryEntryQueries`.
+- `Mood` type ở `features/diary/types/mood.types.ts`; `MOOD_META`/`MOOD_OPTIONS` (class UI) ở `components/mood-diary/mood.constants.ts`. Hàm ngày ở `lib/date.ts`.
+- Form nhật ký dùng `useDiaryEntryForm` + `<DiaryEntryFields/>`; ảnh được nén phía client (`lib/image.ts`) trước khi upload.
 - Text UI tiếng Anh, giọng ấm áp (♡).

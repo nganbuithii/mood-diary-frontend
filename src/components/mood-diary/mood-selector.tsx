@@ -3,14 +3,16 @@
 import { cn } from "cn";
 
 import { MoodFace } from "@/components/mood-diary/mood-face";
-import { MOOD_OPTIONS, type Mood } from "@/components/mood-diary/mood.constants";
+import { MOOD_OPTIONS } from "@/components/mood-diary/mood.constants";
+import type { Mood } from "@/features/diary/types/mood.types";
 
 interface MoodSelectorProps {
   value: Mood | null;
   onChange: (mood: Mood) => void;
+  disabled?: boolean;
 }
 
-export function MoodSelector({ value, onChange }: MoodSelectorProps) {
+export function MoodSelector({ value, onChange, disabled = false }: MoodSelectorProps) {
   return (
     <div
       role="radiogroup"
@@ -25,8 +27,9 @@ export function MoodSelector({ value, onChange }: MoodSelectorProps) {
             type="button"
             role="radio"
             aria-checked={isSelected}
+            disabled={disabled}
             onClick={() => onChange(mood.value)}
-            className="group flex flex-col items-center gap-1.5 rounded-full border-0 outline-none transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:outline-none active:outline-none"
+            className="group flex flex-col items-center gap-1.5 rounded-full border-0 outline-none transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:outline-none active:outline-none disabled:pointer-events-none"
           >
             <span
               className={cn(

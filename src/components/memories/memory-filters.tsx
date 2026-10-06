@@ -4,8 +4,9 @@ import { Heart } from "lucide-react";
 import { cn } from "cn";
 
 import { MoodFace } from "@/components/mood-diary/mood-face";
-import { MOOD_OPTIONS, type Mood } from "@/components/mood-diary/mood.constants";
-import { formatMonthKey } from "@/components/calendar/calendar.utils";
+import { MOOD_OPTIONS } from "@/components/mood-diary/mood.constants";
+import type { Mood } from "@/features/diary/types/mood.types";
+import { formatMonthKey } from "@/lib/date";
 import type { DiaryFeedFilters } from "@/features/diary/api/diary-feed.types";
 
 const MONTHS_TO_OFFER = 12;

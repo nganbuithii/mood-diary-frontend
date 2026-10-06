@@ -1,6 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 import { deleteDiaryEntry } from "@/features/diary/api/delete-diary-entry.api";
+import {
+  diaryKeys,
+  invalidateDiaryEntryQueries,
+  monthOfDateKey,
+} from "@/features/diary/constants/diary-query-keys";
 
 export function useDeleteDiaryEntry() {
   const queryClient = useQueryClient();
@@ -8,10 +13,10 @@ export function useDeleteDiaryEntry() {
   return useMutation({
     mutationFn: deleteDiaryEntry,
     onSuccess: (_data, date) => {
-      queryClient.setQueryData<DiaryEntryDto[]>(["diaries", date.slice(0, 7)], (entries) =>
+      queryClient.setQueryData<DiaryEntryDto[]>(diaryKeys.month(monthOfDateKey(date)), (entries) =>
         entries?.filter((entry) => entry.date !== date),
       );
-      queryClient.invalidateQueries({ queryKey: ["diaries"] });
+      invalidateDiaryEntryQueries(queryClient, date);
     },
   });
 }

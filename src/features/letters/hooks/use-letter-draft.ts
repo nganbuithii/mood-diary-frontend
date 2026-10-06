@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Mood } from "@/components/mood-diary/mood.constants";
+import type { Mood } from "@/features/diary/types/mood.types";
 import {
   addMonthsClamped,
   earliestDeliveryDay,

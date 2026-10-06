@@ -1,7 +1,8 @@
 import { cn } from "cn";
 
 import { MoodFace } from "@/components/mood-diary/mood-face";
-import { MOOD_META, type Mood } from "@/components/mood-diary/mood.constants";
+import { MOOD_META } from "@/components/mood-diary/mood.constants";
+import type { Mood } from "@/features/diary/types/mood.types";
 
 interface MoodPolaroidProps {
   mood: Mood;

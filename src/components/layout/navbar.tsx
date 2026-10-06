@@ -7,7 +7,7 @@ import { BookHeart, ChartPie, Flame, Heart, House, Images, Mail, User } from "lu
 import { cn } from "cn";
 
 import { LogoutButton } from "@/components/auth/logout-button";
-import { formatDateKey } from "@/components/calendar/calendar.utils";
+import { formatDateKey } from "@/lib/date";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 import { useMoodStreak } from "@/features/diary/hooks/use-mood-streak";
 import { useReadyLetterCount } from "@/features/letters/hooks/use-letters";

@@ -8,7 +8,7 @@ import { cn } from "cn";
 import { FavoriteHeartButton } from "@/components/favorites/favorite-heart-button";
 import { MoodFace } from "@/components/mood-diary/mood-face";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
-import { parseDateKey } from "@/components/calendar/calendar.utils";
+import { parseDateKey } from "@/lib/date";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 import { useSongPreview } from "@/features/songs/hooks/use-song-preview";
 import type { Song } from "@/features/songs/types/song.types";

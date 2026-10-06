@@ -1,4 +1,4 @@
-import type { Mood } from "@/components/mood-diary/mood.constants";
+import type { Mood } from "@/features/diary/types/mood.types";
 import type { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
 
 export type LetterStatus = (typeof LETTER_STATUS)[keyof typeof LETTER_STATUS];

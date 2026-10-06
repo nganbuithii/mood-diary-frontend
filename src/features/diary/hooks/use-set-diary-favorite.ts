@@ -3,31 +3,29 @@ import { toast } from "sonner";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 import type { DiaryFeedPageDto } from "@/features/diary/api/diary-feed.types";
 import { setDiaryFavorite } from "@/features/diary/api/set-diary-favorite.api";
+import { diaryKeys, monthOfDateKey } from "@/features/diary/constants/diary-query-keys";
 import { ApiError } from "@/lib/api/http-error";
-
-const FEED_KEY = ["diaries", "feed"] as const;
-const MUTATION_KEY = ["diaries", "favorite"] as const;
 
 export function useSetDiaryFavorite() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: MUTATION_KEY,
+    mutationKey: diaryKeys.setFavorite(),
     mutationFn: setDiaryFavorite,
     // Flip the heart in every cached feed and in the month calendar right away; roll back if the request fails.
     onMutate: async ({ date, isFavorite }) => {
-      const monthKey = ["diaries", date.slice(0, 7)];
+      const monthKey = diaryKeys.month(monthOfDateKey(date));
       await Promise.all([
-        queryClient.cancelQueries({ queryKey: FEED_KEY }),
+        queryClient.cancelQueries({ queryKey: diaryKeys.feeds() }),
         queryClient.cancelQueries({ queryKey: monthKey, exact: true }),
       ]);
       const previousFeeds = queryClient.getQueriesData<InfiniteData<DiaryFeedPageDto>>({
-        queryKey: FEED_KEY,
+        queryKey: diaryKeys.feeds(),
       });
       const previousMonth = queryClient.getQueryData<DiaryEntryDto[]>(monthKey);
       const withFavorite = (entry: DiaryEntryDto) => (entry.date === date ? { ...entry, isFavorite } : entry);
 
-      queryClient.setQueriesData<InfiniteData<DiaryFeedPageDto>>({ queryKey: FEED_KEY }, (feed) =>
+      queryClient.setQueriesData<InfiniteData<DiaryFeedPageDto>>({ queryKey: diaryKeys.feeds() }, (feed) =>
         feed && {
           ...feed,
           pages: feed.pages.map((page) => ({
@@ -50,9 +48,9 @@ export function useSetDiaryFavorite() {
     onSettled: (_data, _error, { date }) => {
       // With several hearts tapped in a row, refetching after the first one would overwrite the
       // optimistic state of the others, so only refetch once the last one has finished.
-      if (queryClient.isMutating({ mutationKey: MUTATION_KEY }) > 1) return;
-      queryClient.invalidateQueries({ queryKey: FEED_KEY });
-      queryClient.invalidateQueries({ queryKey: ["diaries", date.slice(0, 7)], exact: true });
+      if (queryClient.isMutating({ mutationKey: diaryKeys.setFavorite() }) > 1) return;
+      queryClient.invalidateQueries({ queryKey: diaryKeys.feeds() });
+      queryClient.invalidateQueries({ queryKey: diaryKeys.month(monthOfDateKey(date)), exact: true });
     },
   });
 }

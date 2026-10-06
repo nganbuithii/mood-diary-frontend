@@ -3,12 +3,13 @@ import { cn } from "cn";
 import { Card } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { MoodFace } from "@/components/mood-diary/mood-face";
-import { MOOD_META, type Mood } from "@/components/mood-diary/mood.constants";
+import { MOOD_META } from "@/components/mood-diary/mood.constants";
+import type { Mood } from "@/features/diary/types/mood.types";
 import {
   formatDateKey,
   formatMonthKey,
   isAfterDay,
-} from "@/components/calendar/calendar.utils";
+} from "@/lib/date";
 import { useDiaryEntries } from "@/features/diary/hooks/use-diary-entries";
 import { useMoodStreak } from "@/features/diary/hooks/use-mood-streak";
 import { useToday } from "@/lib/hooks/use-today";

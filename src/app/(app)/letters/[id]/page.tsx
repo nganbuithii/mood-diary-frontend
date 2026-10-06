@@ -16,7 +16,7 @@ import { Countdown, useNow } from "@/components/letters/countdown";
 import { Envelope } from "@/components/letters/envelope";
 import { JourneyTrack } from "@/components/letters/journey-track";
 import { LetterPaper } from "@/components/letters/opened-letter";
-import { formatRelativeDay } from "@/components/calendar/calendar.utils";
+import { formatRelativeDay } from "@/lib/date";
 import { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
 import {
   useDeleteLetter,

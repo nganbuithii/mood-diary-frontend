@@ -1,4 +1,4 @@
-import type { Mood } from "@/components/mood-diary/mood.constants";
+import type { Mood } from "@/features/diary/types/mood.types";
 import type { Song } from "@/features/songs/types/song.types";
 
 export interface DiaryEntryDto {
