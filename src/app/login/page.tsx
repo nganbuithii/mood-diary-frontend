@@ -1,7 +1,16 @@
+import type { Metadata } from "next";
 import { LoginBranding } from "@/components/auth/login-branding";
+import { GuestOnly } from "@/components/auth/guest-only";
 import { LoginForm } from "@/components/auth/login-form";
 
-export default function LoginPage() {
+export const metadata: Metadata = {
+  title: "Log in",
+};
+
+export default async function LoginPage({ searchParams }: PageProps<"/login">) {
+  const { next } = await searchParams;
+  const returnTo = typeof next === "string" ? next : undefined;
+
   return (
     <div className="flex min-h-svh w-full items-center justify-center px-6 py-10 lg:px-12 lg:py-16">
       <div className="grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1fr_minmax(380px,440px)] lg:gap-12">
@@ -26,7 +35,9 @@ export default function LoginPage() {
             </p>
           </div>
           <div className="relative z-10 w-full">
-            <LoginForm />
+            <GuestOnly returnTo={returnTo}>
+              <LoginForm returnTo={returnTo} />
+            </GuestOnly>
           </div>
         </div>
       </div>

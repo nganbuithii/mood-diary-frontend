@@ -16,7 +16,10 @@ const patrickHand = Patrick_Hand({
 });
 
 export const metadata: Metadata = {
-  title: "Mood Diary",
+  title: {
+    default: "Mood Diary",
+    template: "%s · Mood Diary",
+  },
   description: "A warm little journal for your everyday feelings.",
 };
 

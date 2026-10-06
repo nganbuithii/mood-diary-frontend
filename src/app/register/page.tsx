@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { RegisterBranding } from "@/components/auth/register-branding";
+import { GuestOnly } from "@/components/auth/guest-only";
 import { RegisterForm } from "@/components/auth/register-form";
+
+export const metadata: Metadata = {
+  title: "Sign up",
+};
 
 export default function RegisterPage() {
   return (
@@ -26,7 +32,9 @@ export default function RegisterPage() {
             </p>
           </div>
           <div className="relative z-10 w-full">
-            <RegisterForm />
+            <GuestOnly>
+              <RegisterForm />
+            </GuestOnly>
           </div>
         </div>
       </div>

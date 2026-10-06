@@ -29,9 +29,10 @@ import {
   loginSchema,
   type LoginFormValues,
 } from "@/features/auth/schemas/login.schema";
+import { safeReturnPath } from "@/features/auth/utils/auth-redirect";
 import { ApiError } from "@/lib/api/http-error";
 
-export function LoginForm() {
+export function LoginForm({ returnTo }: { returnTo?: string }) {
   const router = useRouter();
   const loginMutation = useLogin();
   const {
@@ -53,7 +54,7 @@ export function LoginForm() {
   const onSubmit = handleSubmit(async (values) => {
     try {
       await loginMutation.mutateAsync(values);
-      router.push("/home");
+      router.replace(safeReturnPath(returnTo));
     } catch (error) {
       setError("root", {
         message:

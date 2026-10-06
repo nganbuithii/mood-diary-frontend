@@ -1,12 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import type { VariantProps } from "class-variance-authority";
 import { LogOut } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "cn";
 
 import { Button, type buttonVariants } from "@/components/ui/button";
 import { useLogout } from "@/features/auth/hooks/use-logout";
+import { ApiError } from "@/lib/api/http-error";
+import { HTTP_STATUS } from "@/lib/api/http-status";
 
 interface LogoutButtonProps
   extends Pick<VariantProps<typeof buttonVariants>, "variant" | "size"> {
@@ -20,15 +22,19 @@ export function LogoutButton({
   className,
   showLabel = true,
 }: LogoutButtonProps) {
-  const router = useRouter();
   const logoutMutation = useLogout();
 
   const handleLogout = async () => {
     try {
       await logoutMutation.mutateAsync();
-    } finally {
-      router.push("/login");
+    } catch (error) {
+      const isSessionGone = error instanceof ApiError && error.status === HTTP_STATUS.UNAUTHORIZED;
+      if (!isSessionGone) {
+        toast.error("Couldn't log out. Please check your connection and try again.");
+        return;
+      }
     }
+    window.location.replace("/login");
   };
 
   return (

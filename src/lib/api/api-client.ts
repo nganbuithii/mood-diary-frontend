@@ -4,6 +4,7 @@ import { apiBaseUrl } from "@/lib/env";
 import { ApiError } from "@/lib/api/http-error";
 import { HTTP_STATUS } from "@/lib/api/http-status";
 import { ENDPOINTS } from "@/features/auth/constants/endpoints";
+import { currentLocationPath, loginPathFor } from "@/features/auth/utils/auth-redirect";
 import { SECOND_MS } from "@/lib/constants/time";
 
 interface ErrorResponseBody {
@@ -55,7 +56,7 @@ apiClient.interceptors.response.use(
       originalRequest?.url === ENDPOINTS.REFRESH ||
       originalRequest?.url === ENDPOINTS.LOGIN ||
       originalRequest?.url === ENDPOINTS.REGISTER ||
-      // Logged-out flows: a 401 here means a bad reset token, not an expired session.
+      originalRequest?.url === ENDPOINTS.LOGOUT ||
       originalRequest?.url === ENDPOINTS.FORGOT_PASSWORD ||
       originalRequest?.url === ENDPOINTS.RESET_PASSWORD;
 
@@ -71,7 +72,7 @@ apiClient.interceptors.response.use(
         const shouldRetry = await new Promise<boolean>((resolve) => {
           pendingRequests.push(resolve);
         });
-        
+
         return shouldRetry ? apiClient(originalRequest) : Promise.reject(error);
       }
 
@@ -87,10 +88,8 @@ apiClient.interceptors.response.use(
         isRefreshing = false;
         resolvePendingRequests(false);
 
-        if (typeof window !== "undefined") {
-          // Interceptor runs outside React, so router hooks aren't available here.
-          // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-          window.location.href = "/login";
+        if (typeof window !== "undefined" && originalRequest.url !== ENDPOINTS.ME) {
+          window.location.href = loginPathFor(currentLocationPath());
         }
 
         return Promise.reject(refreshError);

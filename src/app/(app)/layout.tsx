@@ -1,10 +1,13 @@
+import { AuthGate } from "@/components/auth/auth-gate";
 import { Navbar } from "@/components/layout/navbar";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-svh">
-      <Navbar />
-      {children}
-    </div>
+    <AuthGate>
+      <div className="min-h-svh">
+        <Navbar />
+        {children}
+      </div>
+    </AuthGate>
   );
 }
