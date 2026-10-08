@@ -23,6 +23,8 @@ import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { AvatarUpload } from "@/components/profile/avatar-upload";
+import { DeleteAccountDialog } from "@/components/profile/delete-account-dialog";
+import { ExportDiaryButton } from "@/components/profile/export-diary-button";
 import { SettingRow } from "@/components/profile/setting-row";
 import { ThemeSwitcher } from "@/components/profile/theme-switcher";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
@@ -131,7 +133,7 @@ export function ProfileCard() {
             title="Delete account"
             description="Permanently remove your account and diary entries"
             tint="bg-destructive/15"
-            comingSoon
+            action={<DeleteAccountDialog />}
           />
 
           <Separator className="my-4" />
@@ -164,9 +166,9 @@ export function ProfileCard() {
           <SettingRow
             icon={Download}
             title="Export my diary"
-            description="Download all your entries as a keepsake"
+            description="Download all your entries and letters as a JSON keepsake"
             tint="bg-mood-neutral/50"
-            comingSoon
+            action={<ExportDiaryButton />}
           />
         </CardContent>
       </Card>
