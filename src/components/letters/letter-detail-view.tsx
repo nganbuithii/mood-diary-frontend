@@ -28,9 +28,11 @@ import {
 import type { LetterSummaryDto } from "@/features/letters/types/letter.types";
 import { formatOpeningTime } from "@/features/letters/utils/letter-dates";
 import { getErrorMessage } from "@/lib/api/http-error";
+import { useToday } from "@/lib/hooks/use-today";
 
 export function LetterDetailView({ id }: { id: string }) {
   const router = useRouter();
+  const today = useToday();
   const { data: letters, isPending, isError, refetch } = useLetters();
   const openLetter = useOpenLetter();
   const deleteLetter = useDeleteLetter();
@@ -75,7 +77,7 @@ export function LetterDetailView({ id }: { id: string }) {
             body={opened.body}
             mood={opened.moodAtWriting}
             writtenOn={formatDate(new Date(opened.createdAt), "longDate")}
-            writtenAgo={`Written ${formatRelativeDay(new Date(opened.createdAt), new Date())}`}
+            writtenAgo={`Written ${formatRelativeDay(new Date(opened.createdAt), today)}`}
           />
           <div className="mt-10 flex flex-col items-center gap-2 text-center">
             <p className="text-sm text-muted-foreground">How does it feel to read this today?</p>
@@ -138,6 +140,7 @@ function ClosedLetter({
   isOpening: boolean;
   onOpen: () => void;
 }) {
+  const today = useToday();
   const isSealed = summary.status === LETTER_STATUS.SEALED;
 
   return (
@@ -169,7 +172,7 @@ function ClosedLetter({
             {summary.status === LETTER_STATUS.READY ? "A letter from your past self ♡" : "You've read this one before"}
           </p>
           <p className="text-sm text-muted-foreground">
-            Sealed {formatRelativeDay(new Date(summary.createdAt), new Date())}, on {formatDate(new Date(summary.createdAt), "longDate")}.
+            Sealed {formatRelativeDay(new Date(summary.createdAt), today)}, on {formatDate(new Date(summary.createdAt), "longDate")}.
           </p>
           <Button type="button" size="lg" className="mt-3 rounded-full" disabled={isOpening} onClick={onOpen}>
             {isOpening ? (

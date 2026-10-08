@@ -126,7 +126,7 @@ export function DeliveryDayPicker({ value, onChange }: DeliveryDayPickerProps) {
           <span className="text-xs text-muted-foreground">Your letter arrives on</span>
           <span className="font-heading text-lg leading-tight text-foreground">{formatDate(value, "weekdayDate")}</span>
           <span className="text-xs text-muted-foreground">
-            at {formatOpeningTime()} · {timeUntilLabel(deliverAtFor(value))}
+            at {formatOpeningTime()} · {timeUntilLabel(deliverAtFor(value), today)}
           </span>
         </div>
       </div>

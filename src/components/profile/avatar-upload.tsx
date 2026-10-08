@@ -7,6 +7,7 @@ import { cn } from "cn";
 import { Spinner } from "@/components/ui/spinner";
 import { useUploadAvatar } from "@/features/profile/hooks/use-upload-avatar";
 import { getErrorMessage } from "@/lib/api/http-error";
+import { compressImage } from "@/lib/image";
 
 interface AvatarUploadProps {
   initial: string;
@@ -29,6 +30,7 @@ export function AvatarUpload({
   className,
 }: AvatarUploadProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isCompressing, setIsCompressing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadAvatarMutation = useUploadAvatar();
 
@@ -38,30 +40,29 @@ export function AvatarUpload({
     };
   }, [previewUrl]);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const original = event.target.files?.[0];
     event.target.value = "";
-    if (!file) return;
+    if (!original) return;
 
-    if (!file.type.startsWith("image/")) {
+    if (!original.type.startsWith("image/")) {
       toast.error("Please choose an image file.");
       return;
     }
+
+    setIsCompressing(true);
+    const file = await compressImage(original);
+    setIsCompressing(false);
+
     if (file.size > MAX_AVATAR_SIZE_BYTES) {
       toast.error("Image must be smaller than 5MB.");
       return;
     }
 
-    setPreviewUrl((current) => {
-      if (current) URL.revokeObjectURL(current);
-      return URL.createObjectURL(file);
-    });
+    setPreviewUrl(URL.createObjectURL(file));
 
     uploadAvatarMutation.mutate(file, {
-      onSuccess: () => {
-        setPreviewUrl(null);
-        toast.success("Profile photo updated.");
-      },
+      onSuccess: () => toast.success("Profile photo updated."),
       onError: (uploadError) => {
         setPreviewUrl(null);
         toast.error(getErrorMessage(uploadError, "Couldn't upload your photo. Please try again."));
@@ -69,7 +70,7 @@ export function AvatarUpload({
     });
   };
 
-  const isUploading = uploadAvatarMutation.isPending;
+  const isUploading = isCompressing || uploadAvatarMutation.isPending;
   const displayUrl = previewUrl ?? avatarUrl;
 
   return (

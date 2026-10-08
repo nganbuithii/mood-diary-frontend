@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { cn } from "cn";
@@ -11,24 +13,26 @@ import { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
 import type { LetterStatus, LetterSummaryDto } from "@/features/letters/types/letter.types";
 import { daysToGo, opensInLabel } from "@/features/letters/utils/letter-dates";
 import { formatDate } from "@/lib/date";
+import { useToday } from "@/lib/hooks/use-today";
 import { pluralize } from "@/lib/utils";
 
 const LINK_CLASS = "group block rounded-3xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60";
 const CARD_CLASS =
   "h-full gap-3 rounded-3xl border-transparent bg-surface/90 p-4 ring-1 ring-foreground/5 transition-all group-hover:-translate-y-1 group-hover:shadow-md motion-reduce:group-hover:translate-y-0";
 
-const CAPTION_BY_STATUS: Record<LetterStatus, (letter: LetterSummaryDto) => string> = {
-  [LETTER_STATUS.SEALED]: (letter) => opensInLabel(letter.deliverAt),
+const CAPTION_BY_STATUS: Record<LetterStatus, (letter: LetterSummaryDto, today: Date) => string> = {
+  [LETTER_STATUS.SEALED]: (letter, today) => opensInLabel(letter.deliverAt, today),
   [LETTER_STATUS.READY]: () => "It's here! ♡",
   [LETTER_STATUS.OPENED]: (letter) => `Opened · arrived ${formatDate(new Date(letter.deliverAt), "longDate")}`,
 };
 
 export function LetterCard({ letter, isNew = false }: { letter: LetterSummaryDto; isNew?: boolean }) {
+  const today = useToday();
   const written = formatDate(new Date(letter.createdAt), "longDate");
   const mood = letter.moodAtWriting ? MOOD_META[letter.moodAtWriting].label : null;
-  const caption = CAPTION_BY_STATUS[letter.status](letter);
+  const caption = CAPTION_BY_STATUS[letter.status](letter, today);
   const isReady = letter.status === LETTER_STATUS.READY;
-  const days = daysToGo(letter.deliverAt);
+  const days = daysToGo(letter.deliverAt, today);
 
   return (
     <Link

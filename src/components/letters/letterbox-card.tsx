@@ -8,9 +8,11 @@ import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
 import { useLetters } from "@/features/letters/hooks/use-letters";
 import { opensInLabel } from "@/features/letters/utils/letter-dates";
+import { useToday } from "@/lib/hooks/use-today";
 
 export function LetterboxCard() {
   const { data: letters } = useLetters();
+  const today = useToday();
   if (!letters) return null;
 
   const ready = letters.filter((letter) => letter.status === LETTER_STATUS.READY);
@@ -24,7 +26,7 @@ export function LetterboxCard() {
           subtitle: "Open it whenever you're ready ♡",
         }
       : nextSealed
-        ? { href: "/letters", title: "A letter is on its way", subtitle: `${opensInLabel(nextSealed.deliverAt)} ✦` }
+        ? { href: "/letters", title: "A letter is on its way", subtitle: `${opensInLabel(nextSealed.deliverAt, today)} ✦` }
         : { href: "/letters/new", title: "Write to future you", subtitle: "Seal it today, open it on the day you choose." };
 
   return (

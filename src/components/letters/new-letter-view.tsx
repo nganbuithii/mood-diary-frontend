@@ -17,9 +17,10 @@ import type { Mood } from "@/features/diary/types/mood.types";
 import { clearLetterDraft, readLetterDraft, useAutosaveLetterDraft } from "@/features/letters/hooks/use-letter-draft";
 import { useCreateLetter } from "@/features/letters/hooks/use-letters";
 import { MAX_LETTER_LENGTH } from "@/features/letters/types/letter.types";
-import { addMonthsClamped, deliverAtFor } from "@/features/letters/utils/letter-dates";
+import { defaultDeliveryDay, deliverAtFor } from "@/features/letters/utils/letter-dates";
 import { getErrorMessage } from "@/lib/api/http-error";
 import { formatDate } from "@/lib/date";
+import { useToday } from "@/lib/hooks/use-today";
 
 const subscribeNoop = () => () => {};
 
@@ -33,10 +34,11 @@ function LetterComposer() {
   const createLetter = useCreateLetter();
   const bodyRef = useRef<LetterBodyFieldHandle>(null);
 
-  const [restoredDraft] = useState(readLetterDraft);
+  const today = useToday();
+  const [restoredDraft] = useState(() => readLetterDraft(today));
   const [body, setBody] = useState(restoredDraft?.body ?? "");
   const [mood, setMood] = useState<Mood | null>(restoredDraft?.mood ?? null);
-  const [deliveryDay, setDeliveryDay] = useState(() => restoredDraft?.deliveryDay ?? addMonthsClamped(new Date(), 12));
+  const [deliveryDay, setDeliveryDay] = useState(() => restoredDraft?.deliveryDay ?? defaultDeliveryDay(today));
   const [isConfirming, setIsConfirming] = useState(false);
 
   const isDraftSaved = useAutosaveLetterDraft({ body, mood, deliveryDay }, { paused: createLetter.isSuccess });

@@ -7,7 +7,7 @@ import { formatDate } from "@/lib/date";
 interface JourneyTrackProps {
   createdAt: string;
   deliverAt: string;
-  now?: Date;
+  now: Date;
   size?: "sm" | "md";
   className?: string;
 }

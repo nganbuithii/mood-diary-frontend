@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Mood } from "@/features/diary/types/mood.types";
 import {
-  addMonthsClamped,
+  defaultDeliveryDay,
   earliestDeliveryDay,
   latestDeliveryDay,
 } from "@/features/letters/utils/letter-dates";
@@ -22,15 +22,15 @@ interface StoredDraft {
   deliveryDay: string;
 }
 
-export function readLetterDraft(): LetterDraft | null {
+export function readLetterDraft(today: Date): LetterDraft | null {
   try {
     const raw = localStorage.getItem(DRAFT_KEY);
     if (!raw) return null;
     const stored = JSON.parse(raw) as StoredDraft;
     if (!stored.body?.trim()) return null;
     const day = tryParseDateKey(stored.deliveryDay);
-    const isValidDay = day && day >= earliestDeliveryDay() && day <= latestDeliveryDay();
-    return { body: stored.body, mood: stored.mood, deliveryDay: isValidDay ? day : addMonthsClamped(new Date(), 12) };
+    const isValidDay = day && day >= earliestDeliveryDay(today) && day <= latestDeliveryDay(today);
+    return { body: stored.body, mood: stored.mood, deliveryDay: isValidDay ? day : defaultDeliveryDay(today) };
   } catch {
     return null;
   }
