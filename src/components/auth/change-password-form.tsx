@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { KeyRound, Lock } from "lucide-react";
@@ -16,6 +15,7 @@ import {
 import { PasswordInput } from "@/components/auth/password-input";
 import { RetroWindow } from "@/components/mood-diary/retro-window";
 import { useChangePassword } from "@/features/auth/hooks/use-change-password";
+import { reloadToLogin } from "@/features/auth/utils/auth-redirect";
 import {
   changePasswordSchema,
   type ChangePasswordFormValues,
@@ -75,10 +75,9 @@ export function ChangePasswordForm() {
             Your password was changed. For your safety, you&apos;ve been
             logged out everywhere — please log in again.
           </CardDescription>
-          <Button
-            className="w-full"
-            render={<Link href="/login">Go to login</Link>}
-          />
+          <Button className="w-full" onClick={reloadToLogin}>
+            Go to login
+          </Button>
         </div>
       </RetroWindow>
     );
@@ -125,9 +124,7 @@ export function ChangePasswordForm() {
               icon={<KeyRound />}
               disabled={isSubmitting}
               aria-invalid={!!errors.newPassword}
-              aria-describedby={
-                errors.newPassword ? "newPassword-error" : "newPassword-description"
-              }
+              aria-describedby={errors.newPassword ? "newPassword-error" : undefined}
               {...register("newPassword")}
             />
             {errors.newPassword && (

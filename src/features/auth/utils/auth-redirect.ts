@@ -7,6 +7,10 @@ export function loginPathFor(returnTo: string) {
   return `${LOGIN_PATH}?next=${encodeURIComponent(returnTo)}`;
 }
 
+export function reloadToLogin() {
+  window.location.replace(LOGIN_PATH);
+}
+
 export function currentLocationPath() {
   return window.location.pathname + window.location.search;
 }

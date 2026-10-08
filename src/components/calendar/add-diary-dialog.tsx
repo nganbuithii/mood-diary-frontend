@@ -49,7 +49,7 @@ export function AddDiaryDialog({
       >
         {date && (
           <DiaryForm
-            key={formatDateKey(date)}
+            key={`${formatDateKey(date)}:${existingEntry?.id ?? "new"}`}
             date={date}
             existingEntry={existingEntry}
             isSaving={isSaving}

@@ -7,6 +7,7 @@ import { cn } from "cn";
 
 import { Button, type buttonVariants } from "@/components/ui/button";
 import { useLogout } from "@/features/auth/hooks/use-logout";
+import { reloadToLogin } from "@/features/auth/utils/auth-redirect";
 import { ApiError } from "@/lib/api/http-error";
 import { HTTP_STATUS } from "@/lib/api/http-status";
 
@@ -34,7 +35,7 @@ export function LogoutButton({
         return;
       }
     }
-    window.location.replace("/login");
+    reloadToLogin();
   };
 
   return (

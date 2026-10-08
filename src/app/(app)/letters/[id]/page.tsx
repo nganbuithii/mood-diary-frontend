@@ -9,7 +9,7 @@ import { cn } from "cn";
 
 import { Button } from "@/components/ui/button";
 import { ConfirmBar } from "@/components/ui/confirm-bar";
-import { EmptyState } from "@/components/ui/empty-state";
+import { EmptyState, ErrorState } from "@/components/ui/empty-state";
 import { Spinner } from "@/components/ui/spinner";
 import { BackLink, PageShell } from "@/components/layout/page-shell";
 import { Countdown, useNow } from "@/components/letters/countdown";
@@ -36,7 +36,7 @@ function errorMessage(error: unknown, fallback: string) {
 export default function LetterPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const { data: letters, isPending } = useLetters();
+  const { data: letters, isPending, isError, refetch } = useLetters();
   const openLetter = useOpenLetter();
   const deleteLetter = useDeleteLetter();
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
@@ -66,6 +66,8 @@ export default function LetterPage({ params }: { params: Promise<{ id: string }>
         <div className="flex justify-center py-24">
           <Spinner />
         </div>
+      ) : isError && !letters ? (
+        <ErrorState message="Couldn't open this letter. Please try again." onRetry={() => refetch()} />
       ) : !summary ? (
         <EmptyState
           title="This letter isn't here"

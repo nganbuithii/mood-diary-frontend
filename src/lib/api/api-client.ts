@@ -1,4 +1,4 @@
-import axios, { type InternalAxiosRequestConfig } from "axios";
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 
 import { apiBaseUrl } from "@/lib/env";
 import { ApiError } from "@/lib/api/http-error";
@@ -32,6 +32,35 @@ function resolvePendingRequests(shouldRetry: boolean) {
   pendingRequests = [];
 }
 
+const NO_REFRESH_URLS = new Set<string>([
+  ENDPOINTS.REFRESH,
+  ENDPOINTS.LOGIN,
+  ENDPOINTS.REGISTER,
+  ENDPOINTS.LOGOUT,
+  ENDPOINTS.FORGOT_PASSWORD,
+  ENDPOINTS.RESET_PASSWORD,
+]);
+
+function toApiError(error: AxiosError): ApiError {
+  if (!error.response) {
+    return new ApiError(
+      HTTP_STATUS.NETWORK_ERROR,
+      error.code === "ECONNABORTED"
+        ? "The server took too long to respond. Please try again."
+        : "Unable to reach the server. Please try again.",
+    );
+  }
+
+  const data = error.response.data as ErrorResponseBody | undefined;
+  const message = Array.isArray(data?.message) ? data.message[0] : data?.message;
+
+  return new ApiError(
+    error.response.status,
+    message ?? "Something went wrong. Please try again.",
+    Array.isArray(data?.message) ? data.message : undefined,
+  );
+}
+
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: unknown) => {
@@ -39,74 +68,44 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    if (!error.response) {
-      if (error.code === "ECONNABORTED") {
-        return Promise.reject(
-          new ApiError(HTTP_STATUS.NETWORK_ERROR, "The server took too long to respond. Please try again."),
-        );
-      }
-
-      return Promise.reject(
-        new ApiError(HTTP_STATUS.NETWORK_ERROR, "Unable to reach the server. Please try again."),
-      );
-    }
-
     const originalRequest = error.config as RetryableRequestConfig | undefined;
-    const isAuthEntryCall =
-      originalRequest?.url === ENDPOINTS.REFRESH ||
-      originalRequest?.url === ENDPOINTS.LOGIN ||
-      originalRequest?.url === ENDPOINTS.REGISTER ||
-      originalRequest?.url === ENDPOINTS.LOGOUT ||
-      originalRequest?.url === ENDPOINTS.FORGOT_PASSWORD ||
-      originalRequest?.url === ENDPOINTS.RESET_PASSWORD;
-
-    if (
-      error.response.status === HTTP_STATUS.UNAUTHORIZED &&
+    const shouldRefresh =
+      error.response?.status === HTTP_STATUS.UNAUTHORIZED &&
       originalRequest &&
       !originalRequest._retry &&
-      !isAuthEntryCall
-    ) {
-      originalRequest._retry = true;
+      !NO_REFRESH_URLS.has(originalRequest.url ?? "");
 
-      if (isRefreshing) {
-        const shouldRetry = await new Promise<boolean>((resolve) => {
-          pendingRequests.push(resolve);
-        });
-
-        return shouldRetry ? apiClient(originalRequest) : Promise.reject(error);
-      }
-
-      isRefreshing = true;
-
-      try {
-        await apiClient.post(ENDPOINTS.REFRESH);
-        isRefreshing = false;
-        resolvePendingRequests(true);
-
-        return apiClient(originalRequest);
-      } catch (refreshError) {
-        isRefreshing = false;
-        resolvePendingRequests(false);
-
-        if (typeof window !== "undefined" && originalRequest.url !== ENDPOINTS.ME) {
-          window.location.href = loginPathFor(currentLocationPath());
-        }
-
-        return Promise.reject(refreshError);
-      }
+    if (!shouldRefresh) {
+      return Promise.reject(toApiError(error));
     }
 
-    const data = error.response.data as ErrorResponseBody | undefined;
-    const message = Array.isArray(data?.message)
-      ? data.message[0]
-      : data?.message;
+    originalRequest._retry = true;
 
-    return Promise.reject(
-      new ApiError(
-        error.response.status,
-        message ?? "Something went wrong. Please try again.",
-        Array.isArray(data?.message) ? data.message : undefined,
-      ),
-    );
+    if (isRefreshing) {
+      const shouldRetry = await new Promise<boolean>((resolve) => {
+        pendingRequests.push(resolve);
+      });
+
+      return shouldRetry ? apiClient(originalRequest) : Promise.reject(toApiError(error));
+    }
+
+    isRefreshing = true;
+
+    try {
+      await apiClient.post(ENDPOINTS.REFRESH);
+      isRefreshing = false;
+      resolvePendingRequests(true);
+
+      return apiClient(originalRequest);
+    } catch (refreshError) {
+      isRefreshing = false;
+      resolvePendingRequests(false);
+
+      if (typeof window !== "undefined" && originalRequest.url !== ENDPOINTS.ME) {
+        window.location.href = loginPathFor(currentLocationPath());
+      }
+
+      return Promise.reject(refreshError);
+    }
   },
 );

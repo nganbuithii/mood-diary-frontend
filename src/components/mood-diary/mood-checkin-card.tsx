@@ -7,6 +7,7 @@ import { cn } from "cn";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/ui/empty-state";
 import { Spinner } from "@/components/ui/spinner";
 import { RetroWindow } from "@/components/mood-diary/retro-window";
 import { MoodFace } from "@/components/mood-diary/mood-face";
@@ -22,7 +23,7 @@ import { useToday } from "@/lib/hooks/use-today";
 export function MoodCheckinCard() {
   const today = useToday();
   const todayKey = formatDateKey(today);
-  const { data: entries, isPending } = useDiaryEntries(formatMonthKey(today));
+  const { data: entries, isPending, isError, refetch } = useDiaryEntries(formatMonthKey(today));
   const todayEntry = entries?.find((entry) => entry.date === todayKey);
   const [isEditing, setIsEditing] = useState(false);
   const isViewing = todayEntry !== undefined && !isEditing;
@@ -58,6 +59,12 @@ export function MoodCheckinCard() {
 
         {isPending ? (
           <Spinner className="my-10" />
+        ) : isError && !entries ? (
+          <ErrorState
+            message="Couldn't load today's diary. Please try again."
+            onRetry={() => refetch()}
+            className="w-full py-10"
+          />
         ) : isViewing ? (
           <TodayEntryView entry={todayEntry} onEdit={() => setIsEditing(true)} />
         ) : (

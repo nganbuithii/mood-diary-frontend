@@ -59,7 +59,9 @@ export default function DiaryCalendarPage({
 
   const selectedEntry = selectedDate ? entries[formatDateKey(selectedDate)] : undefined;
   const openDate =
-    selectedDate && canOpenDay(selectedDate, today, Boolean(selectedEntry)) ? selectedDate : null;
+    entryList && selectedDate && canOpenDay(selectedDate, today, Boolean(selectedEntry))
+      ? selectedDate
+      : null;
 
   const days = getMonthGrid(viewDate.getFullYear(), viewDate.getMonth());
   const monthLabel = viewDate.toLocaleDateString("en-US", {

@@ -8,11 +8,12 @@ import { safeReturnPath } from "@/features/auth/utils/auth-redirect";
 
 export function GuestOnly({ returnTo, children }: { returnTo?: string; children: ReactNode }) {
   const router = useRouter();
-  const { data: currentUser } = useCurrentUser();
+  const { data: currentUser, error } = useCurrentUser();
+  const isSignedIn = Boolean(currentUser) && !error;
 
   useEffect(() => {
-    if (currentUser) router.replace(safeReturnPath(returnTo));
-  }, [currentUser, returnTo, router]);
+    if (isSignedIn) router.replace(safeReturnPath(returnTo));
+  }, [isSignedIn, returnTo, router]);
 
   return <>{children}</>;
 }
