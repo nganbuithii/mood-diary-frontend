@@ -18,7 +18,7 @@ theo lịch tháng. Repo này là phần frontend (Next.js App Router).
 | Đăng ký / đăng nhập / đăng xuất | `/register`, `/login` | ✅ Nối API |
 | Đổi mật khẩu | `/change-password` | ✅ Nối API |
 | Profile + upload avatar | `/profile` | ✅ Nối API |
-| Export dữ liệu (JSON) / xoá tài khoản | `/profile` | ✅ Nối API |
+| Xoá tài khoản (dialog có link tải bản sao dữ liệu JSON) | `/profile` | ✅ Nối API |
 | Email nhắc check-in hằng ngày (bật/tắt, chọn giờ) | `/profile` | ✅ Nối API |
 | Lịch diary theo tháng, tạo/sửa/xoá entry (mood, note, tối đa 3 ảnh) | `/diary` | ✅ Nối API |
 | Home: check-in mood, little memory, recent memories | `/home` | ✅ Nối API (tab Friends' moments chưa có) |

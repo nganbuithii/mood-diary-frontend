@@ -18,6 +18,7 @@ import { FieldError, FieldGroup } from "@/components/ui/field";
 import { TextField } from "@/components/ui/form-field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { PasswordField } from "@/components/auth/password-input";
+import { ExportDiaryButton } from "@/components/profile/export-diary-button";
 import { useDeleteAccount } from "@/features/profile/hooks/use-delete-account";
 import {
   DELETE_CONFIRMATION_WORD,
@@ -82,8 +83,9 @@ export function DeleteAccountDialog() {
             <DialogTitle>Delete your account?</DialogTitle>
             <DialogDescription>
               This removes your account, every diary page, photo and letter for good — it can&apos;t be undone.
-              You may want to download your diary first.
+              You may want to keep a copy first.
             </DialogDescription>
+            <ExportDiaryButton />
           </DialogHeader>
 
           <form onSubmit={onSubmit} noValidate>

@@ -3,7 +3,6 @@
 import {
   BellRing,
   CalendarDays,
-  Download,
   KeyRound,
   Laptop,
   Mail,
@@ -24,7 +23,6 @@ import { Spinner } from "@/components/ui/spinner";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { DeleteAccountDialog } from "@/components/profile/delete-account-dialog";
-import { ExportDiaryButton } from "@/components/profile/export-diary-button";
 import { ReminderControl } from "@/components/profile/reminder-control";
 import { SettingRow } from "@/components/profile/setting-row";
 import { ThemeSwitcher } from "@/components/profile/theme-switcher";
@@ -163,13 +161,6 @@ export function ProfileCard() {
             description="Easier on the eyes for late-night entries"
             tint="bg-mood-very-happy/40"
             action={<ThemeSwitcher />}
-          />
-          <SettingRow
-            icon={Download}
-            title="Export my diary"
-            description="Download all your entries and letters as a JSON keepsake"
-            tint="bg-mood-neutral/50"
-            action={<ExportDiaryButton />}
           />
         </CardContent>
       </Card>

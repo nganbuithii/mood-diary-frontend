@@ -1,5 +1,6 @@
 "use client";
 
+import { Download } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -18,13 +19,14 @@ export function ExportDiaryButton() {
   return (
     <Button
       type="button"
-      variant="outline"
+      variant="link"
       size="sm"
-      className="shrink-0 rounded-full"
+      className="h-auto self-start px-0"
       onClick={handleExport}
       disabled={exportAccount.isPending}
     >
-      {exportAccount.isPending ? "Preparing..." : "Download"}
+      <Download aria-hidden />
+      {exportAccount.isPending ? "Preparing your copy..." : "Download a copy of my diary"}
     </Button>
   );
 }
