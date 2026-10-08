@@ -24,7 +24,7 @@ theo lịch tháng. Repo này là phần frontend (Next.js App Router).
 | Home: check-in mood, little memory, recent memories | `/home` | ✅ Nối API (tab Friends' moments chưa có) |
 | Chọn bài hát cho ngày (Song of the day), tìm qua iTunes | trong modal diary | ✅ Nối API (chưa có nút nghe thử) |
 | Quên / đặt lại mật khẩu | `/forgot-password`, `/reset-password` | ✅ Nối API |
-| Đăng nhập Google | nút ở `/login`, `/register` | ⬜ Chỉ có UI |
+| Đăng nhập Google | — | ⬜ Chưa làm (đã bỏ nút giả ở `/login`, `/register`) |
 | Memories: scrapbook, lọc theo mood / tháng / favorite | `/memories` | ✅ Nối API |
 | Favorites: thả ♡ ở mọi polaroid và trong modal diary, trang "treasure box" | `/favorites` | ✅ Nối API |
 | Insights: thống kê mood theo tháng, heatmap, so với tháng trước | `/insights` | ✅ Nối API |
