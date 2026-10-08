@@ -1,5 +1,6 @@
 "use client";
 
+import { PageShell } from "@/components/layout/page-shell";
 import { LetterboxCard } from "@/components/letters/letterbox-card";
 import { LittleMemoryCard } from "@/components/mood-diary/little-memory-card";
 import { MoodCheckinCard } from "@/components/mood-diary/mood-checkin-card";
@@ -18,40 +19,29 @@ export default function HomePage() {
   const greeting = getGreeting(new Date().getHours());
 
   return (
-    <div className="relative isolate overflow-hidden">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-24 right-[-10%] size-72 rounded-full bg-accent-blue/20 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute bottom-0 left-[-10%] size-72 rounded-full bg-secondary/15 blur-3xl"
-      />
+    <PageShell glows={["bg-accent-blue/20", "bg-secondary/15"]} className="gap-10 py-10">
+      <section className="flex flex-col items-center gap-2 text-center">
+        <h1 className="font-heading text-3xl text-foreground sm:text-4xl">
+          {greeting}
+          {currentUser ? `, ${currentUser.displayName}` : ""}{" "}
+          <span aria-hidden>♡</span>
+        </h1>
+        <p className="text-sm text-muted-foreground sm:text-base">
+          Every feeling deserves a little space.
+        </p>
+      </section>
 
-      <main className="relative mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-10 sm:px-6 lg:px-10">
-        <section className="flex flex-col items-center gap-2 text-center">
-          <h1 className="font-heading text-3xl text-foreground sm:text-4xl">
-            {greeting}
-            {currentUser ? `, ${currentUser.displayName}` : ""}{" "}
-            <span aria-hidden>♡</span>
-          </h1>
-          <p className="text-sm text-muted-foreground sm:text-base">
-            Every feeling deserves a little space.
-          </p>
-        </section>
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:gap-8">
+        <MoodCheckinCard />
 
-        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:gap-8">
-          <MoodCheckinCard />
+        <aside className="flex flex-col gap-6 lg:gap-8">
+          <MoodStreakCard />
+          <LittleMemoryCard />
+          <LetterboxCard />
+        </aside>
+      </div>
 
-          <aside className="flex flex-col gap-6 lg:gap-8">
-            <MoodStreakCard />
-            <LittleMemoryCard />
-            <LetterboxCard />
-          </aside>
-        </div>
-
-        <RecentMemoriesSection />
-      </main>
-    </div>
+      <RecentMemoriesSection />
+    </PageShell>
   );
 }

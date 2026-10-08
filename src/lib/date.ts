@@ -51,12 +51,61 @@ export function parseDateKey(key: string): Date {
   return new Date(year, month - 1, day);
 }
 
+export function tryParseDateKey(value: unknown): Date | null {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const date = parseDateKey(value);
+  return formatDateKey(date) === value ? date : null;
+}
+
+export function tryParseMonthKey(value: unknown): Date | null {
+  if (typeof value !== "string" || !/^\d{4}-(0[1-9]|1[0-2])$/.test(value)) return null;
+  const [year, month] = value.split("-").map(Number);
+  return new Date(year, month - 1, 1);
+}
+
+export function startOfDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+export function startOfMonth(date: Date, monthOffset = 0): Date {
+  return new Date(date.getFullYear(), date.getMonth() + monthOffset, 1);
+}
+
+export function daysBetween(from: Date, to: Date): number {
+  return Math.round((startOfDay(to).getTime() - startOfDay(from).getTime()) / DAY_MS);
+}
+
+const DATE_FORMATS = {
+  month: { month: "long" },
+  monthYear: { month: "long", year: "numeric" },
+  weekday: { weekday: "long" },
+  monthDay: { month: "long", day: "numeric" },
+  shortMonthDay: { month: "short", day: "numeric" },
+  shortDate: { month: "short", day: "numeric", year: "numeric" },
+  longDate: { month: "long", day: "numeric", year: "numeric" },
+  weekdayDate: { weekday: "short", month: "long", day: "numeric", year: "numeric" },
+  fullDate: { weekday: "long", month: "long", day: "numeric", year: "numeric" },
+} satisfies Record<string, Intl.DateTimeFormatOptions>;
+
+export type DateFormat = keyof typeof DATE_FORMATS;
+
+const dateFormatters = new Map<DateFormat, Intl.DateTimeFormat>();
+
+export function formatDate(date: Date, format: DateFormat): string {
+  let formatter = dateFormatters.get(format);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat("en-US", DATE_FORMATS[format]);
+    dateFormatters.set(format, formatter);
+  }
+  return formatter.format(date);
+}
+
 const relativeTimeFormat = new Intl.RelativeTimeFormat("en-US", { numeric: "auto" });
 
 export function formatRelativeDay(date: Date, today: Date): string {
-  const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const days = Math.round((end.getTime() - start.getTime()) / DAY_MS);
+  const start = startOfDay(date);
+  const end = startOfDay(today);
+  const days = daysBetween(start, end);
 
   if (days < 7) return relativeTimeFormat.format(-days, "day");
   if (days < 30) return relativeTimeFormat.format(-Math.floor(days / 7), "week");

@@ -30,7 +30,7 @@ import {
   type LoginFormValues,
 } from "@/features/auth/schemas/login.schema";
 import { safeReturnPath } from "@/features/auth/utils/auth-redirect";
-import { ApiError } from "@/lib/api/http-error";
+import { getErrorMessage } from "@/lib/api/http-error";
 
 export function LoginForm({ returnTo }: { returnTo?: string }) {
   const router = useRouter();
@@ -57,10 +57,7 @@ export function LoginForm({ returnTo }: { returnTo?: string }) {
       router.replace(safeReturnPath(returnTo));
     } catch (error) {
       setError("root", {
-        message:
-          error instanceof ApiError
-            ? error.message
-            : "Something went wrong. Please try again.",
+        message: getErrorMessage(error, "Something went wrong. Please try again."),
       });
     }
   });

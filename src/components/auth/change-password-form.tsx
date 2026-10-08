@@ -20,7 +20,7 @@ import {
   changePasswordSchema,
   type ChangePasswordFormValues,
 } from "@/features/auth/schemas/change-password.schema";
-import { ApiError } from "@/lib/api/http-error";
+import { ApiError, getErrorMessage } from "@/lib/api/http-error";
 import { HTTP_STATUS } from "@/lib/api/http-status";
 
 export function ChangePasswordForm() {
@@ -56,10 +56,7 @@ export function ChangePasswordForm() {
       }
 
       setError("root", {
-        message:
-          error instanceof ApiError
-            ? error.message
-            : "Something went wrong. Please try again.",
+        message: getErrorMessage(error, "Something went wrong. Please try again."),
       });
     }
   });

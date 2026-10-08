@@ -8,11 +8,11 @@ import {
   deliverAtFor,
   earliestDeliveryDay,
   formatOpeningTime,
-  fromDateInputValue,
   latestDeliveryDay,
   timeUntilLabel,
-  toDateInputValue,
 } from "@/features/letters/utils/letter-dates";
+import { formatDate, formatDateKey, tryParseDateKey } from "@/lib/date";
+import { useToday } from "@/lib/hooks/use-today";
 
 const PRESETS = [
   { label: "1 month", months: 1, emoji: "🌱" },
@@ -21,17 +21,9 @@ const PRESETS = [
   { label: "5 years", months: 60, emoji: "🌳" },
 ] as const;
 
-export function formatDeliveryDay(date: Date) {
-  return date.toLocaleDateString("en-US", { weekday: "short", month: "long", day: "numeric", year: "numeric" });
-}
-
-function formatShortDay(date: Date) {
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-}
-
 function matchesPreset(day: Date, today: Date) {
-  const key = toDateInputValue(day);
-  return PRESETS.some((preset) => toDateInputValue(addMonthsClamped(today, preset.months)) === key);
+  const key = formatDateKey(day);
+  return PRESETS.some((preset) => formatDateKey(addMonthsClamped(today, preset.months)) === key);
 }
 
 interface DeliveryDayPickerProps {
@@ -40,10 +32,10 @@ interface DeliveryDayPickerProps {
 }
 
 export function DeliveryDayPicker({ value, onChange }: DeliveryDayPickerProps) {
-  const today = new Date();
+  const today = useToday();
   const earliest = earliestDeliveryDay(today);
   const latest = latestDeliveryDay(today);
-  const selectedKey = toDateInputValue(value);
+  const selectedKey = formatDateKey(value);
 
   const [isCustom, setIsCustom] = useState(() => !matchesPreset(value, today));
   const dateInputRef = useRef<HTMLInputElement>(null);
@@ -73,7 +65,7 @@ export function DeliveryDayPicker({ value, onChange }: DeliveryDayPickerProps) {
             <Chip
               key={preset.label}
               shape="tile"
-              selected={!isCustom && toDateInputValue(day) === selectedKey}
+              selected={!isCustom && formatDateKey(day) === selectedKey}
               onClick={() => {
                 setIsCustom(false);
                 onChange(day);
@@ -83,7 +75,7 @@ export function DeliveryDayPicker({ value, onChange }: DeliveryDayPickerProps) {
                 {preset.emoji}
               </span>
               In {preset.label}
-              <span className="text-[11px] font-normal text-muted-foreground">{formatShortDay(day)}</span>
+              <span className="text-[11px] font-normal text-muted-foreground">{formatDate(day, "shortDate")}</span>
             </Chip>
           );
         })}
@@ -93,7 +85,7 @@ export function DeliveryDayPicker({ value, onChange }: DeliveryDayPickerProps) {
           </span>
           A special day
           <span className="text-[11px] font-normal text-muted-foreground">
-            {isCustom ? formatShortDay(value) : "Pick any date"}
+            {isCustom ? formatDate(value, "shortDate") : "Pick any date"}
           </span>
         </Chip>
       </div>
@@ -106,10 +98,10 @@ export function DeliveryDayPicker({ value, onChange }: DeliveryDayPickerProps) {
             id="delivery-day"
             type="date"
             value={selectedKey}
-            min={toDateInputValue(earliest)}
-            max={toDateInputValue(latest)}
+            min={formatDateKey(earliest)}
+            max={formatDateKey(latest)}
             onChange={(event) => {
-              const day = fromDateInputValue(event.target.value);
+              const day = tryParseDateKey(event.target.value);
               if (day && day >= earliest && day <= latest) onChange(day);
             }}
             className="h-10 w-full rounded-full bg-surface px-4 sm:w-56"
@@ -132,7 +124,7 @@ export function DeliveryDayPicker({ value, onChange }: DeliveryDayPickerProps) {
         </span>
         <div className="flex flex-col gap-0.5">
           <span className="text-xs text-muted-foreground">Your letter arrives on</span>
-          <span className="font-heading text-lg leading-tight text-foreground">{formatDeliveryDay(value)}</span>
+          <span className="font-heading text-lg leading-tight text-foreground">{formatDate(value, "weekdayDate")}</span>
           <span className="text-xs text-muted-foreground">
             at {formatOpeningTime()} · {timeUntilLabel(deliverAtFor(value))}
           </span>

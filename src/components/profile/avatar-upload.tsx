@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { cn } from "cn";
 import { Spinner } from "@/components/ui/spinner";
 import { useUploadAvatar } from "@/features/profile/hooks/use-upload-avatar";
-import { ApiError } from "@/lib/api/http-error";
+import { getErrorMessage } from "@/lib/api/http-error";
 
 interface AvatarUploadProps {
   initial: string;
@@ -64,11 +64,7 @@ export function AvatarUpload({
       },
       onError: (uploadError) => {
         setPreviewUrl(null);
-        toast.error(
-          uploadError instanceof ApiError
-            ? uploadError.message
-            : "Couldn't upload your photo. Please try again.",
-        );
+        toast.error(getErrorMessage(uploadError, "Couldn't upload your photo. Please try again."));
       },
     });
   };

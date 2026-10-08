@@ -5,14 +5,11 @@ import { Spinner } from "@/components/ui/spinner";
 import { MoodFace } from "@/components/mood-diary/mood-face";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
 import type { Mood } from "@/features/diary/types/mood.types";
-import {
-  formatDateKey,
-  formatMonthKey,
-  isAfterDay,
-} from "@/lib/date";
+import { formatDate, formatDateKey, formatMonthKey, isAfterDay } from "@/lib/date";
 import { useDiaryEntries } from "@/features/diary/hooks/use-diary-entries";
 import { useMoodStreak } from "@/features/diary/hooks/use-mood-streak";
 import { useToday } from "@/lib/hooks/use-today";
+import { pluralize } from "@/lib/utils";
 
 interface WeekDay {
   date: Date;
@@ -72,7 +69,7 @@ export function MoodStreakCard() {
           </h2>
           {longest > 0 && (
             <span className="text-xs text-muted-foreground">
-              Longest: {longest} day{longest === 1 ? "" : "s"} <span aria-hidden>♡</span>
+              Longest: {pluralize(longest, "day")} <span aria-hidden>♡</span>
             </span>
           )}
         </div>
@@ -89,7 +86,7 @@ export function MoodStreakCard() {
           const isToday = day.key === todayKey;
           const isFuture = isAfterDay(day.date, today);
           const meta = day.mood ? MOOD_META[day.mood] : null;
-          const weekday = day.date.toLocaleDateString("en-US", { weekday: "long" });
+          const weekday = formatDate(day.date, "weekday");
           const status = meta ? meta.label : isFuture ? "Upcoming" : "No entry";
 
           return (

@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 import { MoodPolaroid } from "@/components/mood-diary/mood-polaroid";
-import { parseDateKey } from "@/lib/date";
+import { formatDate, parseDateKey } from "@/lib/date";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 import { FavoriteHeartButton } from "@/components/favorites/favorite-heart-button";
 
@@ -15,10 +15,7 @@ interface MemoryTileProps {
 }
 
 export function MemoryTile({ entry, index }: MemoryTileProps) {
-  const date = parseDateKey(entry.date).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
+  const date = formatDate(parseDateKey(entry.date), "shortMonthDay");
 
   return (
     // The heart sits next to the link rather than inside it: a button can't live inside an <a>.

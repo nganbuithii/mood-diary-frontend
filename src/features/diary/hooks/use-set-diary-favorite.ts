@@ -4,7 +4,7 @@ import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 import type { DiaryFeedPageDto } from "@/features/diary/api/diary-feed.types";
 import { setDiaryFavorite } from "@/features/diary/api/set-diary-favorite.api";
 import { diaryKeys, monthOfDateKey } from "@/features/diary/constants/diary-query-keys";
-import { ApiError } from "@/lib/api/http-error";
+import { getErrorMessage } from "@/lib/api/http-error";
 
 export function useSetDiaryFavorite() {
   const queryClient = useQueryClient();
@@ -41,9 +41,7 @@ export function useSetDiaryFavorite() {
     onError: (error, _variables, context) => {
       context?.previousFeeds.forEach(([queryKey, feed]) => queryClient.setQueryData(queryKey, feed));
       if (context) queryClient.setQueryData(context.monthKey, context.previousMonth);
-      toast.error(
-        error instanceof ApiError ? error.message : "Couldn't update your favorites. Please try again.",
-      );
+      toast.error(getErrorMessage(error, "Couldn't update your favorites. Please try again."));
     },
     onSettled: (_data, _error, { date }) => {
       // With several hearts tapped in a row, refetching after the first one would overwrite the

@@ -1,6 +1,6 @@
 import { cn } from "cn";
 
-import { MoodFace } from "@/components/mood-diary/mood-face";
+import { MoodAvatar } from "@/components/mood-diary/mood-avatar";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
 import type { Mood } from "@/features/diary/types/mood.types";
 
@@ -36,9 +36,7 @@ export function FavoritesHero({ stats }: { stats?: FavoritesStats }) {
             <StatBubble label="songs" value={String(stats.songCount)} tilt="right" />
             {stats.topMood && (
               <div className="flex items-center gap-2 rounded-2xl bg-surface/85 px-3 py-2 shadow-sm backdrop-blur-sm">
-                <span className={cn("size-9 rounded-full p-0.5", MOOD_META[stats.topMood].bgClass)}>
-                  <MoodFace mood={stats.topMood} />
-                </span>
+                <MoodAvatar mood={stats.topMood} className="size-9 p-0.5" />
                 <div className="flex flex-col leading-tight">
                   <dt className="text-xs text-muted-foreground">top vibe</dt>
                   <dd className="font-heading text-base text-foreground">{MOOD_META[stats.topMood].label}</dd>

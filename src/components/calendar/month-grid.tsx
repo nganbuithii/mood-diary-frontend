@@ -6,7 +6,7 @@ import { cn } from "cn";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
 import { canOpenDay, formatDateKey, isSameDay } from "@/lib/date";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
-import { MoodFace } from "@/components/mood-diary/mood-face";
+import { MoodAvatar } from "@/components/mood-diary/mood-avatar";
 
 const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -82,15 +82,12 @@ export function MonthGrid({
 
               {meta ? (
                 <>
-                  <span
-                    className={cn(
-                      "mx-auto size-7 shrink-0 rounded-full shadow-sm transition-transform group-hover:-translate-y-0.5 sm:size-8 md:hidden",
-                      meta.bgClass,
-                    )}
+                  <MoodAvatar
+                    mood={meta.value}
+                    className="mx-auto size-7 shadow-sm transition-transform group-hover:-translate-y-0.5 sm:size-8 md:hidden"
                   >
-                    <MoodFace mood={meta.value} />
                     <span className="sr-only">{meta.label}</span>
-                  </span>
+                  </MoodAvatar>
 
                   <span
                     className={cn(
@@ -99,9 +96,7 @@ export function MonthGrid({
                     )}
                   >
                     <span className="flex min-w-0 items-center gap-1 text-xs font-medium text-foreground">
-                      <span className={cn("size-5 shrink-0 rounded-full", meta.bgClass)}>
-                        <MoodFace mood={meta.value} />
-                      </span>
+                      <MoodAvatar mood={meta.value} className="size-5" />
                       <span className="truncate">{meta.label}</span>
                     </span>
                     {entry?.note && (

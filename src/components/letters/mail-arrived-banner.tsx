@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Envelope } from "@/components/letters/envelope";
 import { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
 import type { LetterSummaryDto } from "@/features/letters/types/letter.types";
-import { formatLongDate } from "@/features/letters/utils/letter-dates";
+import { formatDate } from "@/lib/date";
 
 export function MailArrivedBanner({ letters }: { letters: LetterSummaryDto[] }) {
   const [first, ...rest] = letters;
@@ -33,7 +33,7 @@ export function MailArrivedBanner({ letters }: { letters: LetterSummaryDto[] }) 
           </h2>
           <p className="text-sm text-foreground/75">
             {letters.length === 1
-              ? `A letter you sealed on ${formatLongDate(first.createdAt)} just arrived.`
+              ? `A letter you sealed on ${formatDate(new Date(first.createdAt), "longDate")} just arrived.`
               : `${letters.length} letters from your past self have arrived.`}
           </p>
           <div className="mt-2 flex flex-wrap justify-center gap-2 sm:justify-start">

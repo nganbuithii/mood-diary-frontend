@@ -1,6 +1,6 @@
 import { cn } from "cn";
 
-import { MoodFace } from "@/components/mood-diary/mood-face";
+import { MoodAvatar } from "@/components/mood-diary/mood-avatar";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
 import type { Mood } from "@/features/diary/types/mood.types";
 
@@ -61,14 +61,10 @@ export function MoodPolaroid({
         {photoUrl ? (
           <>
             <img src={photoUrl} alt="" className="size-full object-cover" />
-            <span className={cn("absolute right-1.5 bottom-1.5 size-7 rounded-full p-0.5 shadow-sm", meta.bgClass)}>
-              <MoodFace mood={mood} />
-            </span>
+            <MoodAvatar mood={mood} className="absolute right-1.5 bottom-1.5 size-7 p-0.5 shadow-sm" />
           </>
         ) : (
-          <span className={cn("size-16 rounded-full p-1 shadow-sm sm:size-20", meta.bgClass)}>
-            <MoodFace mood={mood} />
-          </span>
+          <MoodAvatar mood={mood} className="size-16 p-1 shadow-sm sm:size-20" />
         )}
         {hasSong && (
           <span

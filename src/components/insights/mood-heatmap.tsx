@@ -5,7 +5,7 @@ import { cn } from "cn";
 
 import { ChartTooltip, useMarkTooltip } from "@/components/insights/chart-tooltip";
 import { MOOD_META, MOOD_OPTIONS } from "@/components/mood-diary/mood.constants";
-import { formatDateKey, isAfterDay } from "@/lib/date";
+import { formatDate, formatDateKey, isAfterDay } from "@/lib/date";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 
 const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
@@ -44,7 +44,7 @@ export function MoodHeatmap({ month, entries, today }: MoodHeatmapProps) {
             const entry = byDate.get(key);
             const meta = entry ? MOOD_META[entry.mood] : null;
             const isFuture = isAfterDay(date, today);
-            const longDate = date.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+            const longDate = formatDate(date, "monthDay");
             const label = `${longDate}: ${meta ? meta.label : isFuture ? "still ahead" : "no page"}`;
 
             const cellClass = cn(

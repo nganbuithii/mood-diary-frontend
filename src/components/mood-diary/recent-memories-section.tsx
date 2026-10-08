@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { cn } from "cn";
 
+import { EmptyState, ErrorState } from "@/components/ui/empty-state";
 import { MemoryTile, MemoryTileSkeleton } from "@/components/memories/memory-tile";
 import { useDiaryFeed } from "@/features/diary/hooks/use-diary-feed";
 
@@ -59,17 +60,12 @@ export function RecentMemoriesSection() {
       {tab === "mine" ? (
         <MyRecentMemories />
       ) : (
-        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-border bg-surface/60 px-6 py-10 text-center">
-          <span aria-hidden className="text-2xl">
-            ✿
-          </span>
-          <p className="font-heading text-lg text-foreground">
-            Friends&apos; moments are coming soon
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Once you add friends, their little diary pages will show up here.
-          </p>
-        </div>
+        <EmptyState
+          className="py-10"
+          illustration={<span aria-hidden className="text-2xl">✿</span>}
+          title="Friends' moments are coming soon"
+          description="Once you add friends, their little diary pages will show up here."
+        />
       )}
     </section>
   );
@@ -77,26 +73,23 @@ export function RecentMemoriesSection() {
 
 function MyRecentMemories() {
   // Same feed as /memories, just the first page.
-  const { data, isPending, isError } = useDiaryFeed({}, RECENT_LIMIT);
+  const { data, isPending, isError, refetch } = useDiaryFeed({}, RECENT_LIMIT);
   const entries = data?.pages[0]?.items ?? [];
 
-  if (isError) {
+  if (isError && !data) {
     return (
-      <p className="py-6 text-center text-sm text-muted-foreground">
-        Couldn&apos;t load your memories right now.
-      </p>
+      <ErrorState message="Couldn't load your memories right now." onRetry={() => refetch()} className="py-10" />
     );
   }
 
   if (!isPending && entries.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-border bg-surface/60 px-6 py-10 text-center">
-        <span aria-hidden className="text-2xl">📔</span>
-        <p className="font-heading text-lg text-foreground">No memories yet</p>
-        <p className="text-sm text-muted-foreground">
-          Every day you write becomes a little polaroid here.
-        </p>
-      </div>
+      <EmptyState
+        className="py-10"
+        illustration={<span aria-hidden className="text-2xl">📔</span>}
+        title="No memories yet"
+        description="Every day you write becomes a little polaroid here."
+      />
     );
   }
 

@@ -2,7 +2,7 @@
 
 import { cn } from "cn";
 
-import { MoodFace } from "@/components/mood-diary/mood-face";
+import { MoodAvatar } from "@/components/mood-diary/mood-avatar";
 import { MOOD_OPTIONS } from "@/components/mood-diary/mood.constants";
 import type { Mood } from "@/features/diary/types/mood.types";
 
@@ -31,18 +31,16 @@ export function MoodSelector({ value, onChange, disabled = false }: MoodSelector
             onClick={() => onChange(mood.value)}
             className="group flex flex-col items-center gap-1.5 rounded-full border-0 outline-none transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:outline-none active:outline-none disabled:pointer-events-none"
           >
-            <span
+            <MoodAvatar
+              mood={mood.value}
               className={cn(
-                "flex size-12 items-center justify-center rounded-full p-1 transition-all sm:size-14",
-                mood.bgClass,
+                "flex size-12 items-center justify-center p-1 transition-all sm:size-14",
                 isSelected
                   ? "scale-110 ring-2 ring-primary-hover ring-offset-2 ring-offset-surface"
                   : "group-hover:scale-105",
                 "group-focus-visible:ring-2 group-focus-visible:ring-ring/60 group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-surface",
               )}
-            >
-              <MoodFace mood={mood.value} />
-            </span>
+            />
             <span
               className={cn(
                 "text-xs text-muted-foreground transition-colors",

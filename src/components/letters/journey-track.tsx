@@ -2,10 +2,7 @@ import { Heart } from "lucide-react";
 import { cn } from "cn";
 
 import { journeyProgress } from "@/features/letters/utils/letter-dates";
-
-function formatShortDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-}
+import { formatDate } from "@/lib/date";
 
 interface JourneyTrackProps {
   createdAt: string;
@@ -57,12 +54,12 @@ export function JourneyTrack({ createdAt, deliverAt, now, size = "sm", className
       <div className={cn("flex items-end justify-between gap-2 tabular-nums", isMd ? "text-xs" : "text-[11px]")}>
         <span className="flex flex-col leading-tight">
           <span className="text-muted-foreground">Written</span>
-          <span className="font-medium text-foreground">{formatShortDate(createdAt)}</span>
+          <span className="font-medium text-foreground">{formatDate(new Date(createdAt), "shortDate")}</span>
         </span>
         {isMd && <span className="pb-px text-muted-foreground">{percent}% of the way</span>}
         <span className="flex flex-col text-right leading-tight">
           <span className="text-muted-foreground">Opens</span>
-          <span className="font-medium text-foreground">{formatShortDate(deliverAt)}</span>
+          <span className="font-medium text-foreground">{formatDate(new Date(deliverAt), "shortDate")}</span>
         </span>
       </div>
     </div>

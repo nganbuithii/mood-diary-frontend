@@ -3,22 +3,22 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { Music2 } from "lucide-react";
-import { cn } from "cn";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { ErrorState } from "@/components/ui/empty-state";
 import { Spinner } from "@/components/ui/spinner";
 import { RetroWindow } from "@/components/mood-diary/retro-window";
-import { MoodFace } from "@/components/mood-diary/mood-face";
+import { MoodAvatar } from "@/components/mood-diary/mood-avatar";
 import { DiaryEntryFields, useDiaryEntryForm } from "@/components/mood-diary/diary-entry-fields";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
-import { formatDateKey, formatMonthKey } from "@/lib/date";
+import { formatDate, formatDateKey, formatMonthKey } from "@/lib/date";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 import { useDiaryEntries } from "@/features/diary/hooks/use-diary-entries";
 import { useUpsertDiaryEntry } from "@/features/diary/hooks/use-upsert-diary-entry";
-import { ApiError } from "@/lib/api/http-error";
+import { getErrorMessage } from "@/lib/api/http-error";
 import { useToday } from "@/lib/hooks/use-today";
+import { pluralize } from "@/lib/utils";
 
 export function MoodCheckinCard() {
   const today = useToday();
@@ -28,11 +28,7 @@ export function MoodCheckinCard() {
   const [isEditing, setIsEditing] = useState(false);
   const isViewing = todayEntry !== undefined && !isEditing;
 
-  const formattedDate = today.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  const formattedDate = formatDate(today, "longDate");
 
   return (
     <RetroWindow title="Dear Diary" accent className="w-full">
@@ -92,9 +88,7 @@ function TodayEntryView({ entry, onEdit }: TodayEntryViewProps) {
   return (
     <div className="flex w-full flex-col items-center gap-5">
       <div className="flex flex-col items-center gap-2">
-        <span className={cn("size-24 -rotate-3 rounded-full p-1.5 shadow-sm sm:size-28", meta.bgClass)}>
-          <MoodFace mood={meta.value} />
-        </span>
+        <MoodAvatar mood={meta.value} className="size-24 -rotate-3 p-1.5 shadow-sm sm:size-28" />
         <span className="font-heading text-xl text-foreground">{meta.label}</span>
       </div>
 
@@ -129,7 +123,7 @@ function TodayEntryView({ entry, onEdit }: TodayEntryViewProps) {
                 ))}
               </span>
               <span className="text-xs text-foreground">
-                {photoCount} photo{photoCount === 1 ? "" : "s"}
+                {pluralize(photoCount, "photo")}
               </span>
             </span>
           )}
@@ -197,11 +191,7 @@ function CheckinForm({ date, existingEntry, onSaved, onCancel }: CheckinFormProp
           onSaved();
         },
         onError: (error) => {
-          toast.error(
-            error instanceof ApiError
-              ? error.message
-              : "Couldn't save your day. Please try again.",
-          );
+          toast.error(getErrorMessage(error, "Couldn't save your day. Please try again."));
         },
       },
     );

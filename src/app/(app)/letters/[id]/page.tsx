@@ -16,7 +16,7 @@ import { Countdown, useNow } from "@/components/letters/countdown";
 import { Envelope } from "@/components/letters/envelope";
 import { JourneyTrack } from "@/components/letters/journey-track";
 import { LetterPaper } from "@/components/letters/opened-letter";
-import { formatRelativeDay } from "@/lib/date";
+import { formatDate, formatRelativeDay } from "@/lib/date";
 import { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
 import {
   useDeleteLetter,
@@ -26,12 +26,8 @@ import {
   useRefreshLetters,
 } from "@/features/letters/hooks/use-letters";
 import type { LetterSummaryDto } from "@/features/letters/types/letter.types";
-import { formatLongDate, formatOpeningTime } from "@/features/letters/utils/letter-dates";
-import { ApiError } from "@/lib/api/http-error";
-
-function errorMessage(error: unknown, fallback: string) {
-  return error instanceof ApiError ? error.message : fallback;
-}
+import { formatOpeningTime } from "@/features/letters/utils/letter-dates";
+import { getErrorMessage } from "@/lib/api/http-error";
 
 export default function LetterPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -46,7 +42,7 @@ export default function LetterPage({ params }: { params: Promise<{ id: string }>
 
   const handleOpen = () =>
     openLetter.mutate(id, {
-      onError: (error) => toast.error(errorMessage(error, "Couldn't open this letter. Please try again.")),
+      onError: (error) => toast.error(getErrorMessage(error, "Couldn't open this letter. Please try again.")),
     });
 
   const handleDelete = () =>
@@ -55,7 +51,7 @@ export default function LetterPage({ params }: { params: Promise<{ id: string }>
         toast.success("Letter deleted");
         router.push("/letters");
       },
-      onError: (error) => toast.error(errorMessage(error, "Couldn't delete this letter. Please try again.")),
+      onError: (error) => toast.error(getErrorMessage(error, "Couldn't delete this letter. Please try again.")),
     });
 
   return (
@@ -79,7 +75,7 @@ export default function LetterPage({ params }: { params: Promise<{ id: string }>
           <LetterPaper
             body={opened.body}
             mood={opened.moodAtWriting}
-            writtenOn={formatLongDate(opened.createdAt)}
+            writtenOn={formatDate(new Date(opened.createdAt), "longDate")}
             writtenAgo={`Written ${formatRelativeDay(new Date(opened.createdAt), new Date())}`}
           />
           <div className="mt-10 flex flex-col items-center gap-2 text-center">
@@ -174,7 +170,7 @@ function ClosedLetter({
             {summary.status === LETTER_STATUS.READY ? "A letter from your past self ♡" : "You've read this one before"}
           </p>
           <p className="text-sm text-muted-foreground">
-            Sealed {formatRelativeDay(new Date(summary.createdAt), new Date())}, on {formatLongDate(summary.createdAt)}.
+            Sealed {formatRelativeDay(new Date(summary.createdAt), new Date())}, on {formatDate(new Date(summary.createdAt), "longDate")}.
           </p>
           <Button type="button" size="lg" className="mt-3 rounded-full" disabled={isOpening} onClick={onOpen}>
             {isOpening ? (
@@ -203,7 +199,7 @@ function SealedCountdown({ summary }: { summary: LetterSummaryDto }) {
           Still sealed · no peeking
         </p>
         <p className="text-sm text-muted-foreground">
-          It opens on <span className="font-medium text-foreground">{formatLongDate(summary.deliverAt)}</span> at{" "}
+          It opens on <span className="font-medium text-foreground">{formatDate(new Date(summary.deliverAt), "longDate")}</span> at{" "}
           {formatOpeningTime()}
         </p>
       </div>

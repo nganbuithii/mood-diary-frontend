@@ -13,16 +13,13 @@ import { MailArrivedBanner } from "@/components/letters/mail-arrived-banner";
 import { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
 import { useLetters } from "@/features/letters/hooks/use-letters";
 import type { LetterSummaryDto } from "@/features/letters/types/letter.types";
+import { pluralize } from "@/lib/utils";
 
 const GRID_CLASS = "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3";
 
-function plural(count: number, word: string) {
-  return `${count} ${word}${count === 1 ? "" : "s"}`;
-}
-
 function summaryLine(ready: number, sealed: number, opened: number) {
   return [
-    ready > 0 && `${plural(ready, "letter")} waiting`,
+    ready > 0 && `${pluralize(ready, "letter")} waiting`,
     sealed > 0 && `${sealed} on the way`,
     opened > 0 && `${opened} read`,
   ]

@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/ui/empty-state";
+import { PageHeader, PageShell } from "@/components/layout/page-shell";
 import { InsightsStats } from "@/components/insights/insights-stats";
 import { MoodBreakdown } from "@/components/insights/mood-breakdown";
 import { MoodHeatmap } from "@/components/insights/mood-heatmap";
-import { formatDateKey, formatMonthKey } from "@/lib/date";
+import { formatDate, formatDateKey, formatMonthKey, startOfMonth, tryParseMonthKey } from "@/lib/date";
 import { useDiaryEntries } from "@/features/diary/hooks/use-diary-entries";
 import { useMoodStats } from "@/features/diary/hooks/use-mood-stats";
 import { useMoodStreak } from "@/features/diary/hooks/use-mood-streak";
@@ -17,15 +19,9 @@ import { useToday } from "@/lib/hooks/use-today";
 type SearchParams = Promise<{ month?: string | string[] }>;
 
 function parseMonth(value: string | string[] | undefined, today: Date): Date {
-  const current = new Date(today.getFullYear(), today.getMonth(), 1);
-  if (typeof value !== "string" || !/^\d{4}-(0[1-9]|1[0-2])$/.test(value)) return current;
-  const [year, month] = value.split("-").map(Number);
-  const parsed = new Date(year, month - 1, 1);
-  return parsed > current ? current : parsed;
-}
-
-function monthLabel(date: Date, withYear = true) {
-  return date.toLocaleDateString("en-US", withYear ? { month: "long", year: "numeric" } : { month: "long" });
+  const current = startOfMonth(today);
+  const parsed = tryParseMonthKey(value);
+  return parsed && parsed <= current ? parsed : current;
 }
 
 export default function InsightsPage({ searchParams }: { searchParams: SearchParams }) {
@@ -34,7 +30,8 @@ export default function InsightsPage({ searchParams }: { searchParams: SearchPar
   const month = parseMonth(use(searchParams).month, today);
   const monthKey = formatMonthKey(month);
   const isCurrentMonth = monthKey === formatMonthKey(today);
-  const previousMonth = new Date(month.getFullYear(), month.getMonth() - 1, 1);
+  const previousMonth = startOfMonth(month, -1);
+  const monthName = formatDate(month, "month");
 
   const stats = useMoodStats(monthKey);
   const entries = useDiaryEntries(monthKey);
@@ -49,38 +46,27 @@ export default function InsightsPage({ searchParams }: { searchParams: SearchPar
   const elapsedDays = isCurrentMonth ? today.getDate() : (data?.daysInMonth ?? 0);
 
   return (
-    <div className="relative isolate overflow-hidden">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-24 left-[-10%] size-72 rounded-full bg-mood-very-happy/25 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute right-[-10%] bottom-0 size-72 rounded-full bg-accent-blue/20 blur-3xl"
-      />
-
-      <main className="relative mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-10">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex flex-col gap-1">
-            <span className="w-fit -rotate-2 rounded-full bg-surface/80 px-3 py-0.5 font-heading text-sm text-primary-hover shadow-sm">
-              ✦ your mood, looked back on
-            </span>
-            <h1 className="font-heading text-3xl text-foreground sm:text-4xl">Insights</h1>
-          </div>
-
-          <nav aria-label="Choose month" className="flex items-center gap-1 self-start rounded-full bg-surface/90 p-1 shadow-sm ring-1 ring-foreground/5 sm:self-auto">
+    <PageShell glows={["bg-mood-very-happy/25", "bg-accent-blue/20"]} className="gap-6">
+      <PageHeader
+        eyebrow="✦ your mood, looked back on"
+        title="Insights"
+        actions={
+          <nav
+            aria-label="Choose month"
+            className="flex items-center gap-1 rounded-full bg-surface/90 p-1 shadow-sm ring-1 ring-foreground/5"
+          >
             <Button
               type="button"
               variant="ghost"
               size="icon-sm"
               className="rounded-full"
-              aria-label={`Previous month, ${monthLabel(previousMonth)}`}
+              aria-label={`Previous month, ${formatDate(previousMonth, "monthYear")}`}
               onClick={() => goToMonth(previousMonth)}
             >
               <ChevronLeft />
             </Button>
             <span aria-live="polite" className="min-w-36 text-center font-heading text-lg text-foreground">
-              {monthLabel(month)}
+              {formatDate(month, "monthYear")}
             </span>
             <Button
               type="button"
@@ -89,54 +75,53 @@ export default function InsightsPage({ searchParams }: { searchParams: SearchPar
               className="rounded-full"
               aria-label="Next month"
               disabled={isCurrentMonth}
-              onClick={() => goToMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}
+              onClick={() => goToMonth(startOfMonth(month, 1))}
             >
               <ChevronRight />
             </Button>
           </nav>
-        </header>
+        }
+      />
 
-        {stats.isError && !data ? (
-          <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed border-border bg-surface/60 px-6 py-16 text-center">
-            <p className="text-sm text-muted-foreground">Couldn&apos;t load your insights. Please try again.</p>
-            <Button type="button" variant="outline" className="rounded-full" onClick={() => stats.refetch()}>
-              Retry
-            </Button>
+      {stats.isError && !data ? (
+        <ErrorState message="Couldn't load your insights. Please try again." onRetry={() => stats.refetch()} />
+      ) : !data ? (
+        <InsightsSkeleton />
+      ) : (
+        <>
+          <InsightsStats
+            stats={data}
+            elapsedDays={elapsedDays}
+            previousMonthLabel={formatDate(previousMonth, "month")}
+            streak={streak}
+          />
+
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+            <Section title="Mood mix" subtitle={`How your ${monthName} pages felt`}>
+              <MoodBreakdown stats={data} monthLabel={monthName} />
+            </Section>
+
+            <Section title="Month at a glance" subtitle="Tap a day to open it">
+              {entries.data ? (
+                <MoodHeatmap month={month} entries={entries.data} today={today} />
+              ) : entries.isError ? (
+                <ErrorState
+                  message="Couldn't load this month's days."
+                  onRetry={() => entries.refetch()}
+                  className="py-8"
+                />
+              ) : (
+                <div aria-hidden className="grid grid-cols-7 gap-1.5">
+                  {Array.from({ length: 35 }, (_, index) => (
+                    <span key={index} className="aspect-square animate-pulse rounded-[6px] bg-muted" />
+                  ))}
+                </div>
+              )}
+            </Section>
           </div>
-        ) : !data ? (
-          <InsightsSkeleton />
-        ) : (
-          <>
-            <InsightsStats
-              stats={data}
-              elapsedDays={elapsedDays}
-              previousMonthLabel={monthLabel(previousMonth, false)}
-              streak={streak}
-            />
-
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-              <Section title="Mood mix" subtitle={`How your ${monthLabel(month, false)} pages felt`}>
-                <MoodBreakdown stats={data} monthLabel={monthLabel(month, false)} />
-              </Section>
-
-              <Section title="Month at a glance" subtitle="Tap a day to open it">
-                {entries.data ? (
-                  <MoodHeatmap month={month} entries={entries.data} today={today} />
-                ) : entries.isError ? (
-                  <p className="py-8 text-center text-sm text-muted-foreground">Couldn&apos;t load this month&apos;s days.</p>
-                ) : (
-                  <div aria-hidden className="grid grid-cols-7 gap-1.5">
-                    {Array.from({ length: 35 }, (_, index) => (
-                      <span key={index} className="aspect-square animate-pulse rounded-[6px] bg-muted" />
-                    ))}
-                  </div>
-                )}
-              </Section>
-            </div>
-          </>
-        )}
-      </main>
-    </div>
+        </>
+      )}
+    </PageShell>
   );
 }
 

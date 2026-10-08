@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ConfirmBar } from "@/components/ui/confirm-bar";
 import { BackLink, PageHeader, PageShell } from "@/components/layout/page-shell";
 import { ComposeStep } from "@/components/letters/compose-step";
-import { DeliveryDayPicker, formatDeliveryDay } from "@/components/letters/delivery-day-picker";
+import { DeliveryDayPicker } from "@/components/letters/delivery-day-picker";
 import { LetterBodyField, type LetterBodyFieldHandle } from "@/components/letters/letter-body-field";
 import { MoodSelector } from "@/components/mood-diary/mood-selector";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
@@ -18,7 +18,8 @@ import { clearLetterDraft, readLetterDraft, useAutosaveLetterDraft } from "@/fea
 import { useCreateLetter } from "@/features/letters/hooks/use-letters";
 import { MAX_LETTER_LENGTH } from "@/features/letters/types/letter.types";
 import { addMonthsClamped, deliverAtFor } from "@/features/letters/utils/letter-dates";
-import { ApiError } from "@/lib/api/http-error";
+import { getErrorMessage } from "@/lib/api/http-error";
+import { formatDate } from "@/lib/date";
 
 const subscribeNoop = () => () => {};
 
@@ -69,7 +70,7 @@ function LetterComposer() {
         },
         onError: (error) => {
           setIsConfirming(false);
-          toast.error(error instanceof ApiError ? error.message : "Couldn't seal your letter. Please try again.");
+          toast.error(getErrorMessage(error, "Couldn't seal your letter. Please try again."));
         },
       },
     );
@@ -125,7 +126,7 @@ function LetterComposer() {
             message={
               <>
                 Ready to seal? You won&apos;t be able to read or change it until{" "}
-                <span className="font-medium">{formatDeliveryDay(deliveryDay)}</span>.
+                <span className="font-medium">{formatDate(deliveryDay, "weekdayDate")}</span>.
               </>
             }
             confirmLabel="Seal it ♡"

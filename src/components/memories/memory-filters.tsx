@@ -3,21 +3,19 @@
 import { Heart } from "lucide-react";
 import { cn } from "cn";
 
-import { MoodFace } from "@/components/mood-diary/mood-face";
+import { MoodAvatar } from "@/components/mood-diary/mood-avatar";
 import { MOOD_OPTIONS } from "@/components/mood-diary/mood.constants";
 import type { Mood } from "@/features/diary/types/mood.types";
-import { formatMonthKey } from "@/lib/date";
+import { formatDate, formatMonthKey, startOfMonth } from "@/lib/date";
+import { useToday } from "@/lib/hooks/use-today";
 import type { DiaryFeedFilters } from "@/features/diary/api/diary-feed.types";
 
 const MONTHS_TO_OFFER = 12;
 
-function getRecentMonths(today = new Date()) {
+function getRecentMonths(today: Date) {
   return Array.from({ length: MONTHS_TO_OFFER }, (_, index) => {
-    const date = new Date(today.getFullYear(), today.getMonth() - index, 1);
-    return {
-      value: formatMonthKey(date),
-      label: date.toLocaleDateString("en-US", { month: "long", year: "numeric" }),
-    };
+    const date = startOfMonth(today, -index);
+    return { value: formatMonthKey(date), label: formatDate(date, "monthYear") };
   });
 }
 
@@ -27,7 +25,8 @@ interface MemoryFiltersProps {
 }
 
 export function MemoryFilters({ value, onChange }: MemoryFiltersProps) {
-  const months = getRecentMonths();
+  const today = useToday();
+  const months = getRecentMonths(today);
   const chipClass =
     "flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-3 text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-ring/60";
 
@@ -71,9 +70,7 @@ export function MemoryFilters({ value, onChange }: MemoryFiltersProps) {
                   : "border-border bg-surface text-muted-foreground hover:text-foreground",
               )}
             >
-              <span className={cn("size-6 rounded-full p-0.5", mood.bgClass)}>
-                <MoodFace mood={mood.value} />
-              </span>
+              <MoodAvatar mood={mood.value} className="size-6 p-0.5" />
               {mood.label}
             </button>
           );

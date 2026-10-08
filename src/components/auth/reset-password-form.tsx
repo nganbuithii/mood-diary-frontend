@@ -20,7 +20,7 @@ import {
   resetPasswordSchema,
   type ResetPasswordFormValues,
 } from "@/features/auth/schemas/reset-password.schema";
-import { ApiError } from "@/lib/api/http-error";
+import { ApiError, getErrorMessage } from "@/lib/api/http-error";
 import { HTTP_STATUS } from "@/lib/api/http-status";
 
 interface ResetPasswordFormProps {
@@ -59,10 +59,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       if (error instanceof ApiError && error.status === HTTP_STATUS.UNAUTHORIZED) return;
 
       setError("root", {
-        message:
-          error instanceof ApiError
-            ? error.message
-            : "Something went wrong. Please try again.",
+        message: getErrorMessage(error, "Something went wrong. Please try again."),
       });
     }
   });

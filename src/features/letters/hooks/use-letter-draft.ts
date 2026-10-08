@@ -3,10 +3,9 @@ import type { Mood } from "@/features/diary/types/mood.types";
 import {
   addMonthsClamped,
   earliestDeliveryDay,
-  fromDateInputValue,
   latestDeliveryDay,
-  toDateInputValue,
 } from "@/features/letters/utils/letter-dates";
+import { formatDateKey, tryParseDateKey } from "@/lib/date";
 
 const DRAFT_KEY = "moodiary-letter-draft";
 const SAVE_DELAY_MS = 600;
@@ -29,7 +28,7 @@ export function readLetterDraft(): LetterDraft | null {
     if (!raw) return null;
     const stored = JSON.parse(raw) as StoredDraft;
     if (!stored.body?.trim()) return null;
-    const day = fromDateInputValue(stored.deliveryDay);
+    const day = tryParseDateKey(stored.deliveryDay);
     const isValidDay = day && day >= earliestDeliveryDay() && day <= latestDeliveryDay();
     return { body: stored.body, mood: stored.mood, deliveryDay: isValidDay ? day : addMonthsClamped(new Date(), 12) };
   } catch {
@@ -56,7 +55,7 @@ export function useAutosaveLetterDraft(current: LetterDraft, { paused = false } 
           const stored: StoredDraft = {
             body: current.body,
             mood: current.mood,
-            deliveryDay: toDateInputValue(current.deliveryDay),
+            deliveryDay: formatDateKey(current.deliveryDay),
           };
           localStorage.setItem(DRAFT_KEY, JSON.stringify(stored));
           setIsSaved(true);

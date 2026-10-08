@@ -19,7 +19,8 @@ import {
   useDiaryEntryForm,
   type DiaryEntryValues,
 } from "@/components/mood-diary/diary-entry-fields";
-import { formatDateKey, isSameDay } from "@/lib/date";
+import { formatDate, formatDateKey, isSameDay } from "@/lib/date";
+import { useToday } from "@/lib/hooks/use-today";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 
 interface AddDiaryDialogProps {
@@ -88,14 +89,9 @@ function DiaryForm({
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const form = useDiaryEntryForm(existingEntry);
 
-  const isPastDay = !isSameDay(date, new Date());
-
-  const formattedDate = date.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  const today = useToday();
+  const isPastDay = !isSameDay(date, today);
+  const formattedDate = formatDate(date, "fullDate");
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();

@@ -12,6 +12,7 @@ import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 import { useMoodStreak } from "@/features/diary/hooks/use-mood-streak";
 import { useReadyLetterCount } from "@/features/letters/hooks/use-letters";
 import { useToday } from "@/lib/hooks/use-today";
+import { pluralize } from "@/lib/utils";
 
 const NAV_LINKS = [
   { href: "/home", label: "Home", icon: House },
@@ -98,7 +99,7 @@ function LetterboxLink() {
   const isActive = pathname.startsWith("/letters");
   const label =
     readyCount > 0
-      ? `Letterbox, ${readyCount} ${readyCount === 1 ? "letter" : "letters"} ready to open`
+      ? `Letterbox, ${pluralize(readyCount, "letter")} ready to open`
       : "Letterbox";
 
   return (

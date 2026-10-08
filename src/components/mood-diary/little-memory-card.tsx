@@ -2,9 +2,9 @@ import Link from "next/link";
 import { cn } from "cn";
 
 import { Button } from "@/components/ui/button";
-import { MoodFace } from "@/components/mood-diary/mood-face";
+import { MoodAvatar } from "@/components/mood-diary/mood-avatar";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
-import { formatDateKey, parseDateKey } from "@/lib/date";
+import { formatDate, formatDateKey, parseDateKey } from "@/lib/date";
 import type { LittleMemoryDto } from "@/features/diary/api/little-memory.types";
 import { useDailyMemory } from "@/features/diary/hooks/use-daily-memory";
 import { useToday } from "@/lib/hooks/use-today";
@@ -25,11 +25,7 @@ interface LittleMemoryContentProps {
 function LittleMemoryContent({ memory }: LittleMemoryContentProps) {
   const meta = MOOD_META[memory.mood];
   const date = parseDateKey(memory.entryDate);
-  const formattedDate = date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  const formattedDate = formatDate(date, "shortDate");
 
   return (
     <article className="relative mx-auto flex w-full max-w-sm rotate-1 flex-col gap-3 rounded-md border border-border bg-surface p-3 pb-4 shadow-sm transition-transform hover:rotate-0 lg:max-w-none">
@@ -60,9 +56,7 @@ function LittleMemoryContent({ memory }: LittleMemoryContentProps) {
             className="size-full object-cover"
           />
         ) : (
-          <span className={cn("size-20 rounded-full p-1 shadow-sm", meta.bgClass)}>
-            <MoodFace mood={meta.value} />
-          </span>
+          <MoodAvatar mood={meta.value} className="size-20 p-1 shadow-sm" />
         )}
       </div>
 
@@ -70,9 +64,7 @@ function LittleMemoryContent({ memory }: LittleMemoryContentProps) {
         <div className="flex items-center justify-between gap-2">
           <span className="flex min-w-0 items-center gap-1.5 font-heading text-base text-foreground">
             {memory.photoUrl && (
-              <span className={cn("size-5 shrink-0 rounded-full", meta.bgClass)}>
-                <MoodFace mood={meta.value} />
-              </span>
+              <MoodAvatar mood={meta.value} className="size-5" />
             )}
             <span className="truncate">{meta.label}</span>
           </span>

@@ -1,19 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { cn } from "cn";
 
-import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { ErrorState } from "@/components/ui/empty-state";
+import { LoadMoreFooter } from "@/components/ui/load-more-footer";
+import { PageShell } from "@/components/layout/page-shell";
+import { FavoritesEmptyState } from "@/components/favorites/favorites-empty-state";
 import { FAVORITES_GRID_CLASS, FavoriteCard, FavoriteCardSkeleton } from "@/components/favorites/favorite-card";
 import { FavoritesHero, type FavoritesStats } from "@/components/favorites/favorites-hero";
-import { MoodFace } from "@/components/mood-diary/mood-face";
+import { MoodAvatar } from "@/components/mood-diary/mood-avatar";
 import { MOOD_OPTIONS } from "@/components/mood-diary/mood.constants";
 import type { Mood } from "@/features/diary/types/mood.types";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 import { useDiaryFeed } from "@/features/diary/hooks/use-diary-feed";
-import { useLoadMoreOnScroll } from "@/lib/hooks/use-load-more-on-scroll";
 
 const PAGE_SIZE = 16;
 // Mirrors the bento spans in FavoriteCard: spotlight, then a mix of tall and short tiles.
@@ -54,30 +54,18 @@ export default function FavoritesPage() {
     isFetchNextPageError,
   } = useDiaryFeed({ favorite: true, mood }, PAGE_SIZE);
 
-  const sentinelRef = useLoadMoreOnScroll({
-    hasNextPage,
-    isFetchingNextPage,
-    isFetchNextPageError,
-    fetchNextPage,
-  });
-
   const entries = data?.pages.flatMap((page) => page.items) ?? [];
   // Stats describe the whole box, so they're skipped while a mood filter narrows it down.
   const stats = data && !mood ? getStats(entries, hasNextPage) : undefined;
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8 sm:px-6 lg:px-10">
+    <PageShell glows={[]}>
       <FavoritesHero stats={stats} />
 
       <VibeFilter value={mood} onChange={setMood} />
 
       {isError && !data ? (
-        <div className="flex flex-col items-center gap-3 rounded-3xl bg-surface/70 px-6 py-16 text-center ring-1 ring-foreground/5">
-          <p className="text-sm text-muted-foreground">Couldn&apos;t open your treasure box. Please try again.</p>
-          <Button type="button" variant="outline" className="rounded-full" onClick={() => refetch()}>
-            Retry
-          </Button>
-        </div>
+        <ErrorState message="Couldn't open your treasure box. Please try again." onRetry={() => refetch()} />
       ) : isPending ? (
         <div className={FAVORITES_GRID_CLASS}>
           {SKELETON_LAYOUT.map((props, index) => (
@@ -85,7 +73,7 @@ export default function FavoritesPage() {
           ))}
         </div>
       ) : entries.length === 0 ? (
-        <EmptyBox filtered={Boolean(mood)} onClearFilter={() => setMood(undefined)} />
+        <FavoritesEmptyState filtered={Boolean(mood)} onClearFilter={() => setMood(undefined)} />
       ) : (
         <>
           <div className={FAVORITES_GRID_CLASS}>
@@ -94,28 +82,18 @@ export default function FavoritesPage() {
             ))}
           </div>
 
-          <div ref={sentinelRef} className="flex justify-center py-2">
-            {isFetchingNextPage ? (
-              <Spinner />
-            ) : isFetchNextPageError ? (
-              <div className="flex flex-col items-center gap-2 text-center">
-                <p className="text-sm text-muted-foreground">Couldn&apos;t load more treasures.</p>
-                <Button type="button" variant="outline" className="rounded-full" onClick={() => fetchNextPage()}>
-                  Retry
-                </Button>
-              </div>
-            ) : hasNextPage ? (
-              // Fallback for when the observer doesn't fire (e.g. very tall screens).
-              <Button type="button" variant="outline" className="rounded-full" onClick={() => fetchNextPage()}>
-                Load more <span aria-hidden>♡</span>
-              </Button>
-            ) : (
-              <p className="font-heading text-base text-muted-foreground">♡ ✦ that&apos;s the whole box ✦ ♡</p>
-            )}
-          </div>
+          <LoadMoreFooter
+            className="py-2"
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            isFetchNextPageError={isFetchNextPageError}
+            fetchNextPage={fetchNextPage}
+            errorText="Couldn't load more treasures."
+            endText={<p className="font-heading text-base text-muted-foreground">♡ ✦ that&apos;s the whole box ✦ ♡</p>}
+          />
         </>
       )}
-    </main>
+    </PageShell>
   );
 }
 
@@ -162,47 +140,15 @@ function VibeFilter({ value, onChange }: { value?: Mood; onChange: (mood?: Mood)
                   : "bg-surface text-muted-foreground ring-1 ring-border/60 hover:-translate-y-0.5 hover:text-foreground",
               )}
             >
-              <span
-                className={cn(
-                  "size-7 rounded-full p-0.5 transition-transform",
-                  option.bgClass,
-                  isSelected && "scale-110 motion-reduce:scale-100",
-                )}
-              >
-                <MoodFace mood={option.value} />
-              </span>
+              <MoodAvatar
+                mood={option.value}
+                className={cn("size-7 p-0.5 transition-transform", isSelected && "scale-110 motion-reduce:scale-100")}
+              />
               {option.label}
             </button>
           );
         })}
       </div>
-    </div>
-  );
-}
-
-function EmptyBox({ filtered, onClearFilter }: { filtered: boolean; onClearFilter: () => void }) {
-  return (
-    <div className="relative flex flex-col items-center gap-3 overflow-hidden rounded-[2rem] bg-surface/70 px-6 py-16 text-center ring-1 ring-foreground/5">
-      <div aria-hidden className="relative mb-2 flex size-24 items-center justify-center rounded-3xl bg-primary/20">
-        <span className="text-5xl">🎁</span>
-        <span className="absolute -top-2 -right-3 rotate-12 font-heading text-2xl text-primary-hover">♡</span>
-        <span className="absolute -bottom-1 -left-3 -rotate-12 font-heading text-lg text-secondary">✦</span>
-      </div>
-      <p className="font-heading text-xl text-foreground">
-        {filtered ? "No treasures with this vibe yet" : "Your treasure box is empty"}
-      </p>
-      <p className="max-w-xs text-sm text-muted-foreground">
-        {filtered
-          ? "Try another mood, or heart a few more days."
-          : "Tap the ♡ on any memory you never want to lose, and it'll land right here."}
-      </p>
-      {filtered ? (
-        <Button type="button" variant="outline" className="rounded-full" onClick={onClearFilter}>
-          Show all treasures
-        </Button>
-      ) : (
-        <Button className="rounded-full" render={<Link href="/memories">Find a memory to keep ♡</Link>} />
-      )}
     </div>
   );
 }

@@ -9,3 +9,7 @@ export class ApiError extends Error {
     this.details = details;
   }
 }
+
+export function getErrorMessage(error: unknown, fallback: string): string {
+  return error instanceof ApiError ? error.message : fallback;
+}

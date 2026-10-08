@@ -6,9 +6,9 @@ import { toast } from "sonner";
 import { cn } from "cn";
 
 import { FavoriteHeartButton } from "@/components/favorites/favorite-heart-button";
-import { MoodFace } from "@/components/mood-diary/mood-face";
+import { MoodAvatar } from "@/components/mood-diary/mood-avatar";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
-import { parseDateKey } from "@/lib/date";
+import { formatDate, parseDateKey } from "@/lib/date";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 import { useSongPreview } from "@/features/songs/hooks/use-song-preview";
 import type { Song } from "@/features/songs/types/song.types";
@@ -25,8 +25,8 @@ export function FavoriteCard({ entry, featured = false }: FavoriteCardProps) {
   const meta = MOOD_META[entry.mood];
   const photoUrl = entry.photoUrls[0];
   const day = parseDateKey(entry.date);
-  const shortDate = day.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  const longDate = day.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  const shortDate = formatDate(day, "shortMonthDay");
+  const longDate = formatDate(day, "fullDate");
   const variant = featured ? "featured" : photoUrl ? "photo" : "sticker";
 
   return (
@@ -133,15 +133,13 @@ function Caption({
       )}
     >
       <div className="flex items-center gap-2">
-        <span
+        <MoodAvatar
+          mood={entry.mood}
           className={cn(
-            "shrink-0 rounded-full p-0.5 shadow-sm ring-2 ring-surface/80",
-            meta.bgClass,
+            "p-0.5 shadow-sm ring-2 ring-surface/80",
             featured ? "size-10 sm:size-12" : onPhoto ? "size-7" : "size-9",
           )}
-        >
-          <MoodFace mood={entry.mood} />
-        </span>
+        />
         <div className="flex min-w-0 flex-col leading-tight">
           <span className={cn("font-heading", featured ? "text-lg sm:text-xl" : "text-base")}>{meta.label}</span>
           <span className={cn("truncate text-xs", onPhoto ? "text-white/85" : "text-muted-foreground")}>

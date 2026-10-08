@@ -10,7 +10,7 @@ const WIDTH = {
 
 interface PageShellProps {
   width?: keyof typeof WIDTH;
-  glows?: [string, string?];
+  glows?: [string?, string?];
   className?: string;
   children: React.ReactNode;
 }
@@ -19,10 +19,12 @@ function PageShell({ width = "wide", glows = ["bg-primary/20"], className, child
   const [topGlow, bottomGlow] = glows;
   return (
     <div className="relative isolate overflow-hidden">
-      <div
-        aria-hidden
-        className={cn("pointer-events-none absolute -top-24 right-[-10%] size-72 rounded-full blur-3xl", topGlow)}
-      />
+      {topGlow && (
+        <div
+          aria-hidden
+          className={cn("pointer-events-none absolute -top-24 right-[-10%] size-72 rounded-full blur-3xl", topGlow)}
+        />
+      )}
       {bottomGlow && (
         <div
           aria-hidden

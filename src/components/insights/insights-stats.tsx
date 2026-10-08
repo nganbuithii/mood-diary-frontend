@@ -1,10 +1,11 @@
 import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 import { cn } from "cn";
 
-import { MoodFace } from "@/components/mood-diary/mood-face";
+import { MoodAvatar } from "@/components/mood-diary/mood-avatar";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
 import type { MoodStatsDto } from "@/features/diary/api/mood-stats.types";
 import type { MoodStreakDto } from "@/features/diary/api/mood-streak.types";
+import { pluralize } from "@/lib/utils";
 
 interface InsightsStatsProps {
   stats: MoodStatsDto;
@@ -31,9 +32,7 @@ export function InsightsStats({ stats, elapsedDays, previousMonthLabel, streak }
       <Tile label="Top vibe" tilt="right">
         {top ? (
           <dd className="flex items-center gap-2">
-            <span aria-hidden className={cn("size-9 shrink-0 rounded-full p-0.5", top.bgClass)}>
-              <MoodFace mood={top.value} />
-            </span>
+            <MoodAvatar aria-hidden mood={top.value} className="size-9 p-0.5" />
             <span className="font-heading text-2xl text-foreground">{top.label}</span>
           </dd>
         ) : (
@@ -68,7 +67,7 @@ export function InsightsStats({ stats, elapsedDays, previousMonthLabel, streak }
           <span className="text-base text-muted-foreground"> {streak?.current === 1 ? "day" : "days"}</span>
         </dd>
         <dd className="text-xs text-muted-foreground">
-          {streak ? `Longest ever: ${streak.longest} ${streak.longest === 1 ? "day" : "days"}` : "Loading…"}
+          {streak ? `Longest ever: ${pluralize(streak.longest, "day")}` : "Loading…"}
         </dd>
       </Tile>
     </dl>

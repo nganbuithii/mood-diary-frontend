@@ -9,7 +9,9 @@ import { OpenedLetterPreview } from "@/components/letters/opened-letter";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
 import { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
 import type { LetterStatus, LetterSummaryDto } from "@/features/letters/types/letter.types";
-import { daysToGo, formatLongDate, opensInLabel } from "@/features/letters/utils/letter-dates";
+import { daysToGo, opensInLabel } from "@/features/letters/utils/letter-dates";
+import { formatDate } from "@/lib/date";
+import { pluralize } from "@/lib/utils";
 
 const LINK_CLASS = "group block rounded-3xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60";
 const CARD_CLASS =
@@ -18,11 +20,11 @@ const CARD_CLASS =
 const CAPTION_BY_STATUS: Record<LetterStatus, (letter: LetterSummaryDto) => string> = {
   [LETTER_STATUS.SEALED]: (letter) => opensInLabel(letter.deliverAt),
   [LETTER_STATUS.READY]: () => "It's here! ♡",
-  [LETTER_STATUS.OPENED]: (letter) => `Opened · arrived ${formatLongDate(letter.deliverAt)}`,
+  [LETTER_STATUS.OPENED]: (letter) => `Opened · arrived ${formatDate(new Date(letter.deliverAt), "longDate")}`,
 };
 
 export function LetterCard({ letter, isNew = false }: { letter: LetterSummaryDto; isNew?: boolean }) {
-  const written = formatLongDate(letter.createdAt);
+  const written = formatDate(new Date(letter.createdAt), "longDate");
   const mood = letter.moodAtWriting ? MOOD_META[letter.moodAtWriting].label : null;
   const caption = CAPTION_BY_STATUS[letter.status](letter);
   const isReady = letter.status === LETTER_STATUS.READY;
@@ -62,7 +64,7 @@ export function LetterCard({ letter, isNew = false }: { letter: LetterSummaryDto
 
           {letter.status === LETTER_STATUS.SEALED && (
             <span className="text-xs text-muted-foreground tabular-nums">
-              {days} {days === 1 ? "day" : "days"} to go
+              {pluralize(days, "day")} to go
             </span>
           )}
 

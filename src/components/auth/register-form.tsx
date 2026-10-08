@@ -29,7 +29,7 @@ import {
   registerSchema,
   type RegisterFormValues,
 } from "@/features/auth/schemas/register.schema";
-import { ApiError } from "@/lib/api/http-error";
+import { ApiError, getErrorMessage } from "@/lib/api/http-error";
 import { HTTP_STATUS } from "@/lib/api/http-status";
 
 export function RegisterForm() {
@@ -68,10 +68,7 @@ export function RegisterForm() {
       }
 
       setError("root", {
-        message:
-          error instanceof ApiError
-            ? error.message
-            : "Something went wrong. Please try again.",
+        message: getErrorMessage(error, "Something went wrong. Please try again."),
       });
     }
   });

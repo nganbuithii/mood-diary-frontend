@@ -3,16 +3,13 @@
 import { cn } from "cn";
 
 import { ChartTooltip, useMarkTooltip } from "@/components/insights/chart-tooltip";
-import { MoodFace } from "@/components/mood-diary/mood-face";
+import { MoodAvatar } from "@/components/mood-diary/mood-avatar";
 import { MOOD_OPTIONS } from "@/components/mood-diary/mood.constants";
 import type { MoodPeriodStatsDto } from "@/features/diary/api/mood-stats.types";
+import { pluralize } from "@/lib/utils";
 
 function percent(count: number, total: number) {
   return Math.round((count / total) * 100);
-}
-
-function daysLabel(count: number) {
-  return `${count} ${count === 1 ? "day" : "days"}`;
 }
 
 export function MoodBreakdown({ stats, monthLabel }: { stats: MoodPeriodStatsDto; monthLabel: string }) {
@@ -35,7 +32,7 @@ export function MoodBreakdown({ stats, monthLabel }: { stats: MoodPeriodStatsDto
         <div className="flex h-7 w-full gap-0.5" role="group" aria-label={`Mood mix for ${monthLabel}`}>
           {segments.map((mood, index) => {
             const count = stats.moodCounts[mood.value];
-            const label = `${mood.label}: ${daysLabel(count)} (${percent(count, total)}%)`;
+            const label = `${mood.label}: ${pluralize(count, "day")} (${percent(count, total)}%)`;
             return (
               <div
                 key={mood.value}
@@ -47,7 +44,7 @@ export function MoodBreakdown({ stats, monthLabel }: { stats: MoodPeriodStatsDto
                     <span aria-hidden className={cn("size-2.5 rounded-[3px]", mood.chartBgClass)} />
                     <span className="font-medium">{mood.label}</span>
                     <span className="text-muted-foreground">
-                      {daysLabel(count)} · {percent(count, total)}%
+                      {pluralize(count, "day")} · {percent(count, total)}%
                     </span>
                   </span>,
                 )}
@@ -71,13 +68,11 @@ export function MoodBreakdown({ stats, monthLabel }: { stats: MoodPeriodStatsDto
           return (
             <li key={mood.value} className={cn("flex items-center gap-2", count === 0 && "opacity-50")}>
               <span aria-hidden className={cn("h-3 w-3 shrink-0 rounded-[3px]", mood.chartBgClass)} />
-              <span aria-hidden className={cn("size-6 shrink-0 rounded-full p-0.5", mood.bgClass)}>
-                <MoodFace mood={mood.value} />
-              </span>
+              <MoodAvatar aria-hidden mood={mood.value} className="size-6 p-0.5" />
               <span className="flex min-w-0 flex-col leading-tight">
                 <span className="text-sm text-foreground">{mood.label}</span>
                 <span className="text-xs text-muted-foreground tabular-nums">
-                  {daysLabel(count)} · {percent(count, total)}%
+                  {pluralize(count, "day")} · {percent(count, total)}%
                 </span>
               </span>
             </li>

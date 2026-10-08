@@ -26,14 +26,7 @@ import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { SettingRow } from "@/components/profile/setting-row";
 import { ThemeSwitcher } from "@/components/profile/theme-switcher";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
-
-function formatMemberSince(dateString: string) {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-}
+import { formatDate } from "@/lib/date";
 
 export function ProfileCard() {
   const { data: currentUser, isPending } = useCurrentUser();
@@ -98,7 +91,7 @@ export function ProfileCard() {
             <div className="flex flex-col">
               <CardDescription>Member since</CardDescription>
               <span className="text-sm font-medium text-foreground">
-                {formatMemberSince(currentUser.createdAt)}
+                {formatDate(new Date(currentUser.createdAt), "longDate")}
               </span>
             </div>
           </CardContent>

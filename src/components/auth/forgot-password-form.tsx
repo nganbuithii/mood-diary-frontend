@@ -25,7 +25,7 @@ import {
   forgotPasswordSchema,
   type ForgotPasswordFormValues,
 } from "@/features/auth/schemas/forgot-password.schema";
-import { ApiError } from "@/lib/api/http-error";
+import { getErrorMessage } from "@/lib/api/http-error";
 
 export function ForgotPasswordForm() {
   const forgotPasswordMutation = useForgotPassword();
@@ -48,10 +48,7 @@ export function ForgotPasswordForm() {
       await forgotPasswordMutation.mutateAsync(values);
     } catch (error) {
       setError("root", {
-        message:
-          error instanceof ApiError
-            ? error.message
-            : "Something went wrong. Please try again.",
+        message: getErrorMessage(error, "Something went wrong. Please try again."),
       });
     }
   });

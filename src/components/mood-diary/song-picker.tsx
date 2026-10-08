@@ -11,7 +11,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useSearchSongs } from "@/features/songs/hooks/use-search-songs";
 import { useTrendingSongs } from "@/features/songs/hooks/use-trending-songs";
 import type { Song } from "@/features/songs/types/song.types";
-import { ApiError } from "@/lib/api/http-error";
+import { getErrorMessage } from "@/lib/api/http-error";
 
 interface SongPickerProps {
   value: Song | null;
@@ -75,7 +75,7 @@ export function SongPicker({ value, onChange, disabled = false }: SongPickerProp
       const fallback = isShowingTrending
         ? "Couldn't load trending songs. Try searching instead ♪"
         : "Couldn't search songs. Please try again.";
-      return <StatusMessage>{error instanceof ApiError ? error.message : fallback}</StatusMessage>;
+      return <StatusMessage>{getErrorMessage(error, fallback)}</StatusMessage>;
     }
     if (isPending) {
       return (
