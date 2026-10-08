@@ -5,7 +5,7 @@ import { cn } from "cn";
 
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
 import { canOpenDay, formatDateKey, isSameDay } from "@/lib/date";
-import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
+import type { DiaryEntryDto } from "@/features/diary/types/diary-entry.types";
 import { MoodAvatar } from "@/components/mood-diary/mood-avatar";
 
 const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

@@ -3,7 +3,7 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { apiBaseUrl } from "@/lib/env";
 import { ApiError } from "@/lib/api/http-error";
 import { HTTP_STATUS } from "@/lib/api/http-status";
-import { ENDPOINTS } from "@/features/auth/constants/endpoints";
+import { AUTH_ENDPOINTS } from "@/features/auth/constants/endpoints";
 import { currentLocationPath, loginPathFor } from "@/features/auth/utils/auth-redirect";
 import { SECOND_MS } from "@/lib/constants/time";
 
@@ -33,12 +33,12 @@ function resolvePendingRequests(shouldRetry: boolean) {
 }
 
 const NO_REFRESH_URLS = new Set<string>([
-  ENDPOINTS.REFRESH,
-  ENDPOINTS.LOGIN,
-  ENDPOINTS.REGISTER,
-  ENDPOINTS.LOGOUT,
-  ENDPOINTS.FORGOT_PASSWORD,
-  ENDPOINTS.RESET_PASSWORD,
+  AUTH_ENDPOINTS.REFRESH,
+  AUTH_ENDPOINTS.LOGIN,
+  AUTH_ENDPOINTS.REGISTER,
+  AUTH_ENDPOINTS.LOGOUT,
+  AUTH_ENDPOINTS.FORGOT_PASSWORD,
+  AUTH_ENDPOINTS.RESET_PASSWORD,
 ]);
 
 function toApiError(error: AxiosError): ApiError {
@@ -92,7 +92,7 @@ apiClient.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      await apiClient.post(ENDPOINTS.REFRESH);
+      await apiClient.post(AUTH_ENDPOINTS.REFRESH);
       isRefreshing = false;
       resolvePendingRequests(true);
 
@@ -101,7 +101,7 @@ apiClient.interceptors.response.use(
       isRefreshing = false;
       resolvePendingRequests(false);
 
-      if (typeof window !== "undefined" && originalRequest.url !== ENDPOINTS.ME) {
+      if (typeof window !== "undefined" && originalRequest.url !== AUTH_ENDPOINTS.ME) {
         window.location.href = loginPathFor(currentLocationPath());
       }
 

@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { MoodPolaroid } from "@/components/mood-diary/mood-polaroid";
 import { formatDate, parseDateKey } from "@/lib/date";
-import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
+import type { DiaryEntryDto } from "@/features/diary/types/diary-entry.types";
 import { FavoriteHeartButton } from "@/components/favorites/favorite-heart-button";
 
 const ROTATIONS = ["left", "none", "right", "none"] as const;

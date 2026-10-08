@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { uploadAvatar } from "@/features/profile/api/upload-avatar.api";
+import { uploadAvatar } from "@/features/profile/api/profile.api";
 import type { AuthUser } from "@/features/auth/types/auth.types";
 import { authKeys } from "@/features/auth/constants/auth-query-keys";
 

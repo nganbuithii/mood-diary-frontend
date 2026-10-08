@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-import { searchSongs } from "@/features/songs/api/search-songs.api";
+import { searchSongs } from "@/features/songs/api/songs.api";
+import { songKeys } from "@/features/songs/constants/song-query-keys";
 import { MINUTE_MS } from "@/lib/constants/time";
 
 const SEARCH_DEBOUNCE_MS = 400;
@@ -18,7 +19,7 @@ export function useSearchSongs(query: string) {
   const isQueryReady = debouncedQuery.length >= MIN_QUERY_LENGTH;
 
   const result = useQuery({
-    queryKey: ["songs", "search", debouncedQuery],
+    queryKey: songKeys.search(debouncedQuery),
     queryFn: () => searchSongs(debouncedQuery),
     enabled: isQueryReady,
     staleTime: 5 * MINUTE_MS,

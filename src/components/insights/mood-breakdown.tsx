@@ -5,7 +5,7 @@ import { cn } from "cn";
 import { ChartTooltip, useMarkTooltip } from "@/components/insights/chart-tooltip";
 import { MoodAvatar } from "@/components/mood-diary/mood-avatar";
 import { MOOD_OPTIONS } from "@/components/mood-diary/mood.constants";
-import type { MoodPeriodStatsDto } from "@/features/diary/api/mood-stats.types";
+import type { MoodPeriodStatsDto } from "@/features/diary/types/mood-stats.types";
 import { pluralize } from "@/lib/utils";
 
 function percent(count: number, total: number) {

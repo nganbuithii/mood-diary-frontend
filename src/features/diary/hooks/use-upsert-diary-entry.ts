@@ -1,11 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
-import { upsertDiaryEntry } from "@/features/diary/api/upsert-diary-entry.api";
-import {
-  diaryKeys,
-  invalidateDiaryEntryQueries,
-  monthOfDateKey,
-} from "@/features/diary/constants/diary-query-keys";
+import type { DiaryEntryDto } from "@/features/diary/types/diary-entry.types";
+import { upsertDiaryEntry } from "@/features/diary/api/diary.api";
+import { diaryKeys } from "@/features/diary/constants/diary-query-keys";
+import { invalidateDiaryEntryQueries, monthOfDateKey } from "@/features/diary/utils/diary-cache";
 
 export function useUpsertDiaryEntry() {
   const queryClient = useQueryClient();

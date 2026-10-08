@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { changePassword } from "@/features/auth/api/change-password.api";
+import { changePassword } from "@/features/auth/api/auth.api";
 
 export function useChangePassword() {
   return useMutation({

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import type { DiaryFeedFilters } from "@/features/diary/api/diary-feed.types";
+import type { DiaryFeedFilters } from "@/features/diary/types/diary-feed.types";
 
 interface MemoriesEmptyStateProps {
   filters: DiaryFeedFilters;

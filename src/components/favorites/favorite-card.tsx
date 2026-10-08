@@ -9,7 +9,7 @@ import { MoodAvatar } from "@/components/mood-diary/mood-avatar";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
 import { SongPreviewButton } from "@/components/songs/song-preview-button";
 import { formatDate, parseDateKey } from "@/lib/date";
-import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
+import type { DiaryEntryDto } from "@/features/diary/types/diary-entry.types";
 
 interface FavoriteCardProps {
   entry: DiaryEntryDto;

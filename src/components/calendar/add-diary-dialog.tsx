@@ -21,7 +21,7 @@ import {
 } from "@/components/mood-diary/diary-entry-fields";
 import { formatDate, formatDateKey, isSameDay } from "@/lib/date";
 import { useToday } from "@/lib/hooks/use-today";
-import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
+import type { DiaryEntryDto } from "@/features/diary/types/diary-entry.types";
 
 interface AddDiaryDialogProps {
   date: Date | null;

@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import type { DiaryFeedFilters } from "@/features/diary/api/diary-feed.types";
-import { getDiaryFeed } from "@/features/diary/api/get-diary-feed.api";
+import type { DiaryFeedFilters } from "@/features/diary/types/diary-feed.types";
+import { getDiaryFeed } from "@/features/diary/api/diary.api";
 import { diaryKeys } from "@/features/diary/constants/diary-query-keys";
 
 export function useDiaryFeed({ mood, month, favorite }: DiaryFeedFilters, limit = 12) {

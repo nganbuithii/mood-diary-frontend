@@ -6,7 +6,7 @@ import { cn } from "cn";
 import { ChartTooltip, useMarkTooltip } from "@/components/insights/chart-tooltip";
 import { MOOD_META, MOOD_OPTIONS } from "@/components/mood-diary/mood.constants";
 import { formatDate, formatDateKey, isAfterDay } from "@/lib/date";
-import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
+import type { DiaryEntryDto } from "@/features/diary/types/diary-entry.types";
 
 const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
 

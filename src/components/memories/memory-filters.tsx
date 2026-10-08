@@ -8,7 +8,7 @@ import { MOOD_OPTIONS } from "@/components/mood-diary/mood.constants";
 import type { Mood } from "@/features/diary/types/mood.types";
 import { formatDate, formatMonthKey, startOfMonth } from "@/lib/date";
 import { useToday } from "@/lib/hooks/use-today";
-import type { DiaryFeedFilters } from "@/features/diary/api/diary-feed.types";
+import type { DiaryFeedFilters } from "@/features/diary/types/diary-feed.types";
 
 const MONTHS_TO_OFFER = 12;
 

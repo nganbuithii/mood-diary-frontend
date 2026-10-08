@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient, type InfiniteData } from "@tanstack/react-query";
 import { toast } from "sonner";
-import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
-import type { DiaryFeedPageDto } from "@/features/diary/api/diary-feed.types";
-import { setDiaryFavorite } from "@/features/diary/api/set-diary-favorite.api";
-import { diaryKeys, monthOfDateKey } from "@/features/diary/constants/diary-query-keys";
+import type { DiaryEntryDto } from "@/features/diary/types/diary-entry.types";
+import type { DiaryFeedPageDto } from "@/features/diary/types/diary-feed.types";
+import { setDiaryFavorite } from "@/features/diary/api/diary.api";
+import { diaryKeys } from "@/features/diary/constants/diary-query-keys";
+import { monthOfDateKey } from "@/features/diary/utils/diary-cache";
 import { getErrorMessage } from "@/lib/api/http-error";
 
 export function useSetDiaryFavorite() {

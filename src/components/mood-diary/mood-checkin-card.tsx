@@ -13,7 +13,7 @@ import { SongArtwork } from "@/components/songs/song-artwork";
 import { DiaryEntryFields, useDiaryEntryForm } from "@/components/mood-diary/diary-entry-fields";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
 import { formatDate, formatDateKey, formatMonthKey } from "@/lib/date";
-import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
+import type { DiaryEntryDto } from "@/features/diary/types/diary-entry.types";
 import { useDiaryEntries } from "@/features/diary/hooks/use-diary-entries";
 import { useUpsertDiaryEntry } from "@/features/diary/hooks/use-upsert-diary-entry";
 import { getErrorMessage } from "@/lib/api/http-error";

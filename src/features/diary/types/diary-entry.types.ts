@@ -12,3 +12,16 @@ export interface DiaryEntryDto {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface UpsertDiaryEntryRequest {
+  date: string;
+  mood: Mood;
+  note?: string;
+  photos?: File[];
+  songId?: string;
+}
+
+export interface SetDiaryFavoriteRequest {
+  date: string;
+  isFavorite: boolean;
+}

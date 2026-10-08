@@ -3,8 +3,8 @@ import { cn } from "cn";
 
 import { MoodAvatar } from "@/components/mood-diary/mood-avatar";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
-import type { MoodStatsDto } from "@/features/diary/api/mood-stats.types";
-import type { MoodStreakDto } from "@/features/diary/api/mood-streak.types";
+import type { MoodStatsDto } from "@/features/diary/types/mood-stats.types";
+import type { MoodStreakDto } from "@/features/diary/types/mood-streak.types";
 import { pluralize } from "@/lib/utils";
 
 interface InsightsStatsProps {

@@ -1,5 +1,4 @@
-import type { QueryClient } from "@tanstack/react-query";
-import type { DiaryFeedFilters } from "@/features/diary/api/diary-feed.types";
+import type { DiaryFeedFilters } from "@/features/diary/types/diary-feed.types";
 
 export const diaryKeys = {
   all: ["diaries"] as const,
@@ -14,17 +13,3 @@ export const diaryKeys = {
   memory: (date: string) => [...diaryKeys.memories(), date] as const,
   setFavorite: () => [...diaryKeys.all, "set-favorite"] as const,
 };
-
-export function monthOfDateKey(date: string) {
-  return date.slice(0, 7);
-}
-
-export function invalidateDiaryEntryQueries(queryClient: QueryClient, date: string) {
-  return Promise.all([
-    queryClient.invalidateQueries({ queryKey: diaryKeys.month(monthOfDateKey(date)), exact: true }),
-    queryClient.invalidateQueries({ queryKey: diaryKeys.feeds() }),
-    queryClient.invalidateQueries({ queryKey: diaryKeys.allStats() }),
-    queryClient.invalidateQueries({ queryKey: diaryKeys.streaks() }),
-    queryClient.invalidateQueries({ queryKey: diaryKeys.memories() }),
-  ]);
-}
