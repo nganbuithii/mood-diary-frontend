@@ -1,12 +1,9 @@
 import { z } from "zod";
 
+import { emailField } from "@/features/auth/schemas/fields";
+
 export const forgotPasswordSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .min(1, "Email is required")
-    .email("Enter a valid email address"),
+  email: emailField,
 });
 
 export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;

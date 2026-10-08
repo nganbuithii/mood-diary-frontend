@@ -9,6 +9,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { FormField, type FormFieldBaseProps } from "@/components/ui/form-field";
 
 type PasswordInputProps = Omit<
   React.ComponentProps<typeof InputGroupInput>,
@@ -36,5 +37,15 @@ export function PasswordInput({ icon, ...props }: PasswordInputProps) {
         </InputGroupButton>
       </InputGroupAddon>
     </InputGroup>
+  );
+}
+
+type PasswordFieldProps = FormFieldBaseProps & Omit<PasswordInputProps, "id">;
+
+export function PasswordField({ id, label, labelAction, error, ...inputProps }: PasswordFieldProps) {
+  return (
+    <FormField id={id} label={label} labelAction={labelAction} error={error}>
+      {(control) => <PasswordInput {...inputProps} {...control} />}
+    </FormField>
   );
 }

@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Lock, Mail } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Field,
@@ -16,13 +15,10 @@ import {
   FieldLabel,
   FieldSeparator,
 } from "@/components/ui/field";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
+import { TextField } from "@/components/ui/form-field";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
-import { PasswordInput } from "@/components/auth/password-input";
+import { PasswordField } from "@/components/auth/password-input";
 import { RetroWindow } from "@/components/mood-diary/retro-window";
 import { useLogin } from "@/features/auth/hooks/use-login";
 import {
@@ -66,50 +62,36 @@ export function LoginForm({ returnTo }: { returnTo?: string }) {
     <RetroWindow title="Welcome Back" accent className="w-full">
       <form onSubmit={onSubmit} noValidate>
         <FieldGroup>
-          <Field data-invalid={!!errors.email}>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
-            <InputGroup>
-              <InputGroupAddon>
-                <Mail />
-              </InputGroupAddon>
-              <InputGroupInput
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                autoComplete="email"
-                disabled={isSubmitting}
-                aria-invalid={!!errors.email}
-                aria-describedby={errors.email ? "email-error" : undefined}
-                {...register("email")}
-              />
-            </InputGroup>
-            <FieldError id="email-error" errors={[errors.email]} />
-          </Field>
+          <TextField
+            id="email"
+            label="Email"
+            icon={<Mail />}
+            type="email"
+            placeholder="you@example.com"
+            autoComplete="email"
+            disabled={isSubmitting}
+            error={errors.email}
+            {...register("email")}
+          />
 
-          <Field data-invalid={!!errors.password}>
-            <div className="flex items-center">
-              <FieldLabel htmlFor="password">Password</FieldLabel>
+          <PasswordField
+            id="password"
+            label="Password"
+            labelAction={
               <Link
                 href="/forgot-password"
-                className="ml-auto text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
               >
                 Forgot your password?
               </Link>
-            </div>
-            <PasswordInput
-              id="password"
-              placeholder="Enter your password"
-              autoComplete="current-password"
-              icon={<Lock />}
-              disabled={isSubmitting}
-              aria-invalid={!!errors.password}
-              aria-describedby={
-                errors.password ? "password-error" : undefined
-              }
-              {...register("password")}
-            />
-            <FieldError id="password-error" errors={[errors.password]} />
-          </Field>
+            }
+            icon={<Lock />}
+            placeholder="Enter your password"
+            autoComplete="current-password"
+            disabled={isSubmitting}
+            error={errors.password}
+            {...register("password")}
+          />
 
           {/* Decorative only for now — backend login has no remember-me /
               long-lived session option yet. */}
@@ -123,9 +105,9 @@ export function LoginForm({ returnTo }: { returnTo?: string }) {
           <FieldError errors={[errors.root]} />
 
           <Field>
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Logging in..." : "Log in"}
-            </Button>
+            <SubmitButton isPending={isSubmitting} pendingLabel="Logging in...">
+              Log in
+            </SubmitButton>
           </Field>
 
           <FieldSeparator>or</FieldSeparator>

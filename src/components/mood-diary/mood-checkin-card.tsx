@@ -2,7 +2,6 @@
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
-import { Music2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import { ErrorState } from "@/components/ui/empty-state";
 import { Spinner } from "@/components/ui/spinner";
 import { RetroWindow } from "@/components/mood-diary/retro-window";
 import { MoodAvatar } from "@/components/mood-diary/mood-avatar";
+import { SongArtwork } from "@/components/songs/song-artwork";
 import { DiaryEntryFields, useDiaryEntryForm } from "@/components/mood-diary/diary-entry-fields";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
 import { formatDate, formatDateKey, formatMonthKey } from "@/lib/date";
@@ -129,13 +129,7 @@ function TodayEntryView({ entry, onEdit }: TodayEntryViewProps) {
           )}
           {entry.song && (
             <span className="flex min-w-0 max-w-full items-center gap-2 rounded-full bg-muted/60 py-1 pr-3 pl-1">
-              <span className="flex size-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent-blue/30 text-foreground">
-                {entry.song.artworkUrl ? (
-                  <img src={entry.song.artworkUrl} alt="" className="size-full object-cover" />
-                ) : (
-                  <Music2 className="size-3" />
-                )}
-              </span>
+              <SongArtwork url={entry.song.artworkUrl} className="size-6 rounded-full shadow-none" iconClassName="size-3" />
               <span className="min-w-0 truncate text-xs">
                 <span className="font-medium text-foreground">{entry.song.title}</span>
                 <span className="text-muted-foreground"> · {entry.song.artist}</span>

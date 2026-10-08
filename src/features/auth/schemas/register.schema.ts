@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { emailField, newPasswordField } from "@/features/auth/schemas/fields";
+
 export const registerSchema = z
   .object({
     displayName: z
@@ -7,16 +9,8 @@ export const registerSchema = z
       .trim()
       .min(1, "Display name is required")
       .max(100, "Display name must be at most 100 characters"),
-    email: z
-      .string()
-      .trim()
-      .toLowerCase()
-      .min(1, "Email is required")
-      .email("Enter a valid email address"),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .max(128, "Password must be at most 128 characters"),
+    email: emailField,
+    password: newPasswordField,
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {

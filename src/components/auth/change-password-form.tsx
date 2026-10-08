@@ -5,15 +5,10 @@ import { useForm } from "react-hook-form";
 import { KeyRound, Lock } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { CardDescription, CardTitle } from "@/components/ui/card";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { PasswordInput } from "@/components/auth/password-input";
-import { RetroWindow } from "@/components/mood-diary/retro-window";
+import { Field, FieldError, FieldGroup } from "@/components/ui/field";
+import { SubmitButton } from "@/components/ui/submit-button";
+import { AuthCard, AuthResultPanel } from "@/components/auth/auth-card";
+import { PasswordField } from "@/components/auth/password-input";
 import { useChangePassword } from "@/features/auth/hooks/use-change-password";
 import { reloadToLogin } from "@/features/auth/utils/auth-redirect";
 import {
@@ -63,104 +58,69 @@ export function ChangePasswordForm() {
 
   if (changePasswordMutation.isSuccess) {
     return (
-      <RetroWindow title="Password Changed" className="w-full max-w-sm">
-        <div className="flex flex-col items-center gap-4 text-center">
-          <CardTitle className="text-xl">
+      <AuthResultPanel
+        windowTitle="Password Changed"
+        title={
+          <>
             All set <span aria-hidden>♡</span>
-          </CardTitle>
-          <CardDescription>
-            Your password was changed. For your safety, you&apos;ve been
-            logged out everywhere — please log in again.
-          </CardDescription>
-          <Button className="w-full" onClick={reloadToLogin}>
-            Go to login
-          </Button>
-        </div>
-      </RetroWindow>
+          </>
+        }
+        description="Your password was changed. For your safety, you've been logged out everywhere — please log in again."
+      >
+        <Button className="w-full" onClick={reloadToLogin}>
+          Go to login
+        </Button>
+      </AuthResultPanel>
     );
   }
 
   return (
-    <RetroWindow title="Change Password" className="w-full max-w-sm">
-      <div className="mb-6 flex flex-col gap-1 text-center">
-        <CardTitle className="text-xl">
-          Update your password <span aria-hidden>♡</span>
-        </CardTitle>
-        <CardDescription>
-          Changing your password will log you out on all devices.
-        </CardDescription>
-      </div>
+    <AuthCard
+      windowTitle="Change Password"
+      title="Update your password"
+      description="Changing your password will log you out on all devices."
+    >
       <form onSubmit={onSubmit} noValidate>
         <FieldGroup>
-          <Field data-invalid={!!errors.currentPassword}>
-            <FieldLabel htmlFor="currentPassword">
-              Current password
-            </FieldLabel>
-            <PasswordInput
-              id="currentPassword"
-              autoComplete="current-password"
-              icon={<Lock />}
-              disabled={isSubmitting}
-              aria-invalid={!!errors.currentPassword}
-              aria-describedby={
-                errors.currentPassword ? "currentPassword-error" : undefined
-              }
-              {...register("currentPassword")}
-            />
-            <FieldError
-              id="currentPassword-error"
-              errors={[errors.currentPassword]}
-            />
-          </Field>
+          <PasswordField
+            id="currentPassword"
+            label="Current password"
+            icon={<Lock />}
+            autoComplete="current-password"
+            disabled={isSubmitting}
+            error={errors.currentPassword}
+            {...register("currentPassword")}
+          />
 
-          <Field data-invalid={!!errors.newPassword}>
-            <FieldLabel htmlFor="newPassword">New password</FieldLabel>
-            <PasswordInput
-              id="newPassword"
-              autoComplete="new-password"
-              icon={<KeyRound />}
-              disabled={isSubmitting}
-              aria-invalid={!!errors.newPassword}
-              aria-describedby={errors.newPassword ? "newPassword-error" : undefined}
-              {...register("newPassword")}
-            />
-            {errors.newPassword && (
-              <FieldError id="newPassword-error" errors={[errors.newPassword]} />
-            )}
-          </Field>
+          <PasswordField
+            id="newPassword"
+            label="New password"
+            icon={<KeyRound />}
+            autoComplete="new-password"
+            disabled={isSubmitting}
+            error={errors.newPassword}
+            {...register("newPassword")}
+          />
 
-          <Field data-invalid={!!errors.confirmNewPassword}>
-            <FieldLabel htmlFor="confirmNewPassword">
-              Confirm new password
-            </FieldLabel>
-            <PasswordInput
-              id="confirmNewPassword"
-              autoComplete="new-password"
-              icon={<KeyRound />}
-              disabled={isSubmitting}
-              aria-invalid={!!errors.confirmNewPassword}
-              aria-describedby={
-                errors.confirmNewPassword
-                  ? "confirmNewPassword-error"
-                  : undefined
-              }
-              {...register("confirmNewPassword")}
-            />
-            <FieldError
-              id="confirmNewPassword-error"
-              errors={[errors.confirmNewPassword]}
-            />
-          </Field>
+          <PasswordField
+            id="confirmNewPassword"
+            label="Confirm new password"
+            icon={<KeyRound />}
+            autoComplete="new-password"
+            disabled={isSubmitting}
+            error={errors.confirmNewPassword}
+            {...register("confirmNewPassword")}
+          />
 
           <FieldError errors={[errors.root]} />
 
           <Field>
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Updating..." : "Update password"}
-            </Button>
+            <SubmitButton isPending={isSubmitting} pendingLabel="Updating...">
+              Update password
+            </SubmitButton>
           </Field>
         </FieldGroup>
       </form>
-    </RetroWindow>
+    </AuthCard>
   );
 }

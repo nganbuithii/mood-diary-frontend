@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { AuthCenteredLayout } from "@/components/auth/auth-layouts";
 import { ResetPasswordForm } from "@/components/auth/reset-password-form";
 
 export const metadata: Metadata = {
@@ -15,16 +16,8 @@ export default async function ResetPasswordPage({
   const { token } = await searchParams;
 
   return (
-    <div className="relative isolate flex min-h-svh w-full items-center justify-center overflow-hidden px-6 py-10 sm:py-16">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-24 right-[-10%] size-72 rounded-full bg-accent-blue/20 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute bottom-0 left-[-10%] size-72 rounded-full bg-secondary/15 blur-3xl"
-      />
+    <AuthCenteredLayout>
       <ResetPasswordForm token={typeof token === "string" && token ? token : undefined} />
-    </div>
+    </AuthCenteredLayout>
   );
 }

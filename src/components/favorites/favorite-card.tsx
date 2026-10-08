@@ -1,17 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { Music2, Pause, Play } from "lucide-react";
-import { toast } from "sonner";
+import { Music2 } from "lucide-react";
 import { cn } from "cn";
 
 import { FavoriteHeartButton } from "@/components/favorites/favorite-heart-button";
 import { MoodAvatar } from "@/components/mood-diary/mood-avatar";
 import { MOOD_META } from "@/components/mood-diary/mood.constants";
+import { SongPreviewButton } from "@/components/songs/song-preview-button";
 import { formatDate, parseDateKey } from "@/lib/date";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
-import { useSongPreview } from "@/features/songs/hooks/use-song-preview";
-import type { Song } from "@/features/songs/types/song.types";
 
 interface FavoriteCardProps {
   entry: DiaryEntryDto;
@@ -84,30 +82,6 @@ export function FavoriteCard({ entry, featured = false }: FavoriteCardProps) {
         <SongPreviewButton song={entry.song} className="absolute top-3 right-13 group-hover:-translate-y-1" />
       )}
     </div>
-  );
-}
-
-function SongPreviewButton({ song, className }: { song: Song; className?: string }) {
-  const { isPlaying, toggle } = useSongPreview(song.previewUrl);
-
-  return (
-    <button
-      type="button"
-      aria-pressed={isPlaying}
-      aria-label={isPlaying ? `Pause preview of ${song.title}` : `Play a preview of ${song.title}`}
-      onClick={() => toggle().catch(() => toast.error("Couldn't play this preview."))}
-      className={cn(
-        "flex size-8 items-center justify-center rounded-full bg-surface/90 text-foreground shadow-sm backdrop-blur-sm transition-all outline-none hover:scale-110 focus-visible:ring-2 focus-visible:ring-ring/60 active:scale-95 motion-reduce:transition-none motion-reduce:hover:scale-100",
-        isPlaying && "text-primary-hover",
-        className,
-      )}
-    >
-      {isPlaying ? (
-        <Pause aria-hidden className="size-3.5 fill-current" />
-      ) : (
-        <Play aria-hidden className="size-3.5 translate-x-px fill-current" />
-      )}
-    </button>
   );
 }
 

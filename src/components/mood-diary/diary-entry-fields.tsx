@@ -8,7 +8,7 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
 import { DiaryPhotoPicker, MAX_PHOTOS, useDiaryPhotos } from "@/components/mood-diary/diary-photo-picker";
 import { MoodSelector } from "@/components/mood-diary/mood-selector";
-import { SongPicker } from "@/components/mood-diary/song-picker";
+import { SongPicker } from "@/components/songs/song-picker";
 import type { DiaryEntryDto } from "@/features/diary/api/diary-entry.types";
 import type { UpsertDiaryEntryRequest } from "@/features/diary/api/upsert-diary-entry.api";
 import type { Mood } from "@/features/diary/types/mood.types";

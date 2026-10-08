@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Lock, Mail, User } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Field,
@@ -16,13 +15,10 @@ import {
   FieldLabel,
   FieldSeparator,
 } from "@/components/ui/field";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
+import { TextField } from "@/components/ui/form-field";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
-import { PasswordInput } from "@/components/auth/password-input";
+import { PasswordField } from "@/components/auth/password-input";
 import { RetroWindow } from "@/components/mood-diary/retro-window";
 import { useRegister } from "@/features/auth/hooks/use-register";
 import {
@@ -77,84 +73,51 @@ export function RegisterForm() {
     <RetroWindow title="Create Your Account" accent className="w-full">
       <form onSubmit={onSubmit} noValidate>
         <FieldGroup>
-          <Field data-invalid={!!errors.displayName}>
-            <FieldLabel htmlFor="displayName">Display name</FieldLabel>
-            <InputGroup>
-              <InputGroupAddon>
-                <User />
-              </InputGroupAddon>
-              <InputGroupInput
-                id="displayName"
-                type="text"
-                placeholder="Jane Doe"
-                autoComplete="name"
-                disabled={isSubmitting}
-                aria-invalid={!!errors.displayName}
-                aria-describedby={
-                  errors.displayName ? "displayName-error" : undefined
-                }
-                {...register("displayName")}
-              />
-            </InputGroup>
-            <FieldError id="displayName-error" errors={[errors.displayName]} />
-          </Field>
+          <TextField
+            id="displayName"
+            label="Display name"
+            icon={<User />}
+            type="text"
+            placeholder="Jane Doe"
+            autoComplete="name"
+            disabled={isSubmitting}
+            error={errors.displayName}
+            {...register("displayName")}
+          />
 
-          <Field data-invalid={!!errors.email}>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
-            <InputGroup>
-              <InputGroupAddon>
-                <Mail />
-              </InputGroupAddon>
-              <InputGroupInput
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                autoComplete="email"
-                disabled={isSubmitting}
-                aria-invalid={!!errors.email}
-                aria-describedby={errors.email ? "email-error" : undefined}
-                {...register("email")}
-              />
-            </InputGroup>
-            <FieldError id="email-error" errors={[errors.email]} />
-          </Field>
+          <TextField
+            id="email"
+            label="Email"
+            icon={<Mail />}
+            type="email"
+            placeholder="you@example.com"
+            autoComplete="email"
+            disabled={isSubmitting}
+            error={errors.email}
+            {...register("email")}
+          />
 
-          <Field data-invalid={!!errors.password}>
-            <FieldLabel htmlFor="password">Password</FieldLabel>
-            <PasswordInput
-              id="password"
-              placeholder="Enter your password"
-              autoComplete="new-password"
-              icon={<Lock />}
-              disabled={isSubmitting}
-              aria-invalid={!!errors.password}
-              aria-describedby={errors.password ? "password-error" : undefined}
-              {...register("password")}
-            />
-            <FieldError id="password-error" errors={[errors.password]} />
-          </Field>
+          <PasswordField
+            id="password"
+            label="Password"
+            icon={<Lock />}
+            placeholder="Enter your password"
+            autoComplete="new-password"
+            disabled={isSubmitting}
+            error={errors.password}
+            {...register("password")}
+          />
 
-          <Field data-invalid={!!errors.confirmPassword}>
-            <FieldLabel htmlFor="confirm-password">
-              Confirm password
-            </FieldLabel>
-            <PasswordInput
-              id="confirm-password"
-              placeholder="Re-enter your password"
-              autoComplete="new-password"
-              icon={<Lock />}
-              disabled={isSubmitting}
-              aria-invalid={!!errors.confirmPassword}
-              aria-describedby={
-                errors.confirmPassword ? "confirm-password-error" : undefined
-              }
-              {...register("confirmPassword")}
-            />
-            <FieldError
-              id="confirm-password-error"
-              errors={[errors.confirmPassword]}
-            />
-          </Field>
+          <PasswordField
+            id="confirm-password"
+            label="Confirm password"
+            icon={<Lock />}
+            placeholder="Re-enter your password"
+            autoComplete="new-password"
+            disabled={isSubmitting}
+            error={errors.confirmPassword}
+            {...register("confirmPassword")}
+          />
 
           {/* Decorative only for now — not required to submit and not sent
               to the API. Backend has no terms-acceptance field yet. */}
@@ -183,9 +146,9 @@ export function RegisterForm() {
           <FieldError errors={[errors.root]} />
 
           <Field>
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Creating account..." : "Create account"}
-            </Button>
+            <SubmitButton isPending={isSubmitting} pendingLabel="Creating account...">
+              Create account
+            </SubmitButton>
           </Field>
 
           <FieldSeparator>or</FieldSeparator>

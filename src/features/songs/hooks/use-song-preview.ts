@@ -14,8 +14,9 @@ export function useSongPreview(previewUrl: string | null) {
       if (!audio) return;
       audio.pause();
       if (currentAudio === audio) currentAudio = null;
+      audioRef.current = null;
     };
-  }, []);
+  }, [previewUrl]);
 
   const toggle = async () => {
     if (!previewUrl) return;
