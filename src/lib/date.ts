@@ -85,6 +85,7 @@ const DATE_FORMATS = {
   longDate: { month: "long", day: "numeric", year: "numeric" },
   weekdayDate: { weekday: "short", month: "long", day: "numeric", year: "numeric" },
   fullDate: { weekday: "long", month: "long", day: "numeric", year: "numeric" },
+  weekdayMonthDay: { weekday: "long", month: "long", day: "numeric" },
 } satisfies Record<string, Intl.DateTimeFormatOptions>;
 
 export type DateFormat = keyof typeof DATE_FORMATS;
