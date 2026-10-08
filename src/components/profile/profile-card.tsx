@@ -25,6 +25,7 @@ import { LogoutButton } from "@/components/auth/logout-button";
 import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { DeleteAccountDialog } from "@/components/profile/delete-account-dialog";
 import { ExportDiaryButton } from "@/components/profile/export-diary-button";
+import { ReminderControl } from "@/components/profile/reminder-control";
 import { SettingRow } from "@/components/profile/setting-row";
 import { ThemeSwitcher } from "@/components/profile/theme-switcher";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
@@ -152,9 +153,9 @@ export function ProfileCard() {
           <SettingRow
             icon={BellRing}
             title="Daily check-in reminder"
-            description="A gentle nudge to log how you're feeling"
+            description="A gentle email if you haven't written by then"
             tint="bg-mood-happy/40"
-            comingSoon
+            action={<ReminderControl />}
           />
           <SettingRow
             icon={Moon}
