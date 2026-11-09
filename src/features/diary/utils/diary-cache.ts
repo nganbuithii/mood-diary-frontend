@@ -1,6 +1,7 @@
 import type { QueryClient } from "@tanstack/react-query";
 
 import { diaryKeys } from "@/features/diary/constants/diary-query-keys";
+import { achievementKeys } from "@/features/achievements/constants/achievement-query-keys";
 
 export function monthOfDateKey(date: string) {
   return date.slice(0, 7);
@@ -13,5 +14,6 @@ export function invalidateDiaryEntryQueries(queryClient: QueryClient, date: stri
     queryClient.invalidateQueries({ queryKey: diaryKeys.allStats() }),
     queryClient.invalidateQueries({ queryKey: diaryKeys.streaks() }),
     queryClient.invalidateQueries({ queryKey: diaryKeys.memories() }),
+    queryClient.invalidateQueries({ queryKey: achievementKeys.all }),
   ]);
 }

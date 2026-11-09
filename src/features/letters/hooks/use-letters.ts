@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLetter, deleteLetter, listLetters, openLetter } from "@/features/letters/api/letters.api";
 import { LETTER_STATUS } from "@/features/letters/constants/letter.constants";
 import { letterKeys } from "@/features/letters/constants/letter-query-keys";
+import { achievementKeys } from "@/features/achievements/constants/achievement-query-keys";
 import { MINUTE_MS } from "@/lib/constants/time";
 
 export function useLetters() {
@@ -28,7 +29,10 @@ export function useCreateLetter() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createLetter,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: letterKeys.list() }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: letterKeys.list() });
+      queryClient.invalidateQueries({ queryKey: achievementKeys.all });
+    },
   });
 }
 

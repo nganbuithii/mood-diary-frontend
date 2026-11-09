@@ -4,6 +4,7 @@ import type { DiaryEntryDto } from "@/features/diary/types/diary-entry.types";
 import type { DiaryFeedPageDto } from "@/features/diary/types/diary-feed.types";
 import { setDiaryFavorite } from "@/features/diary/api/diary.api";
 import { diaryKeys } from "@/features/diary/constants/diary-query-keys";
+import { achievementKeys } from "@/features/achievements/constants/achievement-query-keys";
 import { monthOfDateKey } from "@/features/diary/utils/diary-cache";
 import { getErrorMessage } from "@/lib/api/http-error";
 
@@ -50,6 +51,7 @@ export function useSetDiaryFavorite() {
       if (queryClient.isMutating({ mutationKey: diaryKeys.setFavorite() }) > 1) return;
       queryClient.invalidateQueries({ queryKey: diaryKeys.feeds() });
       queryClient.invalidateQueries({ queryKey: diaryKeys.month(monthOfDateKey(date)), exact: true });
+      queryClient.invalidateQueries({ queryKey: achievementKeys.all });
     },
   });
 }

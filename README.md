@@ -32,6 +32,7 @@ theo lịch tháng. Repo này là phần frontend (Next.js App Router).
 | Thư gửi tương lai: viết, niêm phong, mở đúng ngày, email báo | `/letters` | ✅ Nối API |
 | Friends | `/friends` | ⬜ Chưa có page (đã ẩn khỏi navbar) |
 | Streak | icon trên navbar, card ở `/home` | ✅ Nối API |
+| Thành tích: tổng quan, huy hiệu tháng (10 trang/tháng), huy hiệu nhiều cấp có tag New | `/achievements`, icon cúp trên navbar | 🟡 Mock: số liệu tính từ `GET /users/me/export` + `/diaries/streak`, cấp đã đạt / tháng đã nhận / đã xem lưu localStorage (`features/achievements/api/achievements.mock.ts`) |
 | Thông báo | icon trên navbar | ⬜ Đang disable, "coming soon" |
 
 ## Tech stack

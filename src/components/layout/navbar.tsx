@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Flame, Heart, Mail } from "lucide-react";
+import { Flame, Heart, Mail, Trophy } from "lucide-react";
 import { cn } from "cn";
 
 import { Logo } from "@/components/layout/logo";
@@ -10,6 +10,7 @@ import { UserMenu } from "@/components/layout/user-menu";
 import { formatDate, formatDateKey } from "@/lib/date";
 import { useMoodStreak } from "@/features/diary/hooks/use-mood-streak";
 import { useReadyLetterCount } from "@/features/letters/hooks/use-letters";
+import { useNewAchievementCount } from "@/features/achievements/hooks/use-achievements";
 import { useToday } from "@/lib/hooks/use-today";
 import { pluralize } from "@/lib/utils";
 
@@ -43,6 +44,7 @@ export function Navbar() {
           <StreakLink today={today} />
 
           <div className="ml-auto flex items-center gap-0.5">
+            <AchievementsLink />
             <LetterboxLink />
             <Link
               href="/favorites"
@@ -101,6 +103,28 @@ function StreakLink({ today }: { today: Date }) {
     >
       <Flame className="size-3.5" fill={writtenToday ? "currentColor" : "none"} />
       {text}
+    </Link>
+  );
+}
+
+function AchievementsLink() {
+  const pathname = usePathname();
+  const newCount = useNewAchievementCount();
+  const isActive = pathname === "/achievements";
+  const label = newCount > 0 ? `Achievements, ${pluralize(newCount, "new badge")}` : "Achievements";
+
+  return (
+    <Link
+      href="/achievements"
+      title={label}
+      aria-label={label}
+      aria-current={isActive ? "page" : undefined}
+      className={cn(TOP_ICON_CLASS, isActive && TOP_ICON_ACTIVE_CLASS)}
+    >
+      <Trophy className="size-4" />
+      {newCount > 0 && (
+        <span aria-hidden className="absolute top-0.5 right-0.5 size-2 rounded-full bg-primary-hover ring-2 ring-surface" />
+      )}
     </Link>
   );
 }
