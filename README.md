@@ -32,7 +32,7 @@ theo lịch tháng. Repo này là phần frontend (Next.js App Router).
 | Thư gửi tương lai: viết, niêm phong, mở đúng ngày, email báo | `/letters` | ✅ Nối API |
 | Friends | `/friends` | ⬜ Chưa có page (đã ẩn khỏi navbar) |
 | Streak | icon trên navbar, card ở `/home` | ✅ Nối API |
-| Thành tích: tổng quan, huy hiệu tháng (10 trang/tháng), huy hiệu nhiều cấp có tag New | `/achievements`, icon cúp trên navbar | 🟡 Mock: số liệu tính từ `GET /users/me/export` + `/diaries/streak`, cấp đã đạt / tháng đã nhận / đã xem lưu localStorage (`features/achievements/api/achievements.mock.ts`) |
+| Thành tích: tổng quan, huy hiệu tháng (10 trang/tháng), huy hiệu nhiều cấp có tag New | `/achievements`, icon cúp trên navbar | ✅ Nối API |
 | Thông báo | icon trên navbar | ⬜ Đang disable, "coming soon" |
 
 ## Tech stack
@@ -143,6 +143,7 @@ src/
 | Users | `POST /users/me/avatar` (multipart, field `file`, tối đa 5MB) |
 | Diaries | `GET /diaries?month=YYYY-MM` · `POST /diaries` (multipart: `date`, `mood`, `note`, `photos[]` tối đa 3 ảnh × 5MB, `songId`) |
 | Songs | `GET /songs/search?q=` (tối đa 10 kết quả, giới hạn 30 lần/phút cho mỗi user) · `GET /songs/trending` (top 20 bài nghe nhiều ở Việt Nam, hiện khi ô tìm kiếm còn trống) |
+| Achievements | `GET /achievements?date=YYYY-MM-DD` (date = hôm nay theo giờ địa phương) · `POST /achievements/:id/seen` |
 
 Quy ước của `POST /diaries` cần nhớ: đây là **upsert theo ngày**, và field nào không gửi thì **giữ nguyên**.
 

@@ -26,5 +26,5 @@ Chạy `type-check` và `lint` sau mỗi thay đổi.
 - Query key lấy từ factory (`diaryKeys`, `letterKeys`, `authKeys`, `songKeys`, `healthKeys`, `profileKeys`, `achievementKeys` trong `features/*/constants/`), không viết mảng key tay. Sửa/xoá entry thì gọi `invalidateDiaryEntryQueries` (`features/diary/utils/diary-cache.ts`).
 - `Mood` type ở `features/diary/types/mood.types.ts`; `MOOD_META`/`MOOD_OPTIONS` (class UI) ở `components/mood-diary/mood.constants.ts`. Hàm ngày ở `lib/date.ts`.
 - Form nhật ký dùng `useDiaryEntryForm` + `<DiaryEntryFields/>`; ảnh được nén phía client (`lib/image.ts`) trước khi upload.
-- Thành tích (`features/achievements/`) chưa có backend: mọi lời gọi đi qua `api/achievements.api.ts` (đang trỏ sang `achievements.mock.ts`). Thêm thành tích mới cần sửa `AchievementId`, `ACHIEVEMENT_META` (`components/achievements/`) và bậc trong mock. Cấp đã đạt không bao giờ giảm. Không thêm cơ chế phạt, đếm ngược hay nhắc nhở.
+- Thành tích (`features/achievements/`): bậc và luật tính nằm ở backend (`achievement-catalog.ts`). Thêm thành tích mới cần sửa cả backend lẫn `AchievementId` và `ACHIEVEMENT_META` (`components/achievements/`). Cấp đã đạt không bao giờ giảm. Không thêm cơ chế phạt, đếm ngược hay nhắc nhở.
 - Text UI tiếng Anh, giọng ấm áp (♡).
